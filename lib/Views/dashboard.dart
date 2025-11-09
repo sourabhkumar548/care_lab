@@ -107,7 +107,8 @@ class _DashboardState extends State<Dashboard> {
                                 width: Adaptive.w(45),
                                 height: 300,
                                 child: UiHelper.Custcard(title: "Today's Patient",
-                                    child: Container(child:  BlocBuilder<RevenueCubit, RevenueState>(
+                                    child: Container(child:
+                                    BlocBuilder<RevenueCubit, RevenueState>(
                                       builder: (context, state) {
                                         if(state is RevenueLoadingState){
                                           return Center(child: CircularProgressIndicator());
@@ -115,24 +116,48 @@ class _DashboardState extends State<Dashboard> {
                                         if(state is RevenueErrorState){
                                           return Center(child: UiHelper.CustText(text: state.errorMsg));
                                         }
-                                        if(state is RevenueLoadedState){
-                                          return ListView.builder(
-                                            shrinkWrap: true,
-                                            itemBuilder: (_,index){
+                                        if (state is RevenueLoadedState) {
+                                          var list = state.revenueModel.today!.details!;
 
-                                              var data = state.revenueModel.today!.details![index];
-                                              debugPrint(data.patientName);
+                                          return SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: DataTable(
+                                              columns: const [
+                                                DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
+                                                DataColumn(label: Text("Name", style: TextStyle(fontWeight: FontWeight.bold))),
+                                                DataColumn(label: Text("Total Amount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                                DataColumn(label: Text("Discount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                                DataColumn(label: Text("Paid Amount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                                DataColumn(label: Text("Balance", style: TextStyle(fontWeight: FontWeight.bold))),
+                                              ],
 
-                                              return state.revenueModel.paymentModes![index].payMode!.isNotEmpty ? Expanded(
-                                                child: ListTile(
-                                                  title: UiHelper.CustText(text: "${data.patientName}",color: Colors.green,size: 11.sp),
-                                                  subtitle: UiHelper.CustText(text: "${data.mobile}",color: Colors.green,size: 11.sp),
-                                                  trailing: UiHelper.CustText(text: "₹${data.afterDiscount}.00",color: Colors.black,size: 11.sp),
-                                                ),
-                                              ) : Container();
+                                              rows: List.generate(list.length, (index) {
+                                                var data = list[index];
 
-                                            },itemCount: state.revenueModel.today!.details!.length,);
+                                                return DataRow(cells: [
+                                                  DataCell(Text("${index + 1}")),
+                                                  DataCell(
+                                                    Tooltip(
+                                                      message: "Mobile: ${data.mobile}\nAdvance: ₹${data.advance}.00",
+                                                      padding: EdgeInsets.all(10),
+                                                      textStyle: TextStyle(color: Colors.white),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.black87,
+                                                        borderRadius: BorderRadius.circular(6),
+                                                      ),
+                                                      child: Text(data.patientName ?? "",style: TextStyle(color: Colors.blue),),
+                                                    ),
+                                                  ),
+                                                  DataCell(Text("₹${data.totalAmount}.00")),
+                                                  DataCell(Text("₹${data.discount}.00")),
+                                                  DataCell(Text("₹${data.afterDiscount}.00")),
+                                                  DataCell(Text("₹${data.balance}.00")),
+                                                ]);
+                                              }),
+                                            ),
+                                          );
                                         }
+
                                         return Container();
                                       },
                                     ),)),

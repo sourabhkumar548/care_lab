@@ -73,5 +73,8 @@ class Urls {
   static const MonthlyChart = "${BaseUrl}monthlyChart";
 
 
+  static const StaffCollection = "${BaseUrl}staff-today-collection?today=";
+
+
 
 }
