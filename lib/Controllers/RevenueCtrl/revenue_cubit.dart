@@ -13,13 +13,13 @@ class RevenueCubit extends Cubit<RevenueState> {
   RevenueCubit() : super(RevenueInitialState());
 
 
-  getRevenueDetail()async{
+  getRevenueDetail({String? get_today,String? get_month,String? get_year})async{
 
     DateTime now = DateTime.now();
 
-    String today = "${now.day}-${now.month}-${now.year}";
-    int month = now.month;   // returns 1-12
-    int year = now.year;
+    String today = get_today!.isNotEmpty ? get_today : "${now.day}-${now.month}-${now.year}";
+    String month = get_month!.isNotEmpty ? get_month : now.month.toString();   // returns 1-12
+    String year = get_year!.isNotEmpty ? get_year : now.year.toString();
 
     emit(RevenueLoadingState());
 

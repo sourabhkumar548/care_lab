@@ -24,7 +24,7 @@ class _DashboardState extends State<Dashboard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    context.read<RevenueCubit>()..getRevenueDetail();
+    context.read<RevenueCubit>()..getRevenueDetail(get_today: "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",get_month: DateTime.now().month.toString(),get_year: DateTime.now().year.toString());
   }
 
   @override
@@ -106,7 +106,36 @@ class _DashboardState extends State<Dashboard> {
                               child: Container(
                                 width: Adaptive.w(45),
                                 height: 300,
-                                child: UiHelper.Custcard(title: "Today's Patient", child: Container()),
+                                child: UiHelper.Custcard(title: "Today's Patient",
+                                    child: Container(child:  BlocBuilder<RevenueCubit, RevenueState>(
+                                      builder: (context, state) {
+                                        if(state is RevenueLoadingState){
+                                          return Center(child: CircularProgressIndicator());
+                                        }
+                                        if(state is RevenueErrorState){
+                                          return Center(child: UiHelper.CustText(text: state.errorMsg));
+                                        }
+                                        if(state is RevenueLoadedState){
+                                          return ListView.builder(
+                                            shrinkWrap: true,
+                                            itemBuilder: (_,index){
+
+                                              var data = state.revenueModel.today!.details![index];
+                                              debugPrint(data.patientName);
+
+                                              return state.revenueModel.paymentModes![index].payMode!.isNotEmpty ? Expanded(
+                                                child: ListTile(
+                                                  title: UiHelper.CustText(text: "${data.patientName}",color: Colors.green,size: 11.sp),
+                                                  subtitle: UiHelper.CustText(text: "${data.mobile}",color: Colors.green,size: 11.sp),
+                                                  trailing: UiHelper.CustText(text: "₹${data.afterDiscount}.00",color: Colors.black,size: 11.sp),
+                                                ),
+                                              ) : Container();
+
+                                            },itemCount: state.revenueModel.today!.details!.length,);
+                                        }
+                                        return Container();
+                                      },
+                                    ),)),
                               ),
                             ),
                             Expanded(
@@ -139,11 +168,11 @@ class _DashboardState extends State<Dashboard> {
 
                         Container(
                           width: Adaptive.w(90),
-                          height: 300,
                           child: Row(children: [
                             Expanded(
                               child: Container(
                                   width : Adaptive.w(45),
+                                  height: 350,
                                   child: UiHelper.Custcard(title: "Today's Revenue Details",
                                       trailing: Expanded(
                                         child: Card(
@@ -173,6 +202,15 @@ class _DashboardState extends State<Dashboard> {
                                                         String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
                                                         setState(() {
                                                           dateCtrl.text = formattedDate;
+
+                                                          String date = formattedDate;
+                                                          List<String> parts = date.split('-');
+
+                                                          int month = int.parse(parts[1]);
+                                                          int year = int.parse(parts[2]);
+
+                                                          context.read<RevenueCubit>()..getRevenueDetail(get_today: formattedDate,get_month: month.toString(),get_year: year.toString());
+
                                                         });
 
                                                       }
@@ -238,26 +276,37 @@ class _DashboardState extends State<Dashboard> {
                                                 ),
                                               ),
                                             ],),
-                                            Row(children: [
-                                              Expanded(
-                                                child: Card(
-                                                  color: Colors.grey.shade100,
-                                                  child: ListTile(
-                                                    title: UiHelper.CustText(text: "Online Collection",color: Colors.green,size: 11.sp),
-                                                    trailing: UiHelper.CustText(text: "₹${state.revenueModel.paymentModes![1].total ?? 0}.00",color: Colors.black,size: 11.sp),
-                                                  ),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: Card(
-                                                  color: Colors.grey.shade100,
-                                                  child: ListTile(
-                                                    title: UiHelper.CustText(text: "Cash Collection",color: Colors.green,size: 11.sp),
-                                                    trailing: UiHelper.CustText(text: "₹${state.revenueModel.paymentModes![0].total ?? 0}.00",color: Colors.black,size: 11.sp),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],)
+
+                                            BlocBuilder<RevenueCubit, RevenueState>(
+                                              builder: (context, state) {
+                                                if(state is RevenueLoadingState){
+                                                  return Center(child: CircularProgressIndicator());
+                                                }
+                                                if(state is RevenueErrorState){
+                                                  return Center(child: UiHelper.CustText(text: state.errorMsg));
+                                                }
+                                                if(state is RevenueLoadedState){
+                                                  return ListView.builder(
+                                                    shrinkWrap: true,
+                                                      itemBuilder: (_,index){
+
+                                                        return state.revenueModel.paymentModes![index].payMode!.isNotEmpty ? Expanded(
+                                                          child: Card(
+                                                            color: Colors.grey.shade100,
+                                                            child: ListTile(
+                                                              title: UiHelper.CustText(text: "${state.revenueModel.paymentModes![index].payMode} Collection",color: Colors.green,size: 11.sp),
+                                                              trailing: UiHelper.CustText(text: "₹${state.revenueModel.paymentModes![index].total}.00",color: Colors.black,size: 11.sp),
+                                                            ),
+                                                          ),
+                                                        ) : Container();
+
+                                                      },itemCount: state.revenueModel.paymentModes!.length,);
+                                                }
+                                                return Container();
+                                              },
+                                            ),
+
+
                                           ],);
                                         }
                                         return Container();
@@ -268,6 +317,7 @@ class _DashboardState extends State<Dashboard> {
                             Expanded(
                               child: Container(
                                   width : Adaptive.w(45),
+                                  height: 350,
                                   child: UiHelper.Custcard(title: "Staff Details", child: Container())),
                             )
                           ],),
