@@ -3,6 +3,7 @@
 import 'package:care_lab_software/Controllers/CheckReportCtrl/check_report_cubit.dart';
 import 'package:care_lab_software/Controllers/DoctorCtrl/cibit/doctor_cubit.dart';
 import 'package:care_lab_software/Controllers/PaymentHistoryCtrl/cubit/payment_history_cubit.dart';
+import 'package:care_lab_software/Controllers/RevenueCtrl/revenue_cubit.dart';
 import 'package:care_lab_software/Views/agent_management.dart';
 import 'package:care_lab_software/Views/doctor_management.dart';
 import 'package:care_lab_software/Views/rate_list_management.dart';
@@ -63,6 +64,7 @@ class MyApp extends StatelessWidget {
                 BlocProvider(create: (_)=>AgentCubit()..GetAgent()),
                 BlocProvider(create: (_)=>DoctorCubit()..GetDoctor()),
                 BlocProvider(create: (_)=>CheckReportCubit()),
+                BlocProvider(create: (_)=>RevenueCubit()..getRevenueDetail()),
                 BlocProvider(create: (_)=>CaseListCubit()..getCaseList(date: "${DateTime.now().day.toString()}-${DateTime.now().month.toString()}-${DateTime.now().year.toString()}",type: "All")),
               ],
               child: GetMaterialApp(

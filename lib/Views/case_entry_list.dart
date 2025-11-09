@@ -40,7 +40,8 @@ class _CaseEntryListState extends State<CaseEntryList> {
                 padding: const EdgeInsets.all(10.0),
                 child: ListView(
                   children: [
-                    UiHelper.CustTopBar(title: "CASE ENTRY LIST",widget: Container(width: 300,height: 40,child: TextField(
+                    UiHelper.CustTopBar(title: "CASE ENTRY LIST",widget: Container(width: 300,height: 40,
+                      child: TextField(
                       controller: dateCtrl,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
