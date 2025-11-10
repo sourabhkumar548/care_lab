@@ -77,4 +77,8 @@ class Urls {
 
 
 
+  static const DoctorCollection = "${BaseUrl}doctor-collection?";
+
+
+
 }

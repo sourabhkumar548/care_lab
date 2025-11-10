@@ -76,6 +76,7 @@ class UiHelper{
                 Container(
                   color: container == '5' ? Colors.green.shade300 : Colors.transparent,
                   child: ListTile(
+                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Doctor Management", style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Get.toNamed('/doctor_list_management');
@@ -85,6 +86,7 @@ class UiHelper{
                 Container(
                   color: container == '6' ? Colors.green.shade300 : Colors.transparent,
                   child: ListTile(
+                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Agent Management", style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Get.toNamed('/agent_list_management');
@@ -94,6 +96,7 @@ class UiHelper{
                 Container(
                   color: container == '7' ? Colors.green.shade300 : Colors.transparent,
                   child: ListTile(
+                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Staff Management", style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Get.toNamed('/staff_list_management');
@@ -103,6 +106,7 @@ class UiHelper{
                 Container(
                   color: container == '8' ? Colors.green.shade300 : Colors.transparent,
                   child: ListTile(
+                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Rate List Management", style: TextStyle(color: Colors.white)),
                     onTap: () {
                         Get.toNamed('/rate_list_management');
@@ -114,9 +118,84 @@ class UiHelper{
           ),
 
           // Accounts
+          Theme(
+            data: Theme.of(context).copyWith(
+              dividerColor: Colors.transparent,
+              iconTheme: const IconThemeData(color: Colors.white),
+            ),
+            child: ExpansionTile(
+              collapsedIconColor: Colors.white,
+              iconColor: Colors.white,
+              leading: const Icon(Icons.account_balance_wallet, color: Colors.white),
+              title: const Text("Accounts", style: TextStyle(color: Colors.white)),
+              childrenPadding: const EdgeInsets.only(left: 30),
+              children: [
+                Container(
+                  color: container == '9' ? Colors.green.shade300 : Colors.transparent,
+                  child: ListTile(
+                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
+                    title: const Text("Doctor Collection", style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Get.toNamed('/doctor_collection');
+                    },
+                  ),
+                ),
+                Container(
+                  color: container == '10' ? Colors.green.shade300 : Colors.transparent,
+                  child: ListTile(
+                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
+                    title: const Text("Agent Collection", style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Get.toNamed('/');
+                    },
+                  ),
+                ),
+                Container(
+                  color: container == '11' ? Colors.green.shade300 : Colors.transparent,
+                  child: ListTile(
+                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
+                    title: const Text("Staff Collection", style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Get.toNamed('/');
+                    },
+                  ),
+                ),
+                Container(
+                  color: container == '12' ? Colors.green.shade300 : Colors.transparent,
+                  child: ListTile(
+                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
+                    title: const Text("Collection By Date", style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Get.toNamed('/');
+                    },
+                  ),
+                ),
+                Container(
+                  color: container == '13' ? Colors.green.shade300 : Colors.transparent,
+                  child: ListTile(
+                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
+                    title: const Text("Monthly Collection", style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Get.toNamed('/');
+                    },
+                  ),
+                ),
+                Container(
+                  color: container == '14' ? Colors.green.shade300 : Colors.transparent,
+                  child: ListTile(
+                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
+                    title: const Text("Yearly Collection", style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Get.toNamed('/');
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
           Container(
-            color: container == '9' ? Colors.green.shade300 : Colors.transparent,
-            child: sidebarItem(Icons.history, "Accounts", "/"),
+            color: container == '15' ? Colors.green.shade300 : Colors.transparent,
+            child: sidebarItem(Icons.money, "Daily Expenses", "/"),
           ),
 
           const Spacer(),
