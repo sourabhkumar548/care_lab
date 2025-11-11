@@ -425,59 +425,70 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Tests List
-                        Container(
-                          width: 42.5.w,
-                          child: UiHelper.Custcard(
-                            title: "Tests List",
-                            trailing: TextButton(
-                              onPressed: () async {
-                                var result = await showDialog(
-                                    context: context,
-                                    builder: (_) => AddTestDialog());
-                                if (result != null) {
-                                  setState(() {
-                                    selectedTests = result;
-                                    updateBilling();
-                                  });
-                                }
-                              },
-                              child: Text("Add Test"),
-                            ),
-                            child: Column(
-                              children: [
-                                Divider(),
-                                ...selectedTests.map((item) {
-                                  int index = selectedTests.indexOf(item);
-                                  return Row(
+                      Container(
+                      width: 42.5.w,
+                      child: UiHelper.Custcard(
+                        title: "Tests List",
+                        trailing: TextButton(
+                          onPressed: () async {
+                            var result = await showDialog(
+                              context: context,
+                              builder: (_) => AddTestDialog(),
+                            );
+                            if (result != null) {
+                              setState(() {
+                                selectedTests = result;
+                                updateBilling();
+                              });
+                            }
+                          },
+                          child: Text("Add Test"),
+                        ),
+                        child: Column(
+                          children: [
+                            Divider(),
+
+                            ...selectedTests.asMap().entries.map((entry) {
+                              int index = entry.key;
+                              var item = entry.value;
+
+                              return Card(
+                                color: Colors.grey.shade100,
+                                margin: EdgeInsets.symmetric(vertical: 4),
+                                child: ListTile(
+                                  leading: UiHelper.CustText(text: "${index + 1} : "),
+                                  title: UiHelper.CustText(text: item['Test Name']),
+
+                                  /// ✅ Only ONE trailing widget
+                                  trailing: Row(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Expanded(
-                                        child: ListTile(
-                                          leading: UiHelper.CustText(text: "${index+1} : "),
-                                          title: UiHelper.CustText(text: "${item['Test Name']}"),
-                                          trailing: UiHelper.CustText(text: "${item['Test Rate']}"),
-                                        ),
-                                      ),
+                                      UiHelper.CustText(text: "${item['Test Rate']}"),
+                                      SizedBox(width: 8),
                                       IconButton(
+                                        icon: Icon(Icons.close, color: Colors.red),
                                         onPressed: () {
                                           setState(() {
                                             selectedTests.removeAt(index);
                                             AddTestDialogState.totalAmount -=
-                                                double.parse(
-                                                    item['Test Rate'].toString());
+                                                double.parse(item['Test Rate'].toString());
                                             updateBilling();
                                           });
                                         },
-                                        icon: Icon(Icons.close, color: Colors.red),
-                                      )
+                                      ),
                                     ],
-                                  );
-                                }).toList(),
-                              ],
-                            ),
-                          ),
-                        ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
 
-                        // Billing Summary
+                          ],
+                        ),
+                      ),
+                    ),
+
+
+                // Billing Summary
                         Expanded(
                           child: Container(
                             width: 42.5.w,

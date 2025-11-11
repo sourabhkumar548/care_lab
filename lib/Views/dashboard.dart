@@ -168,16 +168,16 @@ class _DashboardState extends State<Dashboard> {
                                 width: Adaptive.w(45),
                                 height: 300,
                                 child: UiHelper.Custcard(title: "Report Chart of ${year}",
-                                    trailing:Expanded(
-                                      child: Card(
-                                        elevation: 5,
-                                        color: Colors.grey.shade200,
-                                        child: UiHelper.CustDropDown(label: "Year", defaultValue: selectedYear, list: yearList, onChanged: (val){
-
-                                        })
-                                      ),
-                                    )
-                                    , child: Container(
+                                    // trailing:Expanded(
+                                    //   child: Card(
+                                    //     elevation: 5,
+                                    //     color: Colors.grey.shade200,
+                                    //     child: UiHelper.CustDropDown(label: "Year", defaultValue: selectedYear, list: yearList, onChanged: (val){
+                                    //
+                                    //     })
+                                    //   ),
+                                    // ),
+                                    child: Container(
                                   child: Expanded(
                                     child: MonthlyBarChart(
                                       months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "jul", "Aug", "Sep", "Oct", "Nov", "Dec"],          // Month number → no 09 only 9 ✅
@@ -255,84 +255,131 @@ class _DashboardState extends State<Dashboard> {
                                           return Center(child: UiHelper.CustText(text: state.errorMsg));
                                         }
                                         if(state is RevenueLoadedState){
-
-
                                           return ListView(
                                             shrinkWrap: true,
+                                            physics: NeverScrollableScrollPhysics(),
                                             children: [
-
-                                              Row(children: [
-                                                Expanded(
-                                                  child: Card(
-                                                    color: Colors.grey.shade100,
-                                                    child: ListTile(
-                                                      title: UiHelper.CustText(text: "Total Patient",color: Colors.green,size: 11.sp),
-                                                      trailing: UiHelper.CustText(text: state.revenueModel.today!.patients.toString(),color: Colors.black,size: 11.sp),
+                                              // ------- TOP SUMMARY ROW 1 -------
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Card(
+                                                      color: Colors.grey.shade100,
+                                                      child: ListTile(
+                                                        title: UiHelper.CustText(
+                                                            text: "Total Patient",
+                                                            color: Colors.green,
+                                                            size: 11.sp),
+                                                        trailing: UiHelper.CustText(
+                                                            text: state.revenueModel.today!.patients.toString(),
+                                                            color: Colors.black,
+                                                            size: 11.sp),
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                                Expanded(
-                                                  child: Card(
-                                                    color: Colors.grey.shade100,
-                                                    child: ListTile(
-                                                      title: UiHelper.CustText(text: "Total Amount",color: Colors.green,size: 11.sp),
-                                                      trailing: UiHelper.CustText(text: "₹${state.revenueModel.today!.totalAmount.toString()}.00",color: Colors.black,size: 11.sp),
+                                                  Expanded(
+                                                    child: Card(
+                                                      color: Colors.grey.shade100,
+                                                      child: ListTile(
+                                                        title: UiHelper.CustText(
+                                                            text: "Total Amount",
+                                                            color: Colors.green,
+                                                            size: 11.sp),
+                                                        trailing: UiHelper.CustText(
+                                                            text: "₹${state.revenueModel.today!.totalAmount}.00",
+                                                            color: Colors.black,
+                                                            size: 11.sp),
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                              ],),
-                                            Row(children: [
-                                              Expanded(
-                                                child: Card(
-                                                  color: Colors.grey.shade100,
-                                                  child: ListTile(
-                                                    title: UiHelper.CustText(text: "Total Collection",color: Colors.green,size: 11.sp),
-                                                    trailing: UiHelper.CustText(text: "₹${state.revenueModel.today!.totalCollection.toString()}.00",color: Colors.black,size: 11.sp),
-                                                  ),
-                                                ),
+                                                ],
                                               ),
-                                              Expanded(
-                                                child: Card(
-                                                  color: Colors.grey.shade100,
-                                                  child: ListTile(
-                                                    title: UiHelper.CustText(text: "Total Due",color: Colors.green,size: 11.sp),
-                                                    trailing: UiHelper.CustText(text: "₹${state.revenueModel.today!.totalDue.toString()}.00",color: Colors.black,size: 11.sp),
+
+                                              // ------- TOP SUMMARY ROW 2 -------
+                                              Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: Card(
+                                                      color: Colors.grey.shade100,
+                                                      child: ListTile(
+                                                        title: UiHelper.CustText(
+                                                            text: "Total Collection",
+                                                            color: Colors.green,
+                                                            size: 11.sp),
+                                                        trailing: UiHelper.CustText(
+                                                            text: "₹${state.revenueModel.today!.totalCollection}.00",
+                                                            color: Colors.black,
+                                                            size: 11.sp),
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
+                                                  Expanded(
+                                                    child: Card(
+                                                      color: Colors.grey.shade100,
+                                                      child: ListTile(
+                                                        title: UiHelper.CustText(
+                                                            text: "Total Due",
+                                                            color: Colors.green,
+                                                            size: 11.sp),
+                                                        trailing: UiHelper.CustText(
+                                                            text: "₹${state.revenueModel.today!.totalDue}.00",
+                                                            color: Colors.black,
+                                                            size: 11.sp),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                            ],),
 
-                                            BlocBuilder<RevenueCubit, RevenueState>(
-                                              builder: (context, state) {
-                                                if(state is RevenueLoadingState){
-                                                  return Center(child: CircularProgressIndicator());
-                                                }
-                                                if(state is RevenueErrorState){
-                                                  return Center(child: UiHelper.CustText(text: state.errorMsg));
-                                                }
-                                                if(state is RevenueLoadedState){
-                                                  return ListView.builder(
-                                                    shrinkWrap: true,
-                                                      itemBuilder: (_,index){
+                                              // ------- PAYMENT MODE LIST -------
+                                              BlocBuilder<RevenueCubit, RevenueState>(
+                                                builder: (context, state) {
+                                                  if (state is RevenueLoadingState) {
+                                                    return Center(child: CircularProgressIndicator());
+                                                  }
+                                                  if (state is RevenueErrorState) {
+                                                    return Center(child: UiHelper.CustText(text: state.errorMsg));
+                                                  }
+                                                  if (state is RevenueLoadedState) {
+                                                    return ListView.builder(
+                                                      shrinkWrap: true,
+                                                      physics: NeverScrollableScrollPhysics(),
+                                                      itemCount: state.revenueModel.paymentModes!.length,
+                                                      itemBuilder: (_, index) {
+                                                        final mode = state.revenueModel.paymentModes![index];
 
-                                                        return state.revenueModel.paymentModes![index].payMode!.isNotEmpty ? Expanded(
-                                                          child: Card(
-                                                            color: Colors.grey.shade100,
-                                                            child: ListTile(
-                                                              title: UiHelper.CustText(text: "${state.revenueModel.paymentModes![index].payMode} Collection",color: Colors.green,size: 11.sp),
-                                                              trailing: UiHelper.CustText(text: "₹${state.revenueModel.paymentModes![index].total}.00",color: Colors.black,size: 11.sp),
+                                                        if (mode.payMode == null || mode.payMode!.isEmpty) {
+                                                          return SizedBox.shrink();
+                                                        }
+
+                                                        return Card(
+                                                          color: Colors.grey.shade100,
+                                                          child: ListTile(
+                                                            title: Text(
+                                                              "${mode.payMode} Collection",
+                                                              style: TextStyle(
+                                                                color: Colors.green,
+                                                                fontSize: 11.sp,
+                                                              ),
+                                                            ),
+                                                            trailing: Text(
+                                                              "₹${mode.total}.00",
+                                                              style: TextStyle(
+                                                                color: Colors.green,
+                                                                fontSize: 11.sp,
+                                                              ),
                                                             ),
                                                           ),
-                                                        ) : Container();
+                                                        );
+                                                      },
+                                                    );
+                                                  }
+                                                  return Container();
+                                                },
+                                              ),
+                                            ],
+                                          );
 
-                                                      },itemCount: state.revenueModel.paymentModes!.length,);
-                                                }
-                                                return Container();
-                                              },
-                                            ),
-
-
-                                          ],);
                                         }
                                         return Container();
                                       },
