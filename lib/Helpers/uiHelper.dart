@@ -146,7 +146,7 @@ class UiHelper{
                     leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Agent Collection", style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      Get.toNamed('/');
+                      Get.toNamed('/agent_collection');
                     },
                   ),
                 ),
@@ -166,7 +166,7 @@ class UiHelper{
                     leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Collection By Date", style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      Get.toNamed('/');
+                      Get.toNamed('/collection_between_date');
                     },
                   ),
                 ),

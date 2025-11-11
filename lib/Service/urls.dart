@@ -79,6 +79,11 @@ class Urls {
 
   static const DoctorCollection = "${BaseUrl}doctor-collection?";
 
+  static const AgentCollection = "${BaseUrl}agent-collection?";
+
+
+  static const BetweenDateCollection = "${BaseUrl}collectionBetweenDates?";
+
 
 
 }

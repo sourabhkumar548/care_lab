@@ -1,4 +1,4 @@
-import 'package:care_lab_software/Controllers/DoctorCollectionCtrl/doctor_collection_cubit.dart';
+import 'package:care_lab_software/Controllers/AgentCollectionCtrl/agent_collection_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
@@ -7,16 +7,16 @@ import 'package:sizer/sizer.dart';
 import '../Helpers/case_entry_data.dart';
 import '../Helpers/uiHelper.dart';
 
-class DoctorCollection extends StatefulWidget {
-  const DoctorCollection({super.key});
+class AgentCollection extends StatefulWidget {
+  const AgentCollection({super.key});
 
   @override
-  State<DoctorCollection> createState() => _DoctorCollectionState();
+  State<AgentCollection> createState() => _AgentCollectionState();
 }
 
-class _DoctorCollectionState extends State<DoctorCollection> {
+class _AgentCollectionState extends State<AgentCollection> {
 
-  TextEditingController doctorCtrl = TextEditingController(text: "0");
+  TextEditingController agentCtrl = TextEditingController(text: "0");
   TextEditingController dateCtrl = TextEditingController(text: "0");
 
   String Selectedyear="0";
@@ -49,6 +49,8 @@ class _DoctorCollectionState extends State<DoctorCollection> {
     DropdownMenuItem(value: "12", child: Text("December")),
   ];
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +61,7 @@ class _DoctorCollectionState extends State<DoctorCollection> {
             //SIDE BAR
             Container(
               width: Adaptive.w(15),
-              child: UiHelper.custsidebar(container: "9",context: context),
+              child: UiHelper.custsidebar(container: "10",context: context),
             ),
             //MAIN CONTENT
             Container(
@@ -68,7 +70,7 @@ class _DoctorCollectionState extends State<DoctorCollection> {
                 padding: const EdgeInsets.all(10.0),
                 child: ListView(
                   children: [
-                    UiHelper.CustTopBar(title: "Doctor Collection",),
+                    UiHelper.CustTopBar(title: "Agent Collection",),
 
                     const SizedBox(height: 20,),
 
@@ -99,7 +101,7 @@ class _DoctorCollectionState extends State<DoctorCollection> {
                                       String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
                                       setState(() {
                                         dateCtrl.text = formattedDate;
-                                       });
+                                      });
 
                                     }
                                   },
@@ -110,10 +112,10 @@ class _DoctorCollectionState extends State<DoctorCollection> {
                       const SizedBox(width: 10,),
                       Expanded(
                         child: TextField(
-                          controller: doctorCtrl,
+                          controller: agentCtrl,
                           style: TextStyle(color: Colors.black),
                           decoration: InputDecoration(
-                              labelText: "Select Doctor Name",
+                              labelText: "Enter Agent Name",
                               filled: true,
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -125,8 +127,8 @@ class _DoctorCollectionState extends State<DoctorCollection> {
                               ),
                               fillColor: Colors.grey.shade100,
                               labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                              prefixIcon: Icon(Icons.local_hospital),
-                              suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>doctorCtrl.text=data,CaseEnteryData.doctorList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
+                              prefixIcon: Icon(Icons.person),
+                              suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
 
                           ),
                         ),
@@ -144,75 +146,74 @@ class _DoctorCollectionState extends State<DoctorCollection> {
                         });
                       }),
                       const SizedBox(width: 10,),
-                      GestureDetector(
-                        onTap: ()=>context.read<DoctorCollectionCubit>().getDoctorCollection(date: dateCtrl.text,month: Selectedmonth,year: Selectedyear,doctor: doctorCtrl.text),
-                        child: Container(
-                          height: 50,
-                          width: 200,
-                          decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(30)),color: Colors.green),
-                          child: Center(child: UiHelper.CustText(text: "Search Doctor",color: Colors.white,size: 11.sp)),
-                        ),
-                      ),
-
+                       GestureDetector(
+                         onTap: ()=>context.read<AgentCollectionCubit>().getAgentCollection(date: dateCtrl.text,month: Selectedmonth,year: Selectedyear,agent: agentCtrl.text),
+                         child: Container(
+                            height: 50,
+                            width: 200,
+                            decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(30)),color: Colors.green),
+                           child: Center(child: UiHelper.CustText(text: "Search Agent",color: Colors.white,size: 11.sp)),
+                          ),
+                       ),
                     ],),
-                    
-                    BlocBuilder<DoctorCollectionCubit, DoctorCollectionState>(
+
+                    BlocBuilder<AgentCollectionCubit, AgentCollectionState>(
                       builder: (context, state) {
-                        if(state is DoctorCollectionLoadingState){
+                        if(state is AgentCollectionLoadingState){
                           return Center(child: CircularProgressIndicator());
                         }
-                        if(state is DoctorCollectionErrorState){
+                        if(state is AgentCollectionErrorState){
                           return Center(child: UiHelper.CustText(text: state.errorMsg));
                         }
-                        if(state is DoctorCollectionLoadedState){
+                        if(state is AgentCollectionLoadedState){
 
-                          var list = state.doctorCollectionModel.doctorWise;
+                          var list = state.agentCollectionModel.agentWise;
 
                           return SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: Column(
-                            children: [
-                            Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                UiHelper.CustText(
-                                    text: "Total Collection : ₹${state.doctorCollectionModel.totalCollection}.00"
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        UiHelper.CustText(
+                                            text: "Total Collection : ₹${state.agentCollectionModel.totalCollection}.00"
+                                        )
+                                      ],
+                                    ),
+
+                                    const SizedBox(height: 10),
+
+                                    Center(
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Card(
+                                          color: Colors.white,
+                                          child: DataTable(
+                                            columns: const [
+                                              DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
+                                              DataColumn(label: Text("Agent Name", style: TextStyle(fontWeight: FontWeight.bold))),
+                                              DataColumn(label: Text("Patient Count", style: TextStyle(fontWeight: FontWeight.bold))),
+                                              DataColumn(label: Text("Collection Amount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                            ],
+                                            rows: List.generate(list.length, (index) {
+                                              var data = list[index];
+
+                                              return DataRow(cells: [
+                                                DataCell(Text("${index + 1}")),
+                                                DataCell(Text(data.agent)),
+                                                DataCell(Center(child: Text(data.patientCount.toString()))),
+                                                DataCell(Center(child: Text("₹${data.totalCollection}.00")))
+                                              ]);
+                                            }),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 )
-                              ],
-                            ),
-
-                            const SizedBox(height: 10),
-
-                            Center(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Card(
-                                  color: Colors.white,
-                                  child: DataTable(
-                                    columns: const [
-                                      DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
-                                      DataColumn(label: Text("Doctor Name", style: TextStyle(fontWeight: FontWeight.bold))),
-                                      DataColumn(label: Text("Patient Count", style: TextStyle(fontWeight: FontWeight.bold))),
-                                      DataColumn(label: Text("Collection Amount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                    ],
-                                    rows: List.generate(list.length, (index) {
-                                      var data = list[index];
-
-                                      return DataRow(cells: [
-                                        DataCell(Text("${index + 1}")),
-                                        DataCell(Text(data.doctor)),
-                                        DataCell(Center(child: Text(data.patientCount.toString()))),
-                                        DataCell(Center(child: Text("₹${data.totalCollection}.00")))
-                                      ]);
-                                    }),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            ],
-                          )
 
                             ),
                           );

@@ -14,27 +14,17 @@ class DoctorCollectionCubit extends Cubit<DoctorCollectionState> {
 
   getDoctorCollection({String? date,String? month,String? year,String? doctor})async{
 
-    print("Date : ${date}");
-    print("Month : ${month}");
-    print("Year : ${year}");
-    print("Doctor : ${doctor}");
-
     date!.isNotEmpty ? date : "0";
     month!.isNotEmpty ? month : "0";
     year != null ? year : "0";
     doctor != null ? doctor : "0";
 
-print("Date : ${date}");
-print("Month : ${month}");
-print("Year : ${year}");
-print("Doctor : ${doctor}");
     
     emit(DoctorCollectionLoadingState());
     
     try{
       
       final uri = Uri.parse("${Urls.DoctorCollection}date=${date}&month=${month}&year=${year}&doctor=${doctor}");
-      print(uri);
       final response = await http.get(uri);
 
       if(response.statusCode == 200){

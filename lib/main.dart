@@ -6,6 +6,7 @@ import 'package:care_lab_software/Controllers/DoctorCtrl/cibit/doctor_cubit.dart
 import 'package:care_lab_software/Controllers/PaymentHistoryCtrl/cubit/payment_history_cubit.dart';
 import 'package:care_lab_software/Controllers/RevenueCtrl/revenue_cubit.dart';
 import 'package:care_lab_software/Views/agent_management.dart';
+import 'package:care_lab_software/Views/collection_between_date.dart';
 import 'package:care_lab_software/Views/doctor_collection.dart';
 import 'package:care_lab_software/Views/doctor_management.dart';
 import 'package:care_lab_software/Views/rate_list_management.dart';
@@ -17,7 +18,9 @@ import 'package:get_storage/get_storage.dart';
 import 'package:sizer/sizer.dart';
 import 'package:toastification/toastification.dart';
 
+import 'Controllers/AgentCollectionCtrl/agent_collection_cubit.dart';
 import 'Controllers/AgentCtrl/cubit/agent_cubit.dart';
+import 'Controllers/BetweenDateCtrl/between_date_cubit.dart';
 import 'Controllers/CaseEntryCtrl/Bloc/case_entry_bloc.dart';
 import 'Controllers/CaseList/Cubit/case_list_cubit.dart';
 import 'Controllers/CaseNumberCtrl/Cubit/case_number_cubit.dart';
@@ -27,6 +30,7 @@ import 'Controllers/LoginScreenCtrl/UsernameCubit/username_cubit.dart';
 import 'Controllers/RateListCtrl/Cubit/rate_list_cubit.dart';
 import 'Controllers/StaffCtrl/cubit/staff_cubit.dart';
 import 'Helpers/report_page.dart';
+import 'Views/agent_collection.dart';
 import 'Views/case_entry_list.dart';
 import 'Views/dashboard.dart';
 import 'Views/loginscreen.dart';
@@ -68,6 +72,8 @@ class MyApp extends StatelessWidget {
                 BlocProvider(create: (_)=>CheckReportCubit()),
                 BlocProvider(create: (_)=>RevenueCubit()..getRevenueDetail()),
                 BlocProvider(create: (_)=>DoctorCollectionCubit()),
+                BlocProvider(create: (_)=>AgentCollectionCubit()),
+                BlocProvider(create: (_)=>BetweenDateCubit()),
                 BlocProvider(create: (_)=>CaseListCubit()..getCaseList(date: "${DateTime.now().day.toString()}-${DateTime.now().month.toString()}-${DateTime.now().year.toString()}",type: "All")),
               ],
               child: GetMaterialApp(
@@ -87,6 +93,8 @@ class MyApp extends StatelessWidget {
                   "/agent_list_management": (context) => AgentManagement(),
                   "/doctor_list_management": (context) => DoctorManagement(),
                   "/doctor_collection": (context) => DoctorCollection(),
+                  "/agent_collection": (context) => AgentCollection(),
+                  "/collection_between_date": (context) => CollectionBetweenDate(),
                 },
               ),
             ),
