@@ -78,7 +78,7 @@ class MyApp extends StatelessWidget {
               ],
               child: GetMaterialApp(
                 initialRoute: "/login_page",
-                title: 'Care Diagnostics Center',
+                title: 'Care Diagnostics Centre',
                 debugShowCheckedModeBanner: false,
                 supportedLocales: [const Locale('en', 'US')],
                 routes : {

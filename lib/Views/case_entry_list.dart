@@ -25,7 +25,71 @@ class _CaseEntryListState extends State<CaseEntryList> {
 
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
-      body: Center(
+      body: Device.width < 1100 ?
+      Center(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            //SIDE BAR
+            Container(
+              height: 120,
+              child: UiHelper.custHorixontalTab(container: "3",context: context),
+            ),
+            //MAIN CONTENT
+            Container(
+              height: Adaptive.h(100),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ListView(
+                  children: [
+                    UiHelper.CustTopBar(title: "CASE ENTRY LIST",widget: Container(width: 300,height: 40,
+                      child: TextField(
+                        controller: dateCtrl,
+                        style: TextStyle(color: Colors.black),
+                        decoration: InputDecoration(
+                            labelText: "Select Date",
+                            filled: true,
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.green, width: 2),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                            ),
+                            fillColor: Colors.grey.shade100,
+                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                            prefixIcon: Icon(Icons.calendar_month),
+                            suffixIcon: GestureDetector(
+                                onTap: ()async{
+                                  DateTime? pickedDate = await showOmniDateTimePicker(context: context,type: OmniDateTimePickerType.date,);
+
+                                  if (pickedDate != null) {
+                                    String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+                                    setState(() {
+                                      amountType.value = "All";
+                                      dateCtrl.text = formattedDate;
+                                      context.read<CaseListCubit>().getCaseList(date: formattedDate,type: "All");
+                                    });
+
+                                  }
+                                },
+                                child: Icon(Icons.search,))
+                        ),
+                      ),),),
+
+
+                    SizedBox(height: 5,),
+                    GetCaseList.GetCase(date: dateCtrl.text,context: context),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      )
+          :
+      Center(
         child: Row(
           children: [
             //SIDE BAR

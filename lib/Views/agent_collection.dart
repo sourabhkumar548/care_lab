@@ -55,7 +55,186 @@ class _AgentCollectionState extends State<AgentCollection> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
-      body: Center(
+      body: Device.width < 1100 ?
+      Center(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            //SIDE BAR
+            Container(
+              height: 120,
+              child: UiHelper.custHorixontalTab(container: "6",context: context),
+            ),
+            //MAIN CONTENT
+            Container(
+              height: Adaptive.h(100),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ListView(
+                  children: [
+                    UiHelper.CustTopBar(title: "Agent Collection",),
+
+                    const SizedBox(height: 20,),
+
+                    Row(children: [
+                      Expanded(
+                        child: TextField(
+                          controller: dateCtrl,
+                          style: TextStyle(color: Colors.black),
+                          decoration: InputDecoration(
+                              labelText: "Select Date",
+                              filled: true,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.green, width: 2),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                              ),
+                              fillColor: Colors.grey.shade100,
+                              labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                              prefixIcon: Icon(Icons.calendar_month),
+                              suffixIcon: GestureDetector(
+                                  onTap: ()async{
+                                    DateTime? pickedDate = await showOmniDateTimePicker(context: context,type: OmniDateTimePickerType.date,);
+
+                                    if (pickedDate != null) {
+                                      String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+                                      setState(() {
+                                        dateCtrl.text = formattedDate;
+                                      });
+
+                                    }
+                                  },
+                                  child: Icon(Icons.search,))
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      Expanded(
+                        child: TextField(
+                          controller: agentCtrl,
+                          style: TextStyle(color: Colors.black),
+                          decoration: InputDecoration(
+                              labelText: "Enter Agent Name",
+                              filled: true,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.green, width: 2),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                              ),
+                              fillColor: Colors.grey.shade100,
+                              labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                              prefixIcon: Icon(Icons.person),
+                              suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
+
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      UiHelper.CustDropDown(label: "Select Month", defaultValue: "0", list: monthList, onChanged: (val){
+                        setState(() {
+                          Selectedmonth = val!;
+                        });
+                      }),
+                      const SizedBox(width: 10,),
+                      UiHelper.CustDropDown(label: "Select Year", defaultValue: "0", list: yearList, onChanged: (val){
+                        setState(() {
+                          Selectedyear = val!;
+                        });
+                      }),
+                      const SizedBox(width: 10,),
+                      GestureDetector(
+                        onTap: ()=>context.read<AgentCollectionCubit>().getAgentCollection(date: dateCtrl.text,month: Selectedmonth,year: Selectedyear,agent: agentCtrl.text),
+                        child: Container(
+                          height: 50,
+                          width: 200,
+                          decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(30)),color: Colors.green),
+                          child: Center(child: UiHelper.CustText(text: "Search Agent",color: Colors.white,size: 11.sp)),
+                        ),
+                      ),
+                    ],),
+
+                    BlocBuilder<AgentCollectionCubit, AgentCollectionState>(
+                      builder: (context, state) {
+                        if(state is AgentCollectionLoadingState){
+                          return Center(child: CircularProgressIndicator());
+                        }
+                        if(state is AgentCollectionErrorState){
+                          return Center(child: UiHelper.CustText(text: state.errorMsg));
+                        }
+                        if(state is AgentCollectionLoadedState){
+
+                          var list = state.agentCollectionModel.agentWise;
+
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        UiHelper.CustText(
+                                            text: "Total Collection : ₹${state.agentCollectionModel.totalCollection}.00"
+                                        )
+                                      ],
+                                    ),
+
+                                    const SizedBox(height: 10),
+
+                                    Center(
+                                      child: SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Card(
+                                          color: Colors.white,
+                                          child: DataTable(
+                                            columns: const [
+                                              DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
+                                              DataColumn(label: Text("Agent Name", style: TextStyle(fontWeight: FontWeight.bold))),
+                                              DataColumn(label: Text("Patient Count", style: TextStyle(fontWeight: FontWeight.bold))),
+                                              DataColumn(label: Text("Collection Amount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                            ],
+                                            rows: List.generate(list.length, (index) {
+                                              var data = list[index];
+
+                                              return DataRow(cells: [
+                                                DataCell(Text("${index + 1}")),
+                                                DataCell(Text(data.agent)),
+                                                DataCell(Center(child: Text(data.patientCount.toString()))),
+                                                DataCell(Center(child: Text("₹${data.totalCollection}.00")))
+                                              ]);
+                                            }),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+
+                            ),
+                          );
+                        }
+                        return Container();
+                      },
+                    )
+
+
+
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      )
+          :
+      Center(
         child: Row(
           children: [
             //SIDE BAR

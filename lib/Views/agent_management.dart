@@ -12,7 +12,117 @@ class AgentManagement extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
-      body: Center(
+      body: Device.width < 1100 ?
+
+      Center(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            //SIDE BAR
+            Container(
+              height: 120,
+              child: UiHelper.custHorixontalTab(container: "5",context: context),
+            ),
+            //MAIN CONTENT
+            Container(
+              height: Adaptive.h(100),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ListView(
+                  children: [
+                    UiHelper.CustTopBar(title: "Agent List Management",widget: ElevatedButton(onPressed: (){}, child: UiHelper.CustText(text: "Add New Agent",size: 12.sp))),
+
+                    const SizedBox(height: 20,),
+                    Container(
+                      color: Colors.blue.shade200,
+                      child: Table(
+                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                        border: TableBorder.all(width: 0.5, color: Colors.black),
+                        columnWidths: {
+                          0 : FlexColumnWidth(.5),
+                          1 : FlexColumnWidth(5),
+                          2 : FlexColumnWidth(2),
+                          3 : FlexColumnWidth(5),
+                          4 : FlexColumnWidth(2),
+                          6 : FlexColumnWidth(1),
+                        },
+                        children: [
+                          TableRow(children: [
+                            SizedBox(
+                                height: 40,
+                                child: Center(child: UiHelper.CustText(text: "Sno",size: 12.sp))),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: UiHelper.CustText(text: "Agent Name",size: 12.sp),
+                            ),
+                            Center(child: UiHelper.CustText(text: "Mobile",size: 12.sp)),
+                            Center(child: UiHelper.CustText(text: "Address",size: 12.sp)),
+                            Center(child: UiHelper.CustText(text: "Sop Name",size: 12.sp)),
+                            Center(child: UiHelper.CustText(text: "Action",size: 12.sp)),
+                          ])
+                        ],
+                      ),
+                    ),
+
+                    BlocBuilder<AgentCubit, AgentState>(
+                      builder: (context, state) {
+                        if(state is AgentLoadingState){
+                          return Center(child: CircularProgressIndicator(),);
+                        }
+                        if(state is AgentErrorState){
+                          return Center(child: UiHelper.CustText(text: state.errorMsg));
+                        }
+                        if(state is AgentLoadedState){
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            itemBuilder: (_,index){
+                              var data = state.agentModel.agent![index];
+                              return Table(
+                                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                border: TableBorder.all(width: 0.5, color: Colors.grey),
+                                columnWidths: {
+                                  0 : FlexColumnWidth(.5),
+                                  1 : FlexColumnWidth(5),
+                                  2 : FlexColumnWidth(2),
+                                  3 : FlexColumnWidth(5),
+                                  4 : FlexColumnWidth(2),
+                                  6 : FlexColumnWidth(1),
+                                },
+                                children: [
+                                  TableRow(children: [
+                                    Center(child: UiHelper.CustText(text: "${index+1}",size: 12.sp)),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                      child: UiHelper.CustText(text: data.agentName!,size: 12.sp),
+                                    ),
+                                    Center(child: UiHelper.CustText(text: data.mobile!,size: 12.sp)),
+                                    Center(child: UiHelper.CustText(text: data.address!,size: 12.sp)),
+                                    Center(child: UiHelper.CustText(text: data.shopName!,size: 12.sp)),
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly  ,
+                                      children: [
+                                        IconButton(onPressed: (){}, icon: Icon(Icons.edit,color: Colors.green,)),
+                                        IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.red,)),
+                                      ],)
+                                  ])
+                                ],
+                              );
+                            },itemCount: state.agentModel.agent!.length,);
+                        }
+                        return Container();
+                      },
+                    )
+
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      )
+
+          :
+      Center(
         child: Row(
           children: [
             //SIDE BAR

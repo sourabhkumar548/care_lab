@@ -48,7 +48,370 @@ class _DashboardState extends State<Dashboard> {
 
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
-      body: Row(
+      body: Device.width < 1100 ?
+      ListView(
+        shrinkWrap: true,
+        children: [
+          // Sidebar
+          Container(
+              height: 120,
+              child: UiHelper.custHorixontalTab(container: "1",context: context)),
+
+          // Main Content
+          Container(
+            height: Adaptive.h(100),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Lab Info
+                        UiHelper.CustTopBar(title: "Care Diagnostics Centre"),
+                        const SizedBox(height: 20),
+
+                        // Account Information Cards
+                        BlocBuilder<RevenueCubit, RevenueState>(
+                          builder: (context, state) {
+                            if(state is RevenueLoadingState){
+                              return Center(child: CircularProgressIndicator());
+                            }
+                            if(state is RevenueErrorState){
+                              return Center(child: UiHelper.CustText(text: state.errorMsg));
+                            }
+                            if(state is RevenueLoadedState){
+                              return Wrap(
+                                spacing: 20,
+                                runSpacing: 16,
+                                children: [
+                                  UiHelper.infoCard("Today’s Patient", "${state.revenueModel.today!.patients}", Colors.blue, Icons.people),
+                                  UiHelper.infoCard("Today’s Revenue", "₹${state.revenueModel.today!.totalCollection!.toString()}", Colors.red, Icons.wallet),
+                                  UiHelper.infoCard("Patient in ${month}", "${state.revenueModel.selectedMonth!.patients}", Colors.green, Icons.event),
+                                  UiHelper.infoCard("Revenue in ${month}", "₹${state.revenueModel.selectedMonth!.revenue}", Colors.orange, Icons.currency_rupee),
+                                  UiHelper.infoCard("Patient in ${year}", "${state.revenueModel.selectedYear!.patients}", Colors.blue, Icons.people_alt),
+                                  UiHelper.infoCard("Revenue in ${year}", "₹${state.revenueModel.selectedYear!.revenue}",Colors.red, Icons.wallet),
+                                  UiHelper.infoCard("Due Amt in ${month}", "₹${state.revenueModel.pendingTotalThisMonth!}",Colors.red, Icons.currency_rupee),
+                                  UiHelper.infoCard("Due Amt in ${year}", "₹${state.revenueModel.pendingTotalThisYear!}",Colors.red, Icons.currency_rupee),
+                                ],
+                              );
+                            }
+                            return Container();
+                          },
+                        ),
+
+                        const SizedBox(height: 15),
+
+                        Container(
+                          width: Adaptive.w(100),
+                          height: 300,
+                          child: Row(children: [
+                            Expanded(
+                              child: Container(
+                                width: Adaptive.w(45),
+                                height: 300,
+                                child: UiHelper.Custcard(title: "Today's Patient",
+                                    child: Container(child:
+                                    BlocBuilder<RevenueCubit, RevenueState>(
+                                      builder: (context, state) {
+                                        if(state is RevenueLoadingState){
+                                          return Center(child: CircularProgressIndicator());
+                                        }
+                                        if(state is RevenueErrorState){
+                                          return Center(child: UiHelper.CustText(text: state.errorMsg));
+                                        }
+                                        if (state is RevenueLoadedState) {
+                                          var list = state.revenueModel.today!.details!;
+
+                                          return SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: DataTable(
+                                              columns: const [
+                                                DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
+                                                DataColumn(label: Text("Name", style: TextStyle(fontWeight: FontWeight.bold))),
+                                                DataColumn(label: Text("Total Amount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                                DataColumn(label: Text("Discount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                                DataColumn(label: Text("Paid Amount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                                DataColumn(label: Text("Balance", style: TextStyle(fontWeight: FontWeight.bold))),
+                                              ],
+
+                                              rows: List.generate(list.length, (index) {
+                                                var data = list[index];
+
+                                                return DataRow(cells: [
+                                                  DataCell(Text("${index + 1}")),
+                                                  DataCell(
+                                                    Tooltip(
+                                                      message: "Mobile: ${data.mobile}\nAdvance: ₹${data.advance}.00",
+                                                      padding: EdgeInsets.all(10),
+                                                      textStyle: TextStyle(color: Colors.white),
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.black87,
+                                                        borderRadius: BorderRadius.circular(6),
+                                                      ),
+                                                      child: Text(data.patientName ?? "",style: TextStyle(color: Colors.blue),),
+                                                    ),
+                                                  ),
+                                                  DataCell(Text("₹${data.totalAmount}.00")),
+                                                  DataCell(Text("₹${data.discount}.00")),
+                                                  DataCell(Text("₹${data.afterDiscount}.00")),
+                                                  DataCell(Text("₹${data.balance}.00")),
+                                                ]);
+                                              }),
+                                            ),
+                                          );
+                                        }
+
+                                        return Container();
+                                      },
+                                    ),)),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                width: Adaptive.w(45),
+                                height: 300,
+                                child: UiHelper.Custcard(title: "Report Chart of ${year}",
+                                    // trailing:Expanded(
+                                    //   child: Card(
+                                    //     elevation: 5,
+                                    //     color: Colors.grey.shade200,
+                                    //     child: UiHelper.CustDropDown(label: "Year", defaultValue: selectedYear, list: yearList, onChanged: (val){
+                                    //
+                                    //     })
+                                    //   ),
+                                    // ),
+                                    child: Container(
+                                      child: Expanded(
+                                        child: MonthlyBarChart(
+                                          months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "jul", "Aug", "Sep", "Oct", "Nov", "Dec"],          // Month number → no 09 only 9 ✅
+                                          values: [1200, 900, 1500, 1100, 800, 6000, 85000, 45888, 120000, 2000000, 500, 1000],
+                                        ),
+                                      )
+                                      ,
+                                    )),
+                              ),
+                            )
+                          ],),
+                        ),
+
+                        Container(
+                          width: Adaptive.w(100),
+                          child: Row(children: [
+                            Expanded(
+                              child: Container(
+                                  width : Adaptive.w(45),
+                                  height: 350,
+                                  child: UiHelper.Custcard(title: "Today's Revenue Details",
+                                      trailing: Expanded(
+                                        child: Card(
+                                          elevation: 5,
+                                          child: TextField(
+                                            controller: dateCtrl,
+                                            style: TextStyle(color: Colors.black),
+                                            decoration: InputDecoration(
+                                                labelText: "Select Date",
+                                                filled: true,
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.green, width: 2),
+                                                ),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                                ),
+                                                fillColor: Colors.grey.shade100,
+                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                                                prefixIcon: Icon(Icons.calendar_month),
+                                                suffixIcon: GestureDetector(
+                                                    onTap: ()async{
+                                                      DateTime? pickedDate = await showOmniDateTimePicker(context: context,type: OmniDateTimePickerType.date,);
+
+                                                      if (pickedDate != null) {
+                                                        String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+                                                        setState(() {
+                                                          dateCtrl.text = formattedDate;
+
+                                                          String date = formattedDate;
+                                                          List<String> parts = date.split('-');
+
+                                                          int month = int.parse(parts[1]);
+                                                          int year = int.parse(parts[2]);
+
+                                                          context.read<RevenueCubit>()..getRevenueDetail(get_today: formattedDate,get_month: month.toString(),get_year: year.toString());
+
+                                                        });
+
+                                                      }
+                                                    },
+                                                    child: Icon(Icons.search,))
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      child: Container(
+                                        child: BlocBuilder<RevenueCubit, RevenueState>(
+                                          builder: (context, state) {
+                                            if(state is RevenueLoadingState){
+                                              return Center(child: CircularProgressIndicator());
+                                            }
+                                            if(state is RevenueErrorState){
+                                              return Center(child: UiHelper.CustText(text: state.errorMsg));
+                                            }
+                                            if(state is RevenueLoadedState){
+                                              return ListView(
+                                                shrinkWrap: true,
+                                                physics: NeverScrollableScrollPhysics(),
+                                                children: [
+                                                  // ------- TOP SUMMARY ROW 1 -------
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Card(
+                                                          color: Colors.grey.shade100,
+                                                          child: ListTile(
+                                                            title: UiHelper.CustText(
+                                                                text: "Total Patient",
+                                                                color: Colors.green,
+                                                                size: 11.sp),
+                                                            trailing: UiHelper.CustText(
+                                                                text: state.revenueModel.today!.patients.toString(),
+                                                                color: Colors.black,
+                                                                size: 11.sp),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                        child: Card(
+                                                          color: Colors.grey.shade100,
+                                                          child: ListTile(
+                                                            title: UiHelper.CustText(
+                                                                text: "Total Amount",
+                                                                color: Colors.green,
+                                                                size: 11.sp),
+                                                            trailing: UiHelper.CustText(
+                                                                text: "₹${state.revenueModel.today!.totalAmount}.00",
+                                                                color: Colors.black,
+                                                                size: 11.sp),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+
+                                                  // ------- TOP SUMMARY ROW 2 -------
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Card(
+                                                          color: Colors.grey.shade100,
+                                                          child: ListTile(
+                                                            title: UiHelper.CustText(
+                                                                text: "Total Collection",
+                                                                color: Colors.green,
+                                                                size: 11.sp),
+                                                            trailing: UiHelper.CustText(
+                                                                text: "₹${state.revenueModel.today!.totalCollection}.00",
+                                                                color: Colors.black,
+                                                                size: 11.sp),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Expanded(
+                                                        child: Card(
+                                                          color: Colors.grey.shade100,
+                                                          child: ListTile(
+                                                            title: UiHelper.CustText(
+                                                                text: "Total Due",
+                                                                color: Colors.green,
+                                                                size: 11.sp),
+                                                            trailing: UiHelper.CustText(
+                                                                text: "₹${state.revenueModel.today!.totalDue}.00",
+                                                                color: Colors.black,
+                                                                size: 11.sp),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+
+                                                  // ------- PAYMENT MODE LIST -------
+                                                  BlocBuilder<RevenueCubit, RevenueState>(
+                                                    builder: (context, state) {
+                                                      if (state is RevenueLoadingState) {
+                                                        return Center(child: CircularProgressIndicator());
+                                                      }
+                                                      if (state is RevenueErrorState) {
+                                                        return Center(child: UiHelper.CustText(text: state.errorMsg));
+                                                      }
+                                                      if (state is RevenueLoadedState) {
+                                                        return ListView.builder(
+                                                          shrinkWrap: true,
+                                                          physics: NeverScrollableScrollPhysics(),
+                                                          itemCount: state.revenueModel.paymentModes!.length,
+                                                          itemBuilder: (_, index) {
+                                                            final mode = state.revenueModel.paymentModes![index];
+
+                                                            if (mode.payMode == null || mode.payMode!.isEmpty) {
+                                                              return SizedBox.shrink();
+                                                            }
+
+                                                            return Card(
+                                                              color: Colors.grey.shade100,
+                                                              child: ListTile(
+                                                                title: Text(
+                                                                  "${mode.payMode} Collection",
+                                                                  style: TextStyle(
+                                                                    color: Colors.green,
+                                                                    fontSize: 11.sp,
+                                                                  ),
+                                                                ),
+                                                                trailing: Text(
+                                                                  "₹${mode.total}.00",
+                                                                  style: TextStyle(
+                                                                    color: Colors.green,
+                                                                    fontSize: 11.sp,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    },
+                                                  ),
+                                                ],
+                                              );
+
+                                            }
+                                            return Container();
+                                          },
+                                        ),
+                                      ))),
+                            ),
+                            Expanded(
+                              child: Container(
+                                  width : Adaptive.w(45),
+                                  height: 350,
+                                  child: UiHelper.Custcard(title: "Staff Details", child: Container())),
+                            )
+                          ],),
+                        ),
+
+                        const SizedBox(height: 30,)
+
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      )
+          :Row(
         children: [
           // Sidebar
           UiHelper.custsidebar(container: "1",context: context),

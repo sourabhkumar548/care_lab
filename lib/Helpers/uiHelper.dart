@@ -11,24 +11,264 @@ import 'package:pdf/widgets.dart' as pw;
 
 class UiHelper{
 
+
+
+  static Widget custHorixontalTab({
+    required String container,
+    required BuildContext context,
+}){
+    GlobalKey managementKey = GlobalKey();
+    GlobalKey accountKey = GlobalKey();
+
+
+    return Container(
+
+      color: Colors.blue.shade500,
+      child: ListView(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        children: [
+          Center(child: UiHelper.CustText(text: "Care Diagnostics Centre",size: 18.sp,color: Colors.white)),
+          Divider(color: Colors.blue.shade900,),
+          GridView(
+            shrinkWrap: true,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8,),
+            children: [
+              InkWell(
+                onTap: ()=>Get.toNamed('/'),
+                child: Container(
+                  padding: EdgeInsets.only(top: 5),
+                  color: container == "1" ? Colors.green.shade300 : Colors.transparent,
+                  child: Column(children: [
+                    Icon(Icons.dashboard,color: Colors.white,size: 25,),
+                    const SizedBox(height: 5,),
+                    UiHelper.CustText(text: "Dashboard",size: 12.sp,color: Colors.white)
+                  ],),
+                ),
+              ),
+              InkWell(
+                onTap: ()=>Get.toNamed('/case_entry_page'),
+                child: Container(
+                  padding: EdgeInsets.only(top: 5),
+                  color: container == "2" ? Colors.green.shade300 : Colors.transparent,
+                  child: Column(children: [
+                    Icon(Icons.person_add,color: Colors.white,size: 25,),
+                    const SizedBox(height: 5,),
+                    UiHelper.CustText(text: "Case Entry",size: 12.sp,color: Colors.white)
+                  ],),
+                ),
+              ),
+              InkWell(
+                onTap: ()=>Get.toNamed('/case_entry_list'),
+                child: Container(
+                  padding: EdgeInsets.only(top: 5),
+                  color: container == "3" ? Colors.green.shade300 : Colors.transparent,
+                  child: Column(children: [
+                    Icon(Icons.list_alt,color: Colors.white,size: 25,),
+                    const SizedBox(height: 5,),
+                    UiHelper.CustText(text: "Case Entry List",size: 12.sp,color: Colors.white)
+                  ],),
+                ),
+              ),
+              InkWell(
+                onTap: ()=>Get.toNamed('/reporting_page'),
+                child: Container(
+                  padding: EdgeInsets.only(top: 5),
+                  color: container == "4" ? Colors.green.shade300 : Colors.transparent,
+                  child: Column(children: [
+                    Icon(Icons.search,color: Colors.white,size: 25,),
+                    const SizedBox(height: 5,),
+                    UiHelper.CustText(text: "Reporting",size: 12.sp,color: Colors.white)
+                  ],),
+                ),
+              ),
+
+              //MANAGEMENT
+              InkWell(
+                onTap: () {
+                  final RenderBox renderBox =
+                  managementKey.currentContext!.findRenderObject() as RenderBox;
+
+                  final position = renderBox.localToGlobal(Offset.zero);
+                  final size = renderBox.size;
+
+                  showMenu(
+                    context: context,
+                    position: RelativeRect.fromLTRB(
+                      position.dx,
+                      60, // 👉 bottom of widget
+                      position.dx + size.width,
+                      0,
+                    ),
+                    items: [
+                      PopupMenuItem(value: "doctor", child: Text("Doctor Management")),
+                      PopupMenuItem(value: "agent", child: Text("Agent Management")),
+                      PopupMenuItem(value: "staff", child: Text("Staff Management")),
+                      PopupMenuItem(value: "rate", child: Text("Rate List Management")),
+                    ],
+                  ).then((value) {
+                    if (value != null){
+                      if(value == "doctor"){
+                        Get.toNamed('/doctor_list_management');
+                      }
+                      if(value == "agent"){
+                        Get.toNamed('/agent_list_management');
+                      }
+                      if(value == "staff"){
+                        Get.toNamed('/staff_list_management');
+                      }
+                      if(value == "rate"){
+                        Get.toNamed('/rate_list_management');
+                      }
+                    }
+                  });
+                },
+
+                child: Container(
+                  key: managementKey,
+                  padding: EdgeInsets.only(top: 5),
+                  color: container == "5" ? Colors.green.shade300 : Colors.transparent,
+                  child: Column(
+                    children: [
+                      Icon(Icons.settings, color: Colors.white, size: 25),
+                      const SizedBox(height: 5),
+                      UiHelper.CustText(
+                        text: "Management",
+                        size: 12.sp,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              //ACCOUNT
+              InkWell(
+                onTap: () {
+                  final RenderBox renderBox =
+                  accountKey.currentContext!.findRenderObject() as RenderBox;
+
+                  final position = renderBox.localToGlobal(Offset.zero);
+                  final size = renderBox.size;
+
+                  showMenu(
+                    context: context,
+                    position: RelativeRect.fromLTRB(
+                      position.dx,
+                      60, // 👉 bottom of widget
+                      position.dx + size.width,
+                      0,
+                    ),
+                    items: [
+                      PopupMenuItem(value: "doctor", child: Text("Doctor Collection")),
+                      PopupMenuItem(value: "agent", child: Text("Agent Collection")),
+                      PopupMenuItem(value: "staff", child: Text("Staff Collection")),
+                      PopupMenuItem(value: "date", child: Text("Collection By Date")),
+                      PopupMenuItem(value: "monthly", child: Text("Monthly Collection")),
+                      PopupMenuItem(value: "yearly", child: Text("Yearly Collection")),
+                    ],
+                  ).then((value) {
+                    if (value != null){
+                      if(value == "doctor"){
+                        Get.toNamed('/doctor_collection');
+                      }
+                      if(value == "agent"){
+                        Get.toNamed('/agent_collection');
+                      }
+                      if(value == "staff"){
+                      }
+                      if(value == "rate"){
+                      }
+                      if(value == "date"){
+                        Get.toNamed('/collection_between_date');
+                      }
+                      if(value == "monthly"){
+                      }
+                      if(value == "yearly"){
+                      }
+                    }
+                  });
+                },
+
+                child: Container(
+                  key: accountKey,
+                  padding: EdgeInsets.only(top: 5),
+                  color: container == "6" ? Colors.green.shade300 : Colors.transparent,
+                  child: Column(
+                    children: [
+                      Icon(Icons.account_balance_wallet, color: Colors.white, size: 25),
+                      const SizedBox(height: 5),
+                      UiHelper.CustText(
+                        text: "Accounts",
+                        size: 12.sp,
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              //DAILY EXPENSE
+              Container(
+                padding: EdgeInsets.only(top: 5),
+                color: container == "7" ? Colors.green.shade300 : Colors.transparent,
+                child: Column(children: [
+                  Icon(Icons.money,color: Colors.white,size: 25,),
+                  const SizedBox(height: 5,),
+                  UiHelper.CustText(text: "Daily Expense",size: 12.sp,color: Colors.white)
+                ],),
+              ),
+
+              //LOGOUT
+              InkWell(
+                onTap: ()async{
+                  bool? status = await UiHelper.showYesNoDialog(context, "Confirm", "are you confirm to logout ? ");
+
+                  if(status == true){
+                    GetStorage userBox = GetStorage();
+                    userBox.remove('newUser');
+                    Navigator.pushNamedAndRemoveUntil(context, '/login_page',(route) => false );
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.only(top: 5),
+                  color: container == "8" ? Colors.green.shade300 : Colors.transparent,
+                  child: Column(children: [
+                    Icon(Icons.logout,color: Colors.white,size: 25,),
+                    const SizedBox(height: 5,),
+                    UiHelper.CustText(text: "Logout",size: 12.sp,color: Colors.white)
+                  ],),
+                ),
+              ),
+
+
+
+            ],),
+        ],
+      ),
+    );
+  }
+
   static Widget custsidebar({
     required String container,
     required BuildContext context,
   }) {
     return Container(
       width: Adaptive.w(15),
+      height: Adaptive.h(100),
       color: Colors.blue.shade500,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: ListView(
+        shrinkWrap: true,
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 10, bottom: 10),
-            child: Text(
-              "Care Diagnostics Centre",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 13.sp,
-                fontFamily: 'font-bold',
+            child: Center(
+              child: Text("Care Diagnostics Centre",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: Device.width < 1100 ? 15.sp :13.sp,
+                  fontFamily: 'font-bold',
+                ),
               ),
             ),
           ),
@@ -69,8 +309,12 @@ class UiHelper{
             child: ExpansionTile(
               collapsedIconColor: Colors.white,
               iconColor: Colors.white,
-              leading: const Icon(Icons.settings, color: Colors.white),
-              title: const Text("Management", style: TextStyle(color: Colors.white)),
+              leading: Tooltip(
+                  message: "Management",
+                  child: const Icon(Icons.settings, color: Colors.white)),
+              title: Tooltip(
+                  message: "Management",
+                  child: Text("Management", style: TextStyle(color: Colors.white))),
               childrenPadding: const EdgeInsets.only(left: 30),
               children: [
                 Container(
@@ -126,9 +370,13 @@ class UiHelper{
             child: ExpansionTile(
               collapsedIconColor: Colors.white,
               iconColor: Colors.white,
-              leading: const Icon(Icons.account_balance_wallet, color: Colors.white),
-              title: const Text("Accounts", style: TextStyle(color: Colors.white)),
-              childrenPadding: const EdgeInsets.only(left: 30),
+              leading: Tooltip(
+                  message: "Accounts",
+                  child: const Icon(Icons.account_balance_wallet, color: Colors.white)),
+              title: Tooltip(
+                  message: "Accounts",
+                  child: Text("Accounts", style: TextStyle(color: Colors.white))),
+              childrenPadding: const EdgeInsets.only(left: 20),
               children: [
                 Container(
                   color: container == '9' ? Colors.green.shade300 : Colors.transparent,
@@ -198,12 +446,10 @@ class UiHelper{
             child: sidebarItem(Icons.money, "Daily Expenses", "/"),
           ),
 
-          const Spacer(),
-
           // Logout
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.white),
-            title: const Text("Logout", style: TextStyle(color: Colors.white)),
+            title: Text("Logout", style: TextStyle(color: Colors.white)),
             onTap: () async{
 
               bool? status = await UiHelper.showYesNoDialog(context, "Confirm", "are you confirm to logout ? ");
@@ -226,12 +472,15 @@ class UiHelper{
 
 
   static Widget sidebarItem(IconData icon, String title,String routename) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.white),
-      title: Text(title, style: const TextStyle(color: Colors.white)),
-      onTap: () {
-        Get.toNamed(routename);
-      },
+    return Tooltip(
+      message: title,
+      child: ListTile(
+        leading: Icon(icon, color: Colors.white),
+        title: Text(title, style: const TextStyle(color: Colors.white)),
+        onTap: () {
+          Get.toNamed(routename);
+        },
+      ),
     );
   }
 
@@ -322,7 +571,6 @@ class UiHelper{
 
   static Widget infoCard(String title, String value, Color color, IconData icon) {
     return Container(
-      width: 250,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,

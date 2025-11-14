@@ -12,7 +12,123 @@ class RateListManagement extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
-      body: Center(
+      body: Device.width < 1100 ?
+
+      Center(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            //SIDE BAR
+            Container(
+              height: 120,
+              child: UiHelper.custHorixontalTab(container: "5",context: context),
+            ),
+            //MAIN CONTENT
+            Container(
+              height: Adaptive.h(100),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ListView(
+                  children: [
+                    UiHelper.CustTopBar(title: "Rate List Management",widget: ElevatedButton(onPressed: (){}, child: UiHelper.CustText(text: "Add Test",size: 12.sp))),
+
+                    const SizedBox(height: 20,),
+
+                    Container(
+                      color: Colors.blue.shade200,
+                      child: Table(
+                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                        border: TableBorder.all(width: 0.5, color: Colors.black),
+                        columnWidths: {
+                          0 : FlexColumnWidth(.5),
+                          1 : FlexColumnWidth(5),
+                          2 : FlexColumnWidth(2),
+                          3 : FlexColumnWidth(1),
+                          4 : FlexColumnWidth(1),
+                          5 : FlexColumnWidth(3),
+                          6 : FlexColumnWidth(1),
+                        },
+                        children: [
+                          TableRow(children: [
+                            SizedBox(
+                                height: 40,
+                                child: Center(child: UiHelper.CustText(text: "Sno",size: 12.sp))),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: UiHelper.CustText(text: "Test Name",size: 12.sp),
+                            ),
+                            Center(child: UiHelper.CustText(text: "Department",size: 12.sp)),
+                            Center(child: UiHelper.CustText(text: "Rate",size: 12.sp)),
+                            Center(child: UiHelper.CustText(text: "Time\n(days)",size: 12.sp)),
+                            Center(child: UiHelper.CustText(text: "File",size: 12.sp)),
+                            Center(child: UiHelper.CustText(text: "Action",size: 12.sp)),
+                          ])
+                        ],
+                      ),
+                    ),
+                    BlocBuilder<RateListCubit, RateListState>(
+                      builder: (context, state) {
+                        if(state is RateListLoadingState){
+                          return Center(child: CircularProgressIndicator(),);
+                        }
+                        if(state is RateListErrorState){
+                          return Center(child: UiHelper.CustText(text: state.errorMsg));
+                        }
+                        if(state is RateListLoadedState){
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            itemBuilder: (_,index){
+                              var data = state.rateListModel.rateList![index];
+                              return Table(
+                                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                border: TableBorder.all(width: 0.5, color: Colors.grey),
+                                columnWidths: {
+                                  0 : FlexColumnWidth(.5),
+                                  1 : FlexColumnWidth(5),
+                                  2 : FlexColumnWidth(2),
+                                  3 : FlexColumnWidth(1),
+                                  4 : FlexColumnWidth(1),
+                                  5 : FlexColumnWidth(3),
+                                  6 : FlexColumnWidth(1),
+                                },
+                                children: [
+                                  TableRow(children: [
+                                    Center(child: UiHelper.CustText(text: "${index+1}",size: 12.sp)),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                      child: UiHelper.CustText(text: data.testName!,size: 12.sp),
+                                    ),
+                                    Center(child: UiHelper.CustText(text: data.department!,size: 12.sp)),
+                                    Center(child: UiHelper.CustText(text: data.rate!,size: 12.sp)),
+                                    Center(child: UiHelper.CustText(text: data.deliveryAfter!,size: 12.sp)),
+                                    Center(child: UiHelper.CustText(text: data.testFile!,size: 12.sp)),
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly  ,
+                                      children: [
+                                        IconButton(onPressed: (){}, icon: Icon(Icons.edit,color: Colors.green,)),
+                                        IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.red,)),
+                                      ],)
+                                  ])
+                                ],
+                              );
+                            },itemCount: state.rateListModel.rateList!.length,);
+                        }
+                        return Container();
+                      },
+                    )
+
+
+
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      )
+
+          :
+      Center(
         child: Row(
           children: [
             //SIDE BAR
