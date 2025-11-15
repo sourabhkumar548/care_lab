@@ -70,7 +70,7 @@ class MyApp extends StatelessWidget {
                 BlocProvider(create: (_)=>AgentCubit()..GetAgent()),
                 BlocProvider(create: (_)=>DoctorCubit()..GetDoctor()),
                 BlocProvider(create: (_)=>CheckReportCubit()),
-                BlocProvider(create: (_)=>RevenueCubit()..getRevenueDetail()),
+                BlocProvider(create: (_)=>RevenueCubit()..getRevenueDetail(get_today: "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",get_month: DateTime.now().month.toString(),get_year: DateTime.now().year.toString())),
                 BlocProvider(create: (_)=>DoctorCollectionCubit()),
                 BlocProvider(create: (_)=>AgentCollectionCubit()),
                 BlocProvider(create: (_)=>BetweenDateCubit()),

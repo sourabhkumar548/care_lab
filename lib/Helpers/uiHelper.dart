@@ -693,6 +693,7 @@ class UiHelper{
           style: pw.TextStyle(
             fontSize: size ?? 10.sp,
             letterSpacing: .6,
+            fontWeight: pw.FontWeight.bold
           ),
         ),
       ],

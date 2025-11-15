@@ -1243,7 +1243,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
 
                                           List<String> testNames = AddTestDialogState.selectedTests.map((item) => item["Test Name"].toString()).toList();
                                           List<String> testRate = AddTestDialogState.selectedTests.map((item) => item["Test Rate"].toString()).toList();
-                                          List<String> testDate = AddTestDialogState.selectedTests.map((item) => item["Test Date"].toString()).toList();
+                                          List<String> testDate = AddTestDialogState.selectedTests.map((item) => item["Test Time"].toString()).toList();
 
                                           String TotalAmount = AddTestDialogState.totalAmount.toString();
                                           String Advance = advanceCtrl.text.isEmpty ? "0" : advanceCtrl.text;
@@ -1266,6 +1266,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                   ElevatedButton(
                                                     child: const Text("Yes"),
                                                     onPressed: () {
+
                                                       PrintCaseEntry.printBill(
                                                           receiptNo: receiptNo,
                                                           receiptDate: dateCtrl.text,

@@ -74,32 +74,36 @@ class PrintCaseEntry {
       doc.addPage(
         pw.Page(
           pageFormat: PdfPageFormat.a4,
-          margin: pw.EdgeInsets.all(12),
+          clip: true,
+          margin: pw.EdgeInsets.only(top: 12,bottom: 12,left: 18,right: 18),
           build: (pw.Context context) {
             return pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 // 🔹 HEADER (only on first page)
-                if (isFirstPage) ...[
+                ...[
                   UiHelper.PWcustomTextWithRow(
                     text: "CARE DIAGNOSTIC CENTRE",
                     mainaxisalignment: pw.MainAxisAlignment.center,
-                    size: 11.sp,
+                    size: 13.sp,
                     fontfamily: 'font-bold',
+                      fontweight: pw.FontWeight.bold
                   ),
                   pw.SizedBox(height: .5.h),
                   UiHelper.PWcustomTextWithRow(
                     text: "NAYA BAZAR, NEAR GAYA PUL, DHANBAD - 826001",
                     mainaxisalignment: pw.MainAxisAlignment.center,
                     size: 10.sp,
-                    maxline: 3,
+                    maxline: 1,
+                    fontweight: pw.FontWeight.bold
                   ),
                   pw.SizedBox(height: .5.h),
                   UiHelper.PWcustomTextWithRow(
                     text: "PH : 0326-2254788   |   Email : cdc.dhn@gmail.com",
                     mainaxisalignment: pw.MainAxisAlignment.center,
                     size: 10.sp,
-                    maxline: 3,
+                    maxline: 1,
+                    fontweight: pw.FontWeight.bold
                   ),
                   pw.SizedBox(height: 1.h),
 
@@ -107,18 +111,20 @@ class PrintCaseEntry {
                     mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                     children: [
                       pw.Text("Receipt No : $receiptNo",
-                          style: pw.TextStyle(fontSize: 9.5.sp)),
+                          style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                       pw.Center(
                           child: UiHelper.PWcustomText(text: "MONEY RECEIPT")),
                       pw.Text(
                           "Receipt Date : ${"${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}"}",
-                          style: pw.TextStyle(fontSize: 9.5.sp)),
+                          style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                     ],
                   ),
 
                   pw.SizedBox(height: .5.h),
                   pw.Divider(color: PdfColors.grey, height: 1),
-
+                  pw.SizedBox(height: .5.h),
+                ],
+                if (isFirstPage) ...[
                   pw.Padding(
                     padding: const pw.EdgeInsets.symmetric(
                         horizontal: 10, vertical: 3),
@@ -163,7 +169,12 @@ class PrintCaseEntry {
                 pw.Table.fromTextArray(
                   headers: ['SN', 'Test Name', 'Report Date', 'Amount'],
                   data: data
-                      .map((e) => [e["sn"], e["name"], e["date"], e["amt"]])
+                      .map((e) => [
+                        pw.Text(e["sn"]!, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 9.5.sp),maxLines: 1),
+                        pw.Text(e["name"]!, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 9.5.sp),maxLines: 1),
+                        pw.Text(e["date"]!, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 9.5.sp),maxLines: 1),
+                        pw.Text(e["amt"]!, style: pw.TextStyle(fontWeight: pw.FontWeight.bold,fontSize: 9.5.sp),maxLines: 1),
+                      ])
                       .toList(),
                   headerStyle: pw.TextStyle(fontSize: 9.5.sp, fontWeight: pw.FontWeight.bold),
                   cellStyle: pw.TextStyle(fontSize: 9.5.sp),
@@ -197,10 +208,10 @@ class PrintCaseEntry {
                           children: [
                         pw.Text(
                             "Total Amount : ",
-                            style: pw.TextStyle(fontSize: 9.5.sp)),
+                            style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                         pw.Text(
                             "${mainAmount}.00",
-                            style: pw.TextStyle(fontSize: 9.5.sp)),
+                            style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                       ]),
 
                       pw.Row(
@@ -208,10 +219,10 @@ class PrintCaseEntry {
                           children: [
                         pw.Text(
                             "Discount Amount : ",
-                            style: pw.TextStyle(fontSize: 9.5.sp)),
+                            style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                         pw.Text(
                             "${mainAmount - int.parse(totalAmount)}.00",
-                            style: pw.TextStyle(fontSize: 9.5.sp)),
+                            style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                       ]),
 
                       pw.Row(
@@ -219,10 +230,10 @@ class PrintCaseEntry {
                           children: [
                             pw.Text(
                                 "Total Paid Amount : ",
-                                style: pw.TextStyle(fontSize: 9.5.sp)),
+                                style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                             pw.Text(
                                 "${totalAmount}.00",
-                                style: pw.TextStyle(fontSize: 9.5.sp)),
+                                style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                       ]),
 
                       pw.Row(
@@ -230,10 +241,10 @@ class PrintCaseEntry {
                           children: [
                             pw.Text(
                                 "Paid Amount : ",
-                                style: pw.TextStyle(fontSize: 9.5.sp)),
+                                style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                             pw.Text(
                                 "${discountAmount}.00",
-                                style: pw.TextStyle(fontSize: 9.5.sp)),
+                                style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                           ]),
 
                       pw.Row(
@@ -241,15 +252,15 @@ class PrintCaseEntry {
                           children: [
                             pw.Text(
                                 "Received By : $receivedBy",
-                                style: pw.TextStyle(fontSize: 9.5.sp)),
+                                style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
 
                             balanceAmount == ".00" ||
                                 balanceAmount == "0"
                             ?  pw.Text("Full & Final Payment Received",
-                                style: pw.TextStyle(fontSize: 9.5.sp))
+                                style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold))
                             : pw.Text(
                                 "Balance Amount : ${balanceAmount}.00",
-                                style: pw.TextStyle(fontSize: 9.5.sp)),
+                                style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                           ]),
                     ],
                   ),
