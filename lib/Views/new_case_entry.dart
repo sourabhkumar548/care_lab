@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:care_lab_software/Helpers/get_doctor_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -395,26 +396,14 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                             ),
                             const SizedBox(width: 20),
                             Expanded(
-                              child: TextField(
+                              child: DoctorInputField(
                                 controller: doctorCtrl,
-                                style: TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                    labelText: "Enter Doctor Name",
-                                    filled: true,
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(color: Colors.green, width: 2),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                    ),
-                                    fillColor: Colors.grey.shade100,
-                                    labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                                    prefixIcon: Icon(Icons.local_hospital),
-                                    suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>doctorCtrl.text=data,CaseEnteryData.doctorList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
-                                ),
+                                initialValue: "Self",
+                                onDoctorSelected: (doctor) {
+                                  setState(() {
+                                    doctorCtrl.text = doctor;
+                                  });
+                                },
                               ),
                             ),
                           ],
@@ -1003,26 +992,14 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                             ),
                             const SizedBox(width: 20),
                             Expanded(
-                              child: TextField(
+                              child: DoctorInputField(
                                 controller: doctorCtrl,
-                                style: TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                    labelText: "Enter Doctor Name",
-                                    filled: true,
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(color: Colors.green, width: 2),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                    ),
-                                    fillColor: Colors.grey.shade100,
-                                    labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                                    prefixIcon: Icon(Icons.local_hospital),
-                                    suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>doctorCtrl.text=data,CaseEnteryData.doctorList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
-                                ),
+                                initialValue: "Self",
+                                onDoctorSelected: (doctor) {
+                                  setState(() {
+                                    doctorCtrl.text = doctor;
+                                  });
+                                },
                               ),
                             ),
                           ],

@@ -4,7 +4,6 @@ class CaseEnteryData {
   static List<String> monthList = List.generate(12, (index) => index.toString());
   static List<String> yearList = List.generate(100, (index) => index.toString());
 
-  static List<String> doctorList = ["Self","(MRS) PRATIMA DUTTA  MBBS ( D.M.C.H.)","(DR.)R.N.SARKAR. MD,FICP.","(MAJOR)D.K.SINGH. (MBBS,AFMC.)","(MRS) MANISHA JALAN. MBBS."];
   static List<String> agentList = ["Self","Sourabh Kumar","Ujjal Dutta","Rajeesh Rawani"];
   static List<String> discountTypeList = ["Self","By Doctor","Other"];
 
@@ -35,4 +34,7 @@ class CaseEnteryData {
     DropdownMenuItem(value: "Online", child: Text("Online")),
     DropdownMenuItem(value: "Card", child: Text("Card")),
   ];
+
+
+
 }

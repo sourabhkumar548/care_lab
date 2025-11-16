@@ -5,6 +5,7 @@ import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:sizer/sizer.dart';
 
 import '../Helpers/case_entry_data.dart';
+import '../Helpers/get_doctor_data.dart';
 import '../Helpers/uiHelper.dart';
 
 class DoctorCollection extends StatefulWidget {
@@ -112,26 +113,14 @@ class _DoctorCollectionState extends State<DoctorCollection> {
                       ),
                       const SizedBox(width: 10,),
                       Expanded(
-                        child: TextField(
+                        child: DoctorInputField(
                           controller: doctorCtrl,
-                          style: TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                              labelText: "Select Doctor Name",
-                              filled: true,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.green, width: 2),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                              ),
-                              fillColor: Colors.grey.shade100,
-                              labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                              prefixIcon: Icon(Icons.local_hospital),
-                              suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>doctorCtrl.text=data,CaseEnteryData.doctorList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
-                          ),
+                          initialValue: "Self",
+                          onDoctorSelected: (doctor) {
+                            setState(() {
+                              doctorCtrl.text = doctor;
+                            });
+                          },
                         ),
                       ),
                       const SizedBox(width: 10,),
@@ -291,26 +280,14 @@ class _DoctorCollectionState extends State<DoctorCollection> {
                       ),
                       const SizedBox(width: 10,),
                       Expanded(
-                        child: TextField(
+                        child: DoctorInputField(
                           controller: doctorCtrl,
-                          style: TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                              labelText: "Select Doctor Name",
-                              filled: true,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.green, width: 2),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                              ),
-                              fillColor: Colors.grey.shade100,
-                              labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                              prefixIcon: Icon(Icons.local_hospital),
-                              suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>doctorCtrl.text=data,CaseEnteryData.doctorList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
-                          ),
+                          initialValue: "Self",
+                          onDoctorSelected: (doctor) {
+                            setState(() {
+                              doctorCtrl.text = doctor;
+                            });
+                          },
                         ),
                       ),
                       const SizedBox(width: 10,),

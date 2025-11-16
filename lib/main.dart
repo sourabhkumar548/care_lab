@@ -33,6 +33,7 @@ import 'Helpers/report_page.dart';
 import 'Views/agent_collection.dart';
 import 'Views/case_entry_list.dart';
 import 'Views/dashboard.dart';
+import 'Helpers/get_doctor_data.dart';
 import 'Views/loginscreen.dart';
 import 'Views/new_case_entry.dart';
 import 'Views/reporting.dart';
