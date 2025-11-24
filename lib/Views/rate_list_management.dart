@@ -1,8 +1,14 @@
+import 'dart:io';
+
 import 'package:care_lab_software/Controllers/RateListCtrl/Cubit/rate_list_cubit.dart';
+import 'package:care_lab_software/Controllers/UpdateTestCtrl/Cubit/update_test_cubit.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:sizer/sizer.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 import '../Helpers/uiHelper.dart';
 
 class RateListManagement extends StatelessWidget {
@@ -30,7 +36,12 @@ class RateListManagement extends StatelessWidget {
                 padding: const EdgeInsets.all(10.0),
                 child: ListView(
                   children: [
-                    UiHelper.CustTopBar(title: "Rate List Management",widget: ElevatedButton(onPressed: (){}, child: UiHelper.CustText(text: "Add Test",size: 12.sp))),
+                    UiHelper.CustTopBar(title: "Rate List Management",widget: ElevatedButton(onPressed: (){
+
+                      // pickAndUploadFile();
+                      print("click");
+
+                    }, child: UiHelper.CustText(text: "Add Test",size: 12.sp))),
 
                     const SizedBox(height: 20,),
 
@@ -178,8 +189,7 @@ class RateListManagement extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                    BlocBuilder<RateListCubit, RateListState>(
+                BlocBuilder<RateListCubit, RateListState>(
                       builder: (context, state) {
                         if(state is RateListLoadingState){
                           return Center(child: CircularProgressIndicator(),);
@@ -218,7 +228,24 @@ class RateListManagement extends StatelessWidget {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly  ,
                                     children: [
-                                    IconButton(onPressed: (){}, icon: Icon(Icons.edit,color: Colors.green,)),
+                                      BlocConsumer<UpdateTestCubit, UpdateTestState>(
+                                        listener: (context, state) {
+                                          if(state is UpdateTestErrorState){
+                                            UiHelper.showErrorToste(message: state.errorMsg);
+                                          }
+                                          if(state is UpdateTestLoadedState){
+                                            UiHelper.showSuccessToste(message: "Updated Successfully");
+                                          }
+                                        },
+                                        builder: (context, state) {
+                                          if(state is UpdateTestLoadingState){
+                                            return Center(child: CircularProgressIndicator());
+                                          }
+                                          return IconButton(onPressed: ()=>pickAndUploadWebFile(context: context, id: data.id.toString()),
+                                              icon: Icon(Icons.edit,color: Colors.green,));
+                                        },
+                                      ),
+
                                     IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.red,)),
                                   ],)
                                 ])
@@ -239,4 +266,36 @@ class RateListManagement extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<void> pickAndUploadWebFile({required BuildContext context, required String id}) async {
+  FilePickerResult? result = await FilePicker.platform.pickFiles(
+    withData: true,      // IMPORTANT for web
+  );
+
+  if (result == null) {
+    print("No file selected");
+    return;
+  }
+
+  PlatformFile file = result.files.single;
+
+  context.read<UpdateTestCubit>().getUpdateTest(id: id, fileName: file.name, file: file);
+
+  // var uri = Uri.parse("https://dzda.in/upload.php");
+  //
+  // var request = http.MultipartRequest("POST", uri);
+  //
+  // request.files.add(
+  //   http.MultipartFile.fromBytes(
+  //     'file',
+  //     file.bytes!,       // Web uses bytes
+  //     filename: file.name,
+  //   ),
+  // );
+  //
+  // var response = await request.send();
+  // var respStr = await response.stream.bytesToString();
+  //
+  // print("Response: $respStr");
 }

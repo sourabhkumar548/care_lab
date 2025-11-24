@@ -110,71 +110,69 @@ class _DashboardState extends State<Dashboard> {
                           child: ListView(
                             shrinkWrap: true,
                             children: [
-                            Expanded(
-                              child: Container(
-                                width: Adaptive.w(100),
-                                child: UiHelper.Custcard(title: "Today's Patient",
-                                    child: Container(child:
-                                    BlocBuilder<RevenueCubit, RevenueState>(
-                                      builder: (context, state) {
-                                        if(state is RevenueLoadingState){
-                                          return Center(child: CircularProgressIndicator());
-                                        }
-                                        if(state is RevenueErrorState){
-                                          return Center(child: UiHelper.CustText(text: state.errorMsg));
-                                        }
-                                        if (state is RevenueLoadedState) {
-                                          var list = state.revenueModel.today!.details!;
+                            Container(
+                              width: Adaptive.w(100),
+                              child: UiHelper.Custcard(title: "Today's Patient",
+                                  child: Container(child:
+                                  BlocBuilder<RevenueCubit, RevenueState>(
+                                    builder: (context, state) {
+                                      if(state is RevenueLoadingState){
+                                        return Center(child: CircularProgressIndicator());
+                                      }
+                                      if(state is RevenueErrorState){
+                                        return Center(child: UiHelper.CustText(text: state.errorMsg));
+                                      }
+                                      if (state is RevenueLoadedState) {
+                                        var list = state.revenueModel.today!.details!;
 
-                                          return ScrollableTable(list: list);
+                                        return ScrollableTable(list: list);
 
-                                          // return SingleChildScrollView(
-                                          //   scrollDirection: Axis.horizontal,
-                                          //   child: DataTable(
-                                          //     columns: const [
-                                          //       DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Name", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Total Amount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Discount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Paid Amount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Balance", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Doctor", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Agent", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //     ],
-                                          //
-                                          //     rows: List.generate(list.length, (index) {
-                                          //       var data = list[index];
-                                          //
-                                          //       return DataRow(cells: [
-                                          //         DataCell(Text("${index + 1}")),
-                                          //         DataCell(
-                                          //           Tooltip(
-                                          //             message: "Mobile: ${data.mobile}\nAdvance: ₹${data.advance}.00",
-                                          //             padding: EdgeInsets.all(10),
-                                          //             textStyle: TextStyle(color: Colors.white),
-                                          //             decoration: BoxDecoration(
-                                          //               color: Colors.black87,
-                                          //               borderRadius: BorderRadius.circular(6),
-                                          //             ),
-                                          //             child: Text(data.patientName ?? "",style: TextStyle(color: Colors.blue),),
-                                          //           ),
-                                          //         ),
-                                          //         DataCell(Text("₹${data.totalAmount}.00")),
-                                          //         DataCell(Text("₹${data.discount}.00")),
-                                          //         DataCell(Text("₹${data.afterDiscount}.00")),
-                                          //         DataCell(Text("₹${data.balance}.00")),
-                                          //         DataCell(Text("${data.balance}")),
-                                          //         DataCell(Text("${data.balance}")),
-                                          //       ]);
-                                          //     }),
-                                          //   ),
-                                          // );
-                                        }
+                                        // return SingleChildScrollView(
+                                        //   scrollDirection: Axis.horizontal,
+                                        //   child: DataTable(
+                                        //     columns: const [
+                                        //       DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
+                                        //       DataColumn(label: Text("Name", style: TextStyle(fontWeight: FontWeight.bold))),
+                                        //       DataColumn(label: Text("Total Amount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                        //       DataColumn(label: Text("Discount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                        //       DataColumn(label: Text("Paid Amount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                        //       DataColumn(label: Text("Balance", style: TextStyle(fontWeight: FontWeight.bold))),
+                                        //       DataColumn(label: Text("Doctor", style: TextStyle(fontWeight: FontWeight.bold))),
+                                        //       DataColumn(label: Text("Agent", style: TextStyle(fontWeight: FontWeight.bold))),
+                                        //     ],
+                                        //
+                                        //     rows: List.generate(list.length, (index) {
+                                        //       var data = list[index];
+                                        //
+                                        //       return DataRow(cells: [
+                                        //         DataCell(Text("${index + 1}")),
+                                        //         DataCell(
+                                        //           Tooltip(
+                                        //             message: "Mobile: ${data.mobile}\nAdvance: ₹${data.advance}.00",
+                                        //             padding: EdgeInsets.all(10),
+                                        //             textStyle: TextStyle(color: Colors.white),
+                                        //             decoration: BoxDecoration(
+                                        //               color: Colors.black87,
+                                        //               borderRadius: BorderRadius.circular(6),
+                                        //             ),
+                                        //             child: Text(data.patientName ?? "",style: TextStyle(color: Colors.blue),),
+                                        //           ),
+                                        //         ),
+                                        //         DataCell(Text("₹${data.totalAmount}.00")),
+                                        //         DataCell(Text("₹${data.discount}.00")),
+                                        //         DataCell(Text("₹${data.afterDiscount}.00")),
+                                        //         DataCell(Text("₹${data.balance}.00")),
+                                        //         DataCell(Text("${data.balance}")),
+                                        //         DataCell(Text("${data.balance}")),
+                                        //       ]);
+                                        //     }),
+                                        //   ),
+                                        // );
+                                      }
 
-                                        return Container();
-                                      },
-                                    ),)),
-                              ),
+                                      return Container();
+                                    },
+                                  ),)),
                             ),
                           ],),
                         ),
@@ -447,9 +445,10 @@ class _DashboardState extends State<Dashboard> {
                         Container(
                           width: Adaptive.w(100),
                           height: 500,
-                          child: ListView(children: [
-                            Expanded(
-                              child: Container(
+                          child: ListView(
+                            shrinkWrap: true,
+                            children: [
+                              Container(
                                 width: Adaptive.w(100),
                                 child: UiHelper.Custcard(title: "Today's Patient",
                                     child: Container(child:
@@ -468,51 +467,44 @@ class _DashboardState extends State<Dashboard> {
 
                                           // return SingleChildScrollView(
                                           //   scrollDirection: Axis.horizontal,
-                                          //   physics: ScrollPhysics(),
-                                          //   child: SingleChildScrollView(
-                                          //     scrollDirection: Axis.horizontal,
-                                          //     child: DataTable(
-                                          //       columns: const [
-                                          //         DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //         DataColumn(label: Text("Name", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //         DataColumn(label: Text("Total Amount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //         DataColumn(label: Text("Discount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //         DataColumn(label: Text("Paid Amount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //         DataColumn(label: Text("Balance", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //         DataColumn(label: Text("Doctor", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //         DataColumn(label: Text("Agent", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       ],
-                                          //       rows: List.generate(list.length, (index) {
-                                          //         var data = list[index];
+                                          //   child: DataTable(
+                                          //     columns: const [
+                                          //       DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
+                                          //       DataColumn(label: Text("Name", style: TextStyle(fontWeight: FontWeight.bold))),
+                                          //       DataColumn(label: Text("Total Amount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                          //       DataColumn(label: Text("Discount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                          //       DataColumn(label: Text("Paid Amount", style: TextStyle(fontWeight: FontWeight.bold))),
+                                          //       DataColumn(label: Text("Balance", style: TextStyle(fontWeight: FontWeight.bold))),
+                                          //       DataColumn(label: Text("Doctor", style: TextStyle(fontWeight: FontWeight.bold))),
+                                          //       DataColumn(label: Text("Agent", style: TextStyle(fontWeight: FontWeight.bold))),
+                                          //     ],
                                           //
-                                          //         return DataRow(cells: [
-                                          //           DataCell(Text("${index + 1}")),
-                                          //           DataCell(
-                                          //             Tooltip(
-                                          //               message: "Mobile: ${data.mobile}\nAdvance: ₹${data.advance}.00",
-                                          //               padding: EdgeInsets.all(10),
-                                          //               textStyle: TextStyle(color: Colors.white),
-                                          //               decoration: BoxDecoration(
-                                          //                 color: Colors.black87,
-                                          //                 borderRadius: BorderRadius.circular(6),
-                                          //               ),
-                                          //               child: Text(
-                                          //                 data.patientName ?? "",
-                                          //                 style: TextStyle(color: Colors.blue),
-                                          //               ),
+                                          //     rows: List.generate(list.length, (index) {
+                                          //       var data = list[index];
+                                          //
+                                          //       return DataRow(cells: [
+                                          //         DataCell(Text("${index + 1}")),
+                                          //         DataCell(
+                                          //           Tooltip(
+                                          //             message: "Mobile: ${data.mobile}\nAdvance: ₹${data.advance}.00",
+                                          //             padding: EdgeInsets.all(10),
+                                          //             textStyle: TextStyle(color: Colors.white),
+                                          //             decoration: BoxDecoration(
+                                          //               color: Colors.black87,
+                                          //               borderRadius: BorderRadius.circular(6),
                                           //             ),
+                                          //             child: Text(data.patientName ?? "",style: TextStyle(color: Colors.blue),),
                                           //           ),
-                                          //           DataCell(Text("₹${data.totalAmount}.00")),
-                                          //           DataCell(Text("₹${data.discount}.00")),
-                                          //           DataCell(Text("₹${data.afterDiscount}.00")),
-                                          //           DataCell(Text("₹${data.balance}.00")),
-                                          //           DataCell(Text("${data.balance ?? ''}")),
-                                          //           DataCell(Text("${data.balance ?? ''}")),
-                                          //         ]);
-                                          //       }),
-                                          //     ),
-                                          //   )
-                                          //
+                                          //         ),
+                                          //         DataCell(Text("₹${data.totalAmount}.00")),
+                                          //         DataCell(Text("₹${data.discount}.00")),
+                                          //         DataCell(Text("₹${data.afterDiscount}.00")),
+                                          //         DataCell(Text("₹${data.balance}.00")),
+                                          //         DataCell(Text("${data.balance}")),
+                                          //         DataCell(Text("${data.balance}")),
+                                          //       ]);
+                                          //     }),
+                                          //   ),
                                           // );
                                         }
 
@@ -520,8 +512,7 @@ class _DashboardState extends State<Dashboard> {
                                       },
                                     ),)),
                               ),
-                            ),
-                          ],),
+                            ],),
                         ),
 
                         Container(

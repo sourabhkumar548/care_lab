@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ScrollableTable extends StatefulWidget {
 
-  final List<dynamic> list;   // <-- add this
+  final List<dynamic> list;
 
   const ScrollableTable({super.key, required this.list});
 
@@ -13,32 +13,12 @@ class ScrollableTable extends StatefulWidget {
 class _ScrollableTableState extends State<ScrollableTable> {
   final ScrollController _scrollController = ScrollController();
 
-  void scrollRight() {
-    _scrollController.animateTo(
-      _scrollController.offset + 200, // scroll right by 200px
-      duration: Duration(milliseconds: 300),
-      curve: Curves.ease,
-    );
-  }
 
-  void scrollLeft() {
-    _scrollController.animateTo(
-      _scrollController.offset - 200, // scroll left by 200px
-      duration: Duration(milliseconds: 300),
-      curve: Curves.ease,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        // Optional Left Arrow
-        IconButton(
-          icon: Icon(Icons.arrow_back_ios),
-          onPressed: scrollLeft,
-        ),
-
         Expanded(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -85,11 +65,6 @@ class _ScrollableTableState extends State<ScrollableTable> {
           ),
         ),
 
-        // Right Arrow Button
-        IconButton(
-          icon: Icon(Icons.arrow_forward_ios),
-          onPressed: scrollRight,
-        ),
       ],
     );
   }

@@ -84,6 +84,8 @@ class Urls {
 
   static const BetweenDateCollection = "${BaseUrl}collectionBetweenDates?";
 
+  static const UpdateTest = "${BaseUrl}update-test";
+
 
 
 }
