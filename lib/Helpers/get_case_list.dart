@@ -164,7 +164,7 @@ class GetCaseList{
                                                 List<String> testName = data.testName!.split(",");
                                                 List<String> testRate = data.testRate!.split(",");
                                                 List<String> testDate = data.testDate!.split(",");
-                                                PrintCaseEntry.printBill(receiptNo: data.slipNo!, receiptDate: data.date!, caseNo: data.caseNo!, caseDate: data.caseDate!, caseTime: data.time!, patientName: data.patientName!, mobile: data.mobile!, sex: data.gender!, age: "${data.year} Y ${data.month} M", referredBy: data.doctor!, testName: testName, testRate: testRate, date: data.date!, totalAmount: total, discountAmount: paid, balanceAmount: data.balance!, advanceAmount: data.advance!, receivedBy: data.receivedBy!,testDate: testDate);
+                                                PrintCaseEntry.printBill(receiptNo: data.slipNo!, receiptDate: data.date!, caseNo: data.caseNo!, caseDate: data.caseDate!, caseTime: data.time!, patientName: data.patientName!, mobile: data.mobile!, sex: data.gender!, age: "${data.year} Y ${data.month != "0" ? data.month :""}${data.month != "0" ? "M" :""} ", referredBy: data.doctor!, testName: testName, testRate: testRate, date: data.date!, totalAmount: total, discountAmount: paid, balanceAmount: data.balance!, advanceAmount: data.advance!, receivedBy: data.receivedBy!,testDate: testDate);
                                               }, icon: Icon(Icons.print,color: Colors.green.shade700,),),
                                             ),
                                             const SizedBox(width: 10,),

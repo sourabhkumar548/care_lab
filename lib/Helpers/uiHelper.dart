@@ -516,7 +516,6 @@ class UiHelper{
   }
 
   static Widget CustTextField({required TextEditingController controller,required String label,Icon? icon,bool? enabled,bool? obscureText,Widget? suffixWidget}){
-
     return Expanded(
       child: TextField(
         controller: controller,

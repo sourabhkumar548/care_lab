@@ -1,3 +1,4 @@
+import 'package:care_lab_software/Helpers/number_to_words.dart';
 import 'package:care_lab_software/Helpers/uiHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -262,6 +263,14 @@ class PrintCaseEntry {
                                 "Balance Amount : ${balanceAmount}.00",
                                 style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                           ]),
+                      pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.center,
+                          children: [
+                            pw.Text(
+                                "${numberToWords(double.parse(discountAmount).toInt())} Only",
+                                style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
+                          ]),
+
                     ],
                   ),
                 ]
