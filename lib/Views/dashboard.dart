@@ -5,8 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:sizer/sizer.dart';
-
-import '../Helpers/monthly_bar_chart.dart';
 import '../Helpers/uiHelper.dart';
 
 class Dashboard extends StatefulWidget {
@@ -34,8 +32,6 @@ class _DashboardState extends State<Dashboard> {
     DateTime now = DateTime.now();
     String month = DateFormat('MMMM').format(now);
     int year = now.year;
-
-    String selectedYear = DateTime.now().year.toString();
 
     List<DropdownMenuItem<String>> yearList = [
       DropdownMenuItem(value: "2020", child: Text("2020")),
@@ -127,47 +123,6 @@ class _DashboardState extends State<Dashboard> {
 
                                         return ScrollableTable(list: list);
 
-                                        // return SingleChildScrollView(
-                                        //   scrollDirection: Axis.horizontal,
-                                        //   child: DataTable(
-                                        //     columns: const [
-                                        //       DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
-                                        //       DataColumn(label: Text("Name", style: TextStyle(fontWeight: FontWeight.bold))),
-                                        //       DataColumn(label: Text("Total Amount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                        //       DataColumn(label: Text("Discount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                        //       DataColumn(label: Text("Paid Amount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                        //       DataColumn(label: Text("Balance", style: TextStyle(fontWeight: FontWeight.bold))),
-                                        //       DataColumn(label: Text("Doctor", style: TextStyle(fontWeight: FontWeight.bold))),
-                                        //       DataColumn(label: Text("Agent", style: TextStyle(fontWeight: FontWeight.bold))),
-                                        //     ],
-                                        //
-                                        //     rows: List.generate(list.length, (index) {
-                                        //       var data = list[index];
-                                        //
-                                        //       return DataRow(cells: [
-                                        //         DataCell(Text("${index + 1}")),
-                                        //         DataCell(
-                                        //           Tooltip(
-                                        //             message: "Mobile: ${data.mobile}\nAdvance: ₹${data.advance}.00",
-                                        //             padding: EdgeInsets.all(10),
-                                        //             textStyle: TextStyle(color: Colors.white),
-                                        //             decoration: BoxDecoration(
-                                        //               color: Colors.black87,
-                                        //               borderRadius: BorderRadius.circular(6),
-                                        //             ),
-                                        //             child: Text(data.patientName ?? "",style: TextStyle(color: Colors.blue),),
-                                        //           ),
-                                        //         ),
-                                        //         DataCell(Text("₹${data.totalAmount}.00")),
-                                        //         DataCell(Text("₹${data.discount}.00")),
-                                        //         DataCell(Text("₹${data.afterDiscount}.00")),
-                                        //         DataCell(Text("₹${data.balance}.00")),
-                                        //         DataCell(Text("${data.balance}")),
-                                        //         DataCell(Text("${data.balance}")),
-                                        //       ]);
-                                        //     }),
-                                        //   ),
-                                        // );
                                       }
 
                                       return Container();
@@ -442,9 +397,12 @@ class _DashboardState extends State<Dashboard> {
 
                         const SizedBox(height: 15),
 
-                        Container(
-                          width: Adaptive.w(100),
-                          height: 500,
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            maxHeight: 500,
+                            minWidth: Adaptive.w(100),
+                            maxWidth: Adaptive.w(100)
+                          ),
                           child: ListView(
                             shrinkWrap: true,
                             children: [
@@ -465,47 +423,7 @@ class _DashboardState extends State<Dashboard> {
 
                                           return ScrollableTable(list: list);
 
-                                          // return SingleChildScrollView(
-                                          //   scrollDirection: Axis.horizontal,
-                                          //   child: DataTable(
-                                          //     columns: const [
-                                          //       DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Name", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Total Amount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Discount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Paid Amount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Balance", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Doctor", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //       DataColumn(label: Text("Agent", style: TextStyle(fontWeight: FontWeight.bold))),
-                                          //     ],
-                                          //
-                                          //     rows: List.generate(list.length, (index) {
-                                          //       var data = list[index];
-                                          //
-                                          //       return DataRow(cells: [
-                                          //         DataCell(Text("${index + 1}")),
-                                          //         DataCell(
-                                          //           Tooltip(
-                                          //             message: "Mobile: ${data.mobile}\nAdvance: ₹${data.advance}.00",
-                                          //             padding: EdgeInsets.all(10),
-                                          //             textStyle: TextStyle(color: Colors.white),
-                                          //             decoration: BoxDecoration(
-                                          //               color: Colors.black87,
-                                          //               borderRadius: BorderRadius.circular(6),
-                                          //             ),
-                                          //             child: Text(data.patientName ?? "",style: TextStyle(color: Colors.blue),),
-                                          //           ),
-                                          //         ),
-                                          //         DataCell(Text("₹${data.totalAmount}.00")),
-                                          //         DataCell(Text("₹${data.discount}.00")),
-                                          //         DataCell(Text("₹${data.afterDiscount}.00")),
-                                          //         DataCell(Text("₹${data.balance}.00")),
-                                          //         DataCell(Text("${data.balance}")),
-                                          //         DataCell(Text("${data.balance}")),
-                                          //       ]);
-                                          //     }),
-                                          //   ),
-                                          // );
+
                                         }
 
                                         return Container();

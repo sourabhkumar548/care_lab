@@ -209,14 +209,17 @@ class UiHelper{
               ),
 
               //DAILY EXPENSE
-              Container(
-                padding: EdgeInsets.only(top: 5),
-                color: container == "7" ? Colors.green.shade300 : Colors.transparent,
-                child: Column(children: [
-                  Icon(Icons.money,color: Colors.white,size: 25,),
-                  const SizedBox(height: 5,),
-                  UiHelper.CustText(text: "Daily Expense",size: 12.sp,color: Colors.white)
-                ],),
+              InkWell(
+                onTap: ()=>Get.toNamed('/expanses'),
+                child: Container(
+                  padding: EdgeInsets.only(top: 5),
+                  color: container == "7" ? Colors.green.shade300 : Colors.transparent,
+                  child: Column(children: [
+                    Icon(Icons.money,color: Colors.white,size: 25,),
+                    const SizedBox(height: 5,),
+                    UiHelper.CustText(text: "Daily Expense",size: 12.sp,color: Colors.white)
+                  ],),
+                ),
               ),
 
               //LOGOUT
@@ -443,7 +446,7 @@ class UiHelper{
           ),
           Container(
             color: container == '15' ? Colors.green.shade300 : Colors.transparent,
-            child: sidebarItem(Icons.money, "Daily Expenses", "/"),
+            child: sidebarItem(Icons.money, "Daily Expenses", "/expanses"),
           ),
 
           // Logout

@@ -158,6 +158,7 @@ class Today {
 }
 
 class Details {
+  String? _caseNo;
   String? _patientName;
   String? _mobile;
   String? _totalAmount;
@@ -171,7 +172,8 @@ class Details {
   String? _discountType;
 
   Details(
-      {String? patientName,
+      {String? caseNo,
+        String? patientName,
         String? mobile,
         String? totalAmount,
         String? discount,
@@ -184,6 +186,8 @@ class Details {
         String? discountType}) {
     if (patientName != null) {
       this._patientName = patientName;
+    }if (caseNo != null) {
+      this._caseNo = caseNo;
     }
     if (mobile != null) {
       this._mobile = mobile;
@@ -217,6 +221,9 @@ class Details {
     }
   }
 
+  String? get caseNo => _caseNo;
+  set caseNo(String? caseNo) => _caseNo = caseNo;
+
   String? get patientName => _patientName;
   set patientName(String? patientName) => _patientName = patientName;
 
@@ -244,6 +251,7 @@ class Details {
 
   Details.fromJson(Map<String, dynamic> json) {
     _patientName = json['patient_name'];
+    _caseNo = json['case_no'];
     _mobile = json['mobile'];
     _totalAmount = json['total_amount'];
     _discount = json['discount'];
@@ -258,6 +266,7 @@ class Details {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['case_no'] = this._caseNo;
     data['patient_name'] = this._patientName;
     data['mobile'] = this._mobile;
     data['total_amount'] = this._totalAmount;

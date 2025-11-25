@@ -86,6 +86,9 @@ class Urls {
 
   static const UpdateTest = "${BaseUrl}update-test";
 
+  ///Raju/500/dr/25-11-2025/Sourabh/For Oil/Cash
+  static const SaveExpanses = "${BaseUrl}save-expanses";
+
 
 
 }
