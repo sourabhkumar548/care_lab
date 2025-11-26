@@ -37,5 +37,55 @@ class StaffCubit extends Cubit<StaffState> {
     }
 
   }
+  
+  SaveStaff({
+    required String name,  
+    required String username,  
+    required String password,  
+    required String type,  
+    required String mobile,  
+  })async{
+    
+    emit(StaffLoadingState());
+    
+    try{
+      
+      final response = await http.get(Uri.parse("${Urls.SaveStaff}/$name/$username/$password/$type/$mobile"));
+      if(response.statusCode == 200 ){
+        emit(StaffSaveState(successMsg: "Staff Detail Save Successfully"));
+      }else{
+        emit(StaffErrorState(errorMsg: "Staff Detail Not Save"));
+      }
+      
+    }on SocketException catch(e){
+      emit(StaffErrorState(errorMsg: e.message.toString()));
+    }catch(e){
+      emit(StaffErrorState(errorMsg: e.toString()));
+    }
+    
+  }
+
+  DeleteStaff({
+    required String id
+  })async{
+
+    emit(StaffLoadingState());
+
+    try{
+
+      final response = await http.get(Uri.parse("${Urls.DeleteStaff}/$id"));
+      if(response.statusCode == 200 ){
+        emit(StaffSaveState(successMsg: "Staff Delete Successfully"));
+      }else{
+        emit(StaffErrorState(errorMsg: "Staff Not Delete"));
+      }
+
+    }on SocketException catch(e){
+      emit(StaffErrorState(errorMsg: e.message.toString()));
+    }catch(e){
+      emit(StaffErrorState(errorMsg: e.toString()));
+    }
+
+  }
 
 }

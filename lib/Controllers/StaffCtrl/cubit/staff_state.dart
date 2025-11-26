@@ -13,3 +13,7 @@ final class StaffErrorState extends StaffState {
   final String errorMsg;
   StaffErrorState({required this.errorMsg});
 }
+final class StaffSaveState extends StaffState {
+  final successMsg;
+  StaffSaveState({required this.successMsg});
+}

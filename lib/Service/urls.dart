@@ -89,6 +89,12 @@ class Urls {
   ///Raju/500/dr/25-11-2025/Sourabh/For Oil/Cash
   static const SaveExpanses = "${BaseUrl}save-expanses";
 
+  static const GetExpanses = "${BaseUrl}get-expanses";
+
+  static const SaveStaff = "${BaseUrl}save-staff";
+
+  static const DeleteStaff = "${BaseUrl}delete-staff";
+
 
 
 }

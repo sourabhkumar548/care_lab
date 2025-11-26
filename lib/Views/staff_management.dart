@@ -5,9 +5,14 @@ import 'package:sizer/sizer.dart';
 
 import '../Helpers/uiHelper.dart';
 
-class StaffManagement extends StatelessWidget {
+class StaffManagement extends StatefulWidget {
   const StaffManagement({super.key});
 
+  @override
+  State<StaffManagement> createState() => _StaffManagementState();
+}
+
+class _StaffManagementState extends State<StaffManagement> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +26,8 @@ class StaffManagement extends StatelessWidget {
             //SIDE BAR
             Container(
               height: 120,
-              child: UiHelper.custHorixontalTab(container: "5",context: context),
+              child: UiHelper.custHorixontalTab(
+                  container: "5", context: context),
             ),
             //MAIN CONTENT
             Container(
@@ -30,37 +36,50 @@ class StaffManagement extends StatelessWidget {
                 padding: const EdgeInsets.all(10.0),
                 child: ListView(
                   children: [
-                    UiHelper.CustTopBar(title: "Staff List Management",widget: ElevatedButton(onPressed: (){}, child: UiHelper.CustText(text: "Add New Staff",size: 12.sp))),
+                    UiHelper.CustTopBar(title: "Staff List Management",
+                        widget: ElevatedButton(onPressed: ()=> saveStaff(),
+                            child: UiHelper.CustText(
+                                text: "Add New Staff", size: 12.sp))),
 
                     const SizedBox(height: 20,),
                     Container(
                       color: Colors.blue.shade200,
                       child: Table(
-                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                        border: TableBorder.all(width: 0.5, color: Colors.black),
+                        defaultVerticalAlignment: TableCellVerticalAlignment
+                            .middle,
+                        border: TableBorder.all(
+                            width: 0.5, color: Colors.black),
                         columnWidths: {
-                          0 : FlexColumnWidth(.5),
-                          1 : FlexColumnWidth(4),
-                          2 : FlexColumnWidth(2),
-                          3 : FlexColumnWidth(1),
-                          4 : FlexColumnWidth(1),
-                          5 : FlexColumnWidth(2),
-                          6 : FlexColumnWidth(1),
+                          0: FlexColumnWidth(.5),
+                          1: FlexColumnWidth(4),
+                          2: FlexColumnWidth(2),
+                          3: FlexColumnWidth(1),
+                          4: FlexColumnWidth(1),
+                          5: FlexColumnWidth(2),
+                          6: FlexColumnWidth(1),
                         },
                         children: [
                           TableRow(children: [
                             SizedBox(
                                 height: 40,
-                                child: Center(child: UiHelper.CustText(text: "Sno",size: 12.sp))),
+                                child: Center(child: UiHelper.CustText(
+                                    text: "Sno", size: 12.sp))),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              child: UiHelper.CustText(text: "Staff Name",size: 12.sp),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10),
+                              child: UiHelper.CustText(
+                                  text: "Staff Name", size: 12.sp),
                             ),
-                            Center(child: UiHelper.CustText(text: "Username",size: 12.sp)),
-                            Center(child: UiHelper.CustText(text: "Password",size: 12.sp)),
-                            Center(child: UiHelper.CustText(text: "Mobile",size: 12.sp)),
-                            Center(child: UiHelper.CustText(text: "Staff Type",size: 12.sp)),
-                            Center(child: UiHelper.CustText(text: "Action",size: 12.sp)),
+                            Center(child: UiHelper.CustText(
+                                text: "Username", size: 12.sp)),
+                            Center(child: UiHelper.CustText(
+                                text: "Password", size: 12.sp)),
+                            Center(child: UiHelper.CustText(
+                                text: "Mobile", size: 12.sp)),
+                            Center(child: UiHelper.CustText(
+                                text: "Staff Type", size: 12.sp)),
+                            Center(child: UiHelper.CustText(
+                                text: "Action", size: 12.sp)),
                           ])
                         ],
                       ),
@@ -68,50 +87,62 @@ class StaffManagement extends StatelessWidget {
 
                     BlocBuilder<StaffCubit, StaffState>(
                       builder: (context, state) {
-                        if(state is StaffLoadingState){
+                        if (state is StaffLoadingState) {
                           return Center(child: CircularProgressIndicator(),);
                         }
-                        if(state is StaffErrorState){
-                          return Center(child: UiHelper.CustText(text: state.errorMsg));
+                        if (state is StaffErrorState) {
+                          return Center(
+                              child: UiHelper.CustText(text: state.errorMsg));
                         }
-                        if(state is StaffLoadedState){
+                        if (state is StaffLoadedState) {
                           return ListView.builder(
                             shrinkWrap: true,
-                            itemBuilder: (_,index){
+                            itemBuilder: (_, index) {
                               var data = state.staff.staff![index];
                               return Table(
-                                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                                border: TableBorder.all(width: 0.5, color: Colors.grey),
+                                defaultVerticalAlignment: TableCellVerticalAlignment
+                                    .middle,
+                                border: TableBorder.all(
+                                    width: 0.5, color: Colors.grey),
                                 columnWidths: {
-                                  0 : FlexColumnWidth(.5),
-                                  1 : FlexColumnWidth(4),
-                                  2 : FlexColumnWidth(2),
-                                  3 : FlexColumnWidth(1),
-                                  4 : FlexColumnWidth(1),
-                                  5 : FlexColumnWidth(2),
-                                  6 : FlexColumnWidth(1),
+                                  0: FlexColumnWidth(.5),
+                                  1: FlexColumnWidth(4),
+                                  2: FlexColumnWidth(2),
+                                  3: FlexColumnWidth(1),
+                                  4: FlexColumnWidth(1),
+                                  5: FlexColumnWidth(2),
+                                  6: FlexColumnWidth(1),
                                 },
                                 children: [
                                   TableRow(children: [
-                                    Center(child: UiHelper.CustText(text: "${index+1}",size: 12.sp)),
+                                    Center(child: UiHelper.CustText(
+                                        text: "${index + 1}", size: 12.sp)),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                                      child: UiHelper.CustText(text: data.staffName!,size: 12.sp),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: UiHelper.CustText(
+                                          text: data.staffName!, size: 12.sp),
                                     ),
-                                    Center(child: UiHelper.CustText(text: data.username!,size: 12.sp)),
-                                    Center(child: UiHelper.CustText(text: data.password!,size: 12.sp)),
-                                    Center(child: UiHelper.CustText(text: data.mobile!,size: 12.sp)),
-                                    Center(child: UiHelper.CustText(text: data.staffType!,size: 12.sp)),
+                                    Center(child: UiHelper.CustText(
+                                        text: data.username!, size: 12.sp)),
+                                    Center(child: UiHelper.CustText(
+                                        text: data.password!, size: 12.sp)),
+                                    Center(child: UiHelper.CustText(
+                                        text: data.mobile!, size: 12.sp)),
+                                    Center(child: UiHelper.CustText(
+                                        text: data.staffType!, size: 12.sp)),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly  ,
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .spaceEvenly,
                                       children: [
-                                        IconButton(onPressed: (){}, icon: Icon(Icons.edit,color: Colors.green,)),
-                                        IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.red,)),
+                                        IconButton(onPressed: () => deleteStaff(id: data.id.toString()),
+                                            icon: Icon(Icons.delete,
+                                              color: Colors.red,)),
                                       ],)
                                   ])
                                 ],
                               );
-                            },itemCount: state.staff.staff!.length,);
+                            }, itemCount: state.staff.staff!.length,);
                         }
                         return Container();
                       },
@@ -132,7 +163,7 @@ class StaffManagement extends StatelessWidget {
             //SIDE BAR
             Container(
               width: Adaptive.w(15),
-              child: UiHelper.custsidebar(container: "7",context: context),
+              child: UiHelper.custsidebar(container: "7", context: context),
             ),
             //MAIN CONTENT
             Container(
@@ -141,36 +172,43 @@ class StaffManagement extends StatelessWidget {
                 padding: const EdgeInsets.all(10.0),
                 child: ListView(
                   children: [
-                    UiHelper.CustTopBar(title: "Staff List Management",widget: ElevatedButton(onPressed: (){}, child: UiHelper.CustText(text: "Add New Staff"))),
+                    UiHelper.CustTopBar(title: "Staff List Management",
+                        widget: ElevatedButton(onPressed: () => saveStaff(),
+                            child: UiHelper.CustText(text: "Add New Staff"))),
 
                     const SizedBox(height: 20,),
                     Container(
                       color: Colors.blue.shade200,
                       child: Table(
-                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                        border: TableBorder.all(width: 0.5, color: Colors.black),
+                        defaultVerticalAlignment: TableCellVerticalAlignment
+                            .middle,
+                        border: TableBorder.all(
+                            width: 0.5, color: Colors.black),
                         columnWidths: {
-                          0 : FlexColumnWidth(.5),
-                          1 : FlexColumnWidth(6),
-                          2 : FlexColumnWidth(3),
-                          3 : FlexColumnWidth(1),
-                          4 : FlexColumnWidth(1),
-                          5 : FlexColumnWidth(3),
-                          6 : FlexColumnWidth(1),
+                          0: FlexColumnWidth(.5),
+                          1: FlexColumnWidth(6),
+                          2: FlexColumnWidth(3),
+                          3: FlexColumnWidth(1),
+                          4: FlexColumnWidth(1),
+                          5: FlexColumnWidth(3),
+                          6: FlexColumnWidth(1),
                         },
                         children: [
                           TableRow(children: [
                             SizedBox(
                                 height: 40,
-                                child: Center(child: UiHelper.CustText(text: "Sno"))),
+                                child: Center(
+                                    child: UiHelper.CustText(text: "Sno"))),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10),
                               child: UiHelper.CustText(text: "Staff Name"),
                             ),
                             Center(child: UiHelper.CustText(text: "Username")),
                             Center(child: UiHelper.CustText(text: "Password")),
                             Center(child: UiHelper.CustText(text: "Mobile")),
-                            Center(child: UiHelper.CustText(text: "Staff Type")),
+                            Center(
+                                child: UiHelper.CustText(text: "Staff Type")),
                             Center(child: UiHelper.CustText(text: "Action")),
                           ])
                         ],
@@ -179,50 +217,62 @@ class StaffManagement extends StatelessWidget {
 
                     BlocBuilder<StaffCubit, StaffState>(
                       builder: (context, state) {
-                        if(state is StaffLoadingState){
+                        if (state is StaffLoadingState) {
                           return Center(child: CircularProgressIndicator(),);
                         }
-                        if(state is StaffErrorState){
-                          return Center(child: UiHelper.CustText(text: state.errorMsg));
+                        if (state is StaffErrorState) {
+                          return Center(
+                              child: UiHelper.CustText(text: state.errorMsg));
                         }
-                        if(state is StaffLoadedState){
+                        if (state is StaffLoadedState) {
                           return ListView.builder(
                             shrinkWrap: true,
-                            itemBuilder: (_,index){
+                            itemBuilder: (_, index) {
                               var data = state.staff.staff![index];
                               return Table(
-                                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                                border: TableBorder.all(width: 0.5, color: Colors.grey),
+                                defaultVerticalAlignment: TableCellVerticalAlignment
+                                    .middle,
+                                border: TableBorder.all(
+                                    width: 0.5, color: Colors.grey),
                                 columnWidths: {
-                                  0 : FlexColumnWidth(.5),
-                                  1 : FlexColumnWidth(6),
-                                  2 : FlexColumnWidth(3),
-                                  3 : FlexColumnWidth(1),
-                                  4 : FlexColumnWidth(1),
-                                  5 : FlexColumnWidth(3),
-                                  6 : FlexColumnWidth(1),
+                                  0: FlexColumnWidth(.5),
+                                  1: FlexColumnWidth(6),
+                                  2: FlexColumnWidth(3),
+                                  3: FlexColumnWidth(1),
+                                  4: FlexColumnWidth(1),
+                                  5: FlexColumnWidth(3),
+                                  6: FlexColumnWidth(1),
                                 },
                                 children: [
                                   TableRow(children: [
-                                    Center(child: UiHelper.CustText(text: "${index+1}")),
+                                    Center(child: UiHelper.CustText(
+                                        text: "${index + 1}")),
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                                      child: UiHelper.CustText(text: data.staffName!),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: UiHelper.CustText(
+                                          text: data.staffName!),
                                     ),
-                                    Center(child: UiHelper.CustText(text: data.username!)),
-                                    Center(child: UiHelper.CustText(text: data.password!)),
-                                    Center(child: UiHelper.CustText(text: data.mobile!)),
-                                    Center(child: UiHelper.CustText(text: data.staffType!)),
+                                    Center(child: UiHelper.CustText(
+                                        text: data.username!)),
+                                    Center(child: UiHelper.CustText(
+                                        text: data.password!)),
+                                    Center(child: UiHelper.CustText(
+                                        text: data.mobile!)),
+                                    Center(child: UiHelper.CustText(
+                                        text: data.staffType!)),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly  ,
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .spaceEvenly,
                                       children: [
-                                        IconButton(onPressed: (){}, icon: Icon(Icons.edit,color: Colors.green,)),
-                                        IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.red,)),
+                                        IconButton(onPressed: () => deleteStaff(id: data.id.toString()),
+                                            icon: Icon(Icons.delete,
+                                              color: Colors.red,)),
                                       ],)
                                   ])
                                 ],
                               );
-                            },itemCount: state.staff.staff!.length,);
+                            }, itemCount: state.staff.staff!.length,);
                         }
                         return Container();
                       },
@@ -237,4 +287,149 @@ class StaffManagement extends StatelessWidget {
       ),
     );
   }
+
+
+  saveStaff() {
+    List<DropdownMenuItem<String>> typeList = [
+      DropdownMenuItem(value: "Admin", child: Text("Admin")),
+      DropdownMenuItem(value: "Lab", child: Text("Lab")),
+      DropdownMenuItem(value: "Counter", child: Text("Counter")),
+    ];
+
+    String type = "Admin";
+
+    TextEditingController nameCtrl = TextEditingController();
+    TextEditingController usernameCtrl = TextEditingController();
+    TextEditingController passwordCtrl = TextEditingController();
+    TextEditingController mobileCtrl = TextEditingController();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: UiHelper.CustText(text: "Add New Staff", size: 11.sp),
+          content: Container(
+            height: 500,
+            width: 500,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                UiHelper.CustTextField(controller: nameCtrl,
+                    label: "Enter Name",
+                    icon: Icon(Icons.person)),
+                const SizedBox(height: 15),
+                UiHelper.CustTextField(controller: usernameCtrl,
+                    label: "Enter Username",
+                    icon: Icon(Icons.person)),
+                const SizedBox(height: 15),
+                UiHelper.CustTextField(controller: passwordCtrl,
+                    label: "Enter Password",
+                    icon: Icon(Icons.person)),
+                const SizedBox(height: 15),
+                UiHelper.CustDropDown(label: "Select Staff Type",
+                    defaultValue: "Admin",
+                    list: typeList,
+                    onChanged: (val) {
+                      setState(() {
+                        type = val!;
+                      });
+                    }),
+                const SizedBox(height: 15),
+                UiHelper.CustTextField(controller: mobileCtrl,
+                    label: "Enter Mobile",
+                    icon: Icon(Icons.phone)),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+                child: const Text("Cancel"),
+                onPressed: () {
+                  nameCtrl.clear();
+                  usernameCtrl.clear();
+                  passwordCtrl.clear();
+                  mobileCtrl.clear();
+                  Navigator.of(context).pop(false);
+                }
+            ),
+            BlocConsumer<StaffCubit, StaffState>(
+              listener: (context, state) {
+                if (state is StaffSaveState) {
+                  Navigator.pushNamed(context, "/staff_list_management");
+                  UiHelper.showSuccessToste(message: state.successMsg);
+                }
+                if (state is StaffErrorState) {
+                  UiHelper.showErrorToste(message: state.errorMsg);
+                }
+              },
+              builder: (context, state) {
+                if (state is StaffLoadingState) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                return ElevatedButton(
+                  child: const Text("Save"),
+                  onPressed: () {
+                    context.read<StaffCubit>().SaveStaff(
+                        name: nameCtrl.text,
+                        username: usernameCtrl.text,
+                        password: passwordCtrl.text,
+                        type: type,
+                        mobile: mobileCtrl.text);
+                    nameCtrl.clear();
+                    usernameCtrl.clear();
+                    passwordCtrl.clear();
+                    mobileCtrl.clear();
+                  },
+                );
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  deleteStaff({required String id}){
+
+    showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // user must tap a button
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: UiHelper.CustText(text: "Delete Staff",size: 10.5.sp),
+          content: Text("Are you sure to delete this record ?"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("No"),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            BlocConsumer<StaffCubit, StaffState>(
+              listener: (context, state) {
+                if (state is StaffSaveState) {
+                  Navigator.pushNamed(context, "/staff_list_management");
+                  UiHelper.showSuccessToste(message: state.successMsg);
+                }
+                if (state is StaffErrorState) {
+                  UiHelper.showErrorToste(message: state.errorMsg);
+                }
+              },
+              builder: (context, state) {
+                if (state is StaffLoadingState) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                return ElevatedButton(
+                  child: const Text("Yes"),
+                  onPressed: ()=> context.read<StaffCubit>().DeleteStaff(id: id),
+                );
+              },
+            )
+
+          ],
+        );
+      },
+    );
+
+  }
+
 }

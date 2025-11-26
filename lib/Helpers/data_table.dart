@@ -1,9 +1,5 @@
-import 'package:care_lab_software/Helpers/uiHelper.dart';
-import 'package:care_lab_software/Views/reporting.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../Controllers/CheckReportCtrl/check_report_cubit.dart';
+import 'package:flutter/material.dart';
 
 class ScrollableTable extends StatefulWidget {
 
