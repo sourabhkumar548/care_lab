@@ -290,6 +290,7 @@ class _StaffManagementState extends State<StaffManagement> {
 
 
   saveStaff() {
+
     List<DropdownMenuItem<String>> typeList = [
       DropdownMenuItem(value: "Admin", child: Text("Admin")),
       DropdownMenuItem(value: "Lab", child: Text("Lab")),
@@ -309,36 +310,123 @@ class _StaffManagementState extends State<StaffManagement> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: UiHelper.CustText(text: "Add New Staff", size: 11.sp),
-          content: Container(
+          content: SizedBox(
             height: 500,
             width: 500,
             child: ListView(
               shrinkWrap: true,
               children: [
-                UiHelper.CustTextField(controller: nameCtrl,
-                    label: "Enter Name",
-                    icon: Icon(Icons.person)),
+
+                TextField(
+                  controller: nameCtrl,
+                  enabled: true,
+                  style: TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                      labelText: "Enter Staff Name",
+                      filled: true,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.green, width: 2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                      ),
+                      fillColor: Colors.grey.shade100,
+                      labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                      prefixIcon: Icon(Icons.person),
+                  ),
+                ),
                 const SizedBox(height: 15),
-                UiHelper.CustTextField(controller: usernameCtrl,
-                    label: "Enter Username",
-                    icon: Icon(Icons.person)),
+                TextField(
+                  controller: usernameCtrl,
+                  enabled: true,
+                  style: TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                      labelText: "Enter Username",
+                      filled: true,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.green, width: 2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                      ),
+                      fillColor: Colors.grey.shade100,
+                      labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                      prefixIcon: Icon(Icons.person),
+                  ),
+                ),
                 const SizedBox(height: 15),
-                UiHelper.CustTextField(controller: passwordCtrl,
-                    label: "Enter Password",
-                    icon: Icon(Icons.person)),
+                TextField(
+                  controller: passwordCtrl,
+                  obscureText: true,
+                  style: TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                      labelText: "Enter Password",
+                      filled: true,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.green, width: 2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                      ),
+                      fillColor: Colors.grey.shade100,
+                      labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                      prefixIcon: Icon(Icons.password),
+                  ),
+                ),
                 const SizedBox(height: 15),
-                UiHelper.CustDropDown(label: "Select Staff Type",
-                    defaultValue: "Admin",
-                    list: typeList,
-                    onChanged: (val) {
-                      setState(() {
-                        type = val!;
-                      });
-                    }),
+                DropdownButtonFormField(
+                  style: TextStyle(color: Colors.black),
+                  decoration:  InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.green, width: 2),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                    ),
+                    labelText: "Select Staff Type",
+                    filled: true,
+                    fillColor: Colors.grey.shade100,
+                    labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                    prefixIcon: Icon(Icons.local_hospital_outlined),
+                  ),
+                  items: typeList,
+                  onChanged: (val){
+                    setState(() {
+                      type = val!;
+                    });
+                  },
+                  value: "Admin",
+                ),
                 const SizedBox(height: 15),
-                UiHelper.CustTextField(controller: mobileCtrl,
-                    label: "Enter Mobile",
-                    icon: Icon(Icons.phone)),
+                TextField(
+                  controller: mobileCtrl,
+                  style: TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                      labelText: "Enter Mobile Number",
+                      filled: true,
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.green, width: 2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                      ),
+                      fillColor: Colors.grey.shade100,
+                      labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                      prefixIcon: Icon(Icons.phone_android),
+                  ),
+                ),
+
+
               ],
             ),
           ),
