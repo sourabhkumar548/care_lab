@@ -1,6 +1,5 @@
 import 'package:care_lab_software/Helpers/number_to_words.dart';
 import 'package:care_lab_software/Helpers/uiHelper.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:pdf/pdf.dart';
@@ -100,7 +99,7 @@ class PrintCaseEntry {
                   ),
                   pw.SizedBox(height: .5.h),
                   UiHelper.PWcustomTextWithRow(
-                    text: "PH : 0326-2254788   |   Email : cdc.dhn@gmail.com",
+                    text: "PH : 9708035306 , 9708046999   |   Email : cdc.dhn@gmail.com",
                     mainaxisalignment: pw.MainAxisAlignment.center,
                     size: 10.sp,
                     maxline: 1,

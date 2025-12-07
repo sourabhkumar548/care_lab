@@ -22,7 +22,7 @@ class DocBloc extends Bloc<DocEvent, DocState> {
           "slipno" : event.slipno,
           "age" : event.age,
           "sex" : event.sex,
-          "raferredby" : event.referredby,
+          "referredby" : event.referredby,
           "filename" : event.filename,
           "main_file" : event.mainfile
         }),headers: {

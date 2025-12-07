@@ -51,7 +51,7 @@ class Urls {
   // "slipno" : "66786",
   // "age" : "67",
   // "sex" : "Male",
-  // "raferredby" : "Dr Ujjal Dutta",
+  // "referredby" : "Dr Ujjal Dutta",
   // "filename" : "p_66786",
   // "main_file" : "NORMALFORMAT.docx"
   // }
