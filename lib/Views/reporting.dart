@@ -1,16 +1,14 @@
 import 'dart:convert';
-
+import 'dart:math';
 import 'package:care_lab_software/Controllers/CheckReportCtrl/check_report_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:web/web.dart' as html;
-
 import '../Controllers/CaseList/Cubit/case_list_cubit.dart';
 import '../Controllers/DocCtrl/bloc/doc_bloc.dart';
 import '../Controllers/DocCtrl/doc_ctrl.dart';
-import '../Helpers/get_reporting_list.dart';
 import '../Helpers/print_case_entry.dart';
 import '../Helpers/uiHelper.dart';
 
@@ -143,8 +141,8 @@ class _ReportingState extends State<Reporting> {
 
                                       String name = data.patientName!;
                                       String date = data.date!;
-                                      String slipno = data.slipNo!;
-                                      String age = "${data.year!} Y ${data.month!} M";
+                                      String slipno = data.caseNo!;
+                                      String age = "${data.year!} Y ${data.month! == "0" ? "" : "${data.month}M"} ";
                                       String sex = data.gender!;
                                       String referredby = data.doctor!;
 
@@ -194,7 +192,9 @@ class _ReportingState extends State<Reporting> {
                                             ListView.builder(
                                               shrinkWrap: true,
                                               itemBuilder: (_, testIndex) {
-                                                String filename = "p_${data.caseNo}";
+
+
+                                                String filename = "p_${data.caseNo}${data.testName![testIndex]}";
 
                                                 String testDateFormatted =
                                                 PrintCaseEntry.GenerateDate(
@@ -275,7 +275,11 @@ class _ReportingState extends State<Reporting> {
                                                                             if (state is DocLoadedState) {
                                                                               var json = jsonDecode(state.fileUrl);
                                                                               String url = json['url'];
-                                                                              openInMSWord(url);
+                                                                              // openInMSWord(url);
+                                                                              openInOfficeOnline(url);
+                                                                              // ZohoEditorService.openEditor(
+                                                                              //     "https://dzda.in/wordfiles/p_0002.docx"
+                                                                              // );
 
                                                                               // Clear loading state
                                                                               setState(() {
@@ -344,7 +348,11 @@ class _ReportingState extends State<Reporting> {
                                                                                 onPressed: () async {
                                                                                   // Get the file URL and open in Office Online
                                                                                   String reportUrl = "https://dzda.in/DocApi/public/wordfiles/${filename}.docx";
-                                                                                  openInMSWord(reportUrl);
+                                                                                  // openInMSWord(reportUrl);
+                                                                                  openInOfficeOnline(reportUrl);
+                                                                                  // ZohoEditorService.openEditor(
+                                                                                  //     "https://dzda.in/wordfiles/p_0002.docx"
+                                                                                  // );
                                                                                 },
                                                                                 icon: Icon(
                                                                                   Icons.download,
@@ -500,8 +508,8 @@ class _ReportingState extends State<Reporting> {
 
                                       String name = data.patientName!;
                                       String date = data.date!;
-                                      String slipno = data.slipNo!;
-                                      String age = "${data.year!} Y ${data.month!} M";
+                                      String slipno = data.caseNo!;
+                                      String age = "${data.year!} Y ${data.month! == "0" ? "" : "${data.month}M"} ";
                                       String sex = data.gender!;
                                       String referredby = data.doctor!;
 
@@ -551,7 +559,10 @@ class _ReportingState extends State<Reporting> {
                                             ListView.builder(
                                               shrinkWrap: true,
                                               itemBuilder: (_, testIndex) {
-                                                String filename = "p_${data.caseNo}";
+
+                                                Random random = Random(99999);
+
+                                                String filename = "p_${data.caseNo}${data.testName![testIndex]}";
 
                                                 String testDateFormatted =
                                                 PrintCaseEntry.GenerateDate(
@@ -632,7 +643,11 @@ class _ReportingState extends State<Reporting> {
                                                                             if (state is DocLoadedState) {
                                                                               var json = jsonDecode(state.fileUrl);
                                                                               String url = json['url'];
-                                                                              openInMSWord(url);
+                                                                              // openInMSWord(url);
+                                                                              openInOfficeOnline(url);
+                                                                              // ZohoEditorService.openEditor(
+                                                                              //     "https://dzda.in/wordfiles/p_0002.docx"
+                                                                              // );
 
                                                                               // Clear loading state
                                                                               setState(() {
@@ -701,7 +716,9 @@ class _ReportingState extends State<Reporting> {
                                                                                 onPressed: () async {
                                                                                   // Get the file URL and open in Office Online
                                                                                   String reportUrl = "https://dzda.in/DocApi/public/wordfiles/${filename}.docx";
-                                                                                  openInMSWord(reportUrl);
+                                                                                  // openInMSWord(reportUrl);
+                                                                                  openInOfficeOnline(reportUrl);
+
                                                                                 },
                                                                                 icon: Icon(
                                                                                   Icons.download,
@@ -781,3 +798,5 @@ class _ReportingState extends State<Reporting> {
     html.window.open(wordUrl, "_self");
   }
 }
+
+
