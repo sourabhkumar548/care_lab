@@ -45,7 +45,7 @@ class _ScrollableTableState extends State<ScrollableTable> {
                   DataCell(Text("₹${data.totalAmount}.00",style: TextStyle(fontWeight: FontWeight.bold))),
                   DataCell(Text("₹${data.discount}.00",style: TextStyle(fontWeight: FontWeight.bold),)),
                   DataCell(Text("₹${data.afterDiscount}.00",style: TextStyle(fontWeight: FontWeight.bold),)),
-                  DataCell(Text("₹${data.paidAmount}.00",style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold),)),
+                  DataCell(Text("₹${data.paidAmount}",style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold),)),
                   DataCell(Text("₹${data.balance}.00",style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold),)),
                 ]);
               }),

@@ -161,6 +161,17 @@ class GetCaseList{
                                             Tooltip(
                                               message : "Print Receipt",
                                               child: IconButton(onPressed: (){
+
+                                                double d = double.parse(paid);
+
+                                                String amountStr = d.toStringAsFixed(2);
+
+                                                if (amountStr.endsWith('.00')) {
+                                                  paid = paid;
+                                                } else {
+                                                  paid = "${paid}.00";
+                                                }
+
                                                 List<String> testName = data.testName!.split(",");
                                                 List<String> testRate = data.testRate!.split(",");
                                                 List<String> testDate = data.testDate!.split(",");

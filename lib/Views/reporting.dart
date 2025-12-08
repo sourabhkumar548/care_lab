@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:care_lab_software/Controllers/CheckReportCtrl/check_report_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:sizer/sizer.dart';
 import 'package:web/web.dart' as html;
 import '../Controllers/CaseList/Cubit/case_list_cubit.dart';
@@ -335,6 +337,8 @@ class _ReportingState extends State<Reporting> {
                 return Row(
                   children: [
                     // Status Column
+
+
                     Expanded(
                       child: Center(
                         child: isCheckingStatus
@@ -437,6 +441,33 @@ class _ReportingState extends State<Reporting> {
                                     )),
                               ),
                             ),
+
+                          if (isReady)
+                            Center(
+                              child: Tooltip(
+                                message: "Open Report",
+                                child: IconButton(
+                                    onPressed: () async {
+                                      String reportUrl = "${filename}.docx";
+
+                                      String filePath = 'D:\\$filename.docx';
+
+                                      final file = File(filePath);
+
+                                      if (await file.exists()) {
+                                        final result = await OpenFilex.open(filePath);
+                                        print(result.type);
+                                      } else {
+                                        print('File not found!');
+                                      }
+
+                                    },
+                                    icon: Icon(
+                                      Icons.open_in_browser_sharp,
+                                      color: Colors.orangeAccent,
+                                    )),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -466,9 +497,12 @@ class _ReportingState extends State<Reporting> {
   }
 
   static void openInOfficeOnline(String fileUrl) {
-    final onlineViewer =
-        "https://view.officeapps.live.com/op/embed.aspx?src=$fileUrl";
-    html.window.open(onlineViewer, "_blank");
+    final encodedUrl = Uri.encodeComponent(fileUrl);
+
+    final officeEditorUrl =
+        "https://www.office.com/launch/word?src=$encodedUrl";
+
+    html.window.open(officeEditorUrl, "_blank");
   }
 
   static void openInMSWord(String fileUrl) {
