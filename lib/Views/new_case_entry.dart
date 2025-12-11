@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:care_lab_software/Helpers/get_doctor_data.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -245,6 +246,11 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                   child: TextField(
                                     controller: yearCtrl,
                                     style: TextStyle(color: Colors.black),
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                      LengthLimitingTextInputFormatter(3),
+                                    ],
                                     decoration: InputDecoration(
                                         labelText: "Year",
                                         filled: true,
@@ -269,6 +275,11 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                   child: TextField(
                                     controller: monthCtrl,
                                     style: TextStyle(color: Colors.black),
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                      LengthLimitingTextInputFormatter(3),
+                                    ],
                                     decoration: InputDecoration(
                                         labelText: "Month",
                                         filled: true,
@@ -305,6 +316,11 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                     child: TextField(
                                       controller: mobileCtrl,
                                       style: TextStyle(color: Colors.black),
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(10),
+                                      ],
                                       decoration: InputDecoration(
                                         labelText: "Mobile No",
                                         filled: true,
@@ -490,6 +506,9 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                     Expanded(
                                       child: TextField(
                                         controller: discountCtrl,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                        ],
                                         decoration: InputDecoration(
                                             filled: true,
                                             focusedBorder: OutlineInputBorder(
@@ -528,6 +547,9 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                     Expanded(
                                       child: TextField(
                                         controller: advanceCtrl,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                        ],
                                         decoration: InputDecoration(
                                             filled: true,
                                             focusedBorder: OutlineInputBorder(
@@ -634,38 +656,57 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                 actions: <Widget>[
                                                   TextButton(
                                                     child: const Text("No"),
-                                                    onPressed: () => Navigator.pop(context),
-                                                  ),
-                                                  ElevatedButton(
-                                                    child: const Text("Yes"),
-                                                    onPressed: () {
-
-                                                      GetStorage userBox = GetStorage();
-                                                      String User = userBox.read("newUser") ?? "";
-
-                                                      PrintCaseEntry.printBill(
-                                                          receiptNo: receiptNo,
-                                                          receiptDate: dateCtrl.text,
-                                                          caseNo: caseNoCtrl.text,
-                                                          caseDate: dateCtrl.text,
-                                                          caseTime: timeCtrl.text,
-                                                          patientName: nameCtrl.text,
-                                                          mobile: mobileCtrl.text,
-                                                          sex: SelectedGender,
-                                                          age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
-                                                          referredBy: doctorCtrl.text,
-                                                          testName: testNames,
-                                                          testRate: testRate,
-                                                          date: dateCtrl.text,
-                                                          totalAmount: TotalAmount,
-                                                          discountAmount: afterdiscountCtrl.text,
-                                                          balanceAmount: balanceCtrl.text,
-                                                          advanceAmount: Advance,
-                                                          receivedBy: User,
-                                                          testDate: testDate
-                                                      );
+                                                    onPressed: (){
+                                                      setState(() {
+                                                        selectedTests.clear();
+                                                        AddTestDialogState.selectedTests.clear();
+                                                        AddTestDialogState.totalAmount = 0;
+                                                        updateBilling();
+                                                      });
+                                                      Navigator.popAndPushNamed(
+                                                          context,
+                                                          '/case_entry_page');
                                                     },
                                                   ),
+                                              ElevatedButton(
+                                              child: const Text("Yes"),
+                                              onPressed: () {
+                                              GetStorage userBox = GetStorage();
+                                              String User = userBox.read("newUser") ?? "";
+
+                                              PrintCaseEntry.printBill(
+                                              receiptNo: receiptNo,
+                                              receiptDate: dateCtrl.text,
+                                              caseNo: caseNoCtrl.text,
+                                              caseDate: dateCtrl.text,
+                                              caseTime: timeCtrl.text,
+                                              patientName: nameCtrl.text,
+                                              mobile: mobileCtrl.text,
+                                              sex: SelectedGender,
+                                              age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
+                                              referredBy: doctorCtrl.text,
+                                              testName: testNames,
+                                              testRate: testRate,
+                                              date: dateCtrl.text,
+                                              totalAmount: TotalAmount,
+                                              discountAmount: afterdiscountCtrl.text,
+                                              balanceAmount: balanceCtrl.text,
+                                              advanceAmount: Advance,
+                                              receivedBy: User,
+                                              testDate: testDate
+                                              );
+
+                                              // Clear the tests after printing
+                                              setState(() {
+                                              selectedTests.clear();
+                                              AddTestDialogState.selectedTests.clear();
+                                              AddTestDialogState.totalAmount = 0;
+                                              updateBilling();
+                                              });
+
+                                              Navigator.popAndPushNamed(context, '/case_entry_page');
+                                              },
+                                              ),
                                                 ],
                                               );
                                             },
@@ -879,6 +920,11 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                   child: TextField(
                                     controller: yearCtrl,
                                     style: TextStyle(color: Colors.black),
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                      LengthLimitingTextInputFormatter(3),
+                                    ],
                                     decoration: InputDecoration(
                                         labelText: "Year",
                                         filled: true,
@@ -903,6 +949,11 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                   child: TextField(
                                     controller: monthCtrl,
                                     style: TextStyle(color: Colors.black),
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                      LengthLimitingTextInputFormatter(3),
+                                    ],
                                     decoration: InputDecoration(
                                         labelText: "Month",
                                         filled: true,
@@ -939,6 +990,11 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                     child: TextField(
                                       controller: mobileCtrl,
                                       style: TextStyle(color: Colors.black),
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(10),
+                                      ],
                                       decoration: InputDecoration(
                                         labelText: "Mobile No",
                                         filled: true,
@@ -1124,6 +1180,9 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                     Expanded(
                                       child: TextField(
                                         controller: discountCtrl,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                        ],
                                         decoration: InputDecoration(
                                             filled: true,
                                             focusedBorder: OutlineInputBorder(
@@ -1162,6 +1221,9 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                     Expanded(
                                       child: TextField(
                                         controller: advanceCtrl,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                        ],
                                         decoration: InputDecoration(
                                             filled: true,
                                             focusedBorder: OutlineInputBorder(
@@ -1268,12 +1330,21 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                 actions: <Widget>[
                                                   TextButton(
                                                     child: const Text("No"),
-                                                    onPressed: () => Navigator.pop(context),
+                                                    onPressed: (){
+                                                      setState(() {
+                                                        selectedTests.clear();
+                                                        AddTestDialogState.selectedTests.clear();
+                                                        AddTestDialogState.totalAmount = 0;
+                                                        updateBilling();
+                                                      });
+                                                      Navigator.popAndPushNamed(
+                                                          context,
+                                                          '/case_entry_page');
+                                                    },
                                                   ),
                                                   ElevatedButton(
                                                     child: const Text("Yes"),
                                                     onPressed: () {
-
                                                       GetStorage userBox = GetStorage();
                                                       String User = userBox.read("newUser") ?? "";
 
@@ -1298,6 +1369,16 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                           receivedBy: User,
                                                           testDate: testDate
                                                       );
+
+                                                      // Clear the tests after printing
+                                                      setState(() {
+                                                        selectedTests.clear();
+                                                        AddTestDialogState.selectedTests.clear();
+                                                        AddTestDialogState.totalAmount = 0;
+                                                        updateBilling();
+                                                      });
+
+                                                      Navigator.popAndPushNamed(context, '/case_entry_page');
                                                     },
                                                   ),
                                                 ],

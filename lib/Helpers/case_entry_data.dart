@@ -4,7 +4,7 @@ class CaseEnteryData {
   static List<String> monthList = List.generate(12, (index) => index.toString());
   static List<String> yearList = List.generate(100, (index) => index.toString());
 
-  static List<String> agentList = ["Self","Sudhir Jha","Sekhu Ahmed","Minaj","CIMFR","Sri Ram Medical","Baby","Deepak Clinic","Health Assure","Health India","Medi Buddy","Red Cross Society"];
+  static List<String> agentList = ["Self","Sudhir Jha","Sekhu Ahmed","Minaj","CIMFR","Sri Ram Medical","Baby","Deepak Clinic","Health Assure","Health India","Medi Buddy","Red Cross Society","Maximum Health Care","Medpipper","Chottu"];
   static List<String> discountTypeList = ["By D Mitra","By B Mitra","By Doctor","By Agent","Poor Patient","Regular Patient","Staff Discount"];
 
   static List<DropdownMenuItem<String>> mChildList = List.generate(
