@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../Helpers/case_entry_data.dart';
 import '../../../Helpers/uiHelper.dart';
 import '../Bloc/case_entry_bloc.dart';
 
@@ -42,6 +43,13 @@ class CaseEntryCtrl{
       required String name_title
     }
   ) {
+
+      bool zero = false;
+
+      if(CaseEnteryData.agentZero.contains(agent)){
+        zero = true;
+      }
+
       if (year.isEmpty) {
           year = "0";
       }
@@ -55,25 +63,25 @@ class CaseEntryCtrl{
           child_female = "0";
       }
       if (mobile.isEmpty) {
-          mobile = "Null";
+          mobile = "0";
       }
       if (narration.isEmpty) {
-        narration = "Null";
+        narration = "None";
       }
       if (name_title.isEmpty) {
-        name_title = "Null";
+        name_title = "None";
       }
       if(case_no.isEmpty){
         case_no = "0001";
+      }if(address.isEmpty){
+        address = "Not Added";
       }
 
       if (patient_name.isEmpty) {
             UiHelper.showErrorToste(message: "Patient Name is Required",heading: "Required Field");
-      } else if (address.isEmpty) {
-          UiHelper.showErrorToste(message: "Address is Required",heading: "Required Field");
       } else if (test_name == "[]") {
           UiHelper.showErrorToste(message: "Select At Least One Test",heading: "Required Field");
-      } else if (total_amount == "0") {
+      } else if (total_amount == "0" && zero == false) {
           UiHelper.showErrorToste(message: "Total Amount not Show",heading: "Required Field");
       } else {
           BlocProvider.of<CaseEntryBloc>(context).add(AddCaseEntryEvent(

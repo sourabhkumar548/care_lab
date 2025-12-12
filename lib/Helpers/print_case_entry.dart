@@ -242,9 +242,14 @@ class PrintCaseEntry {
                             pw.Text(
                                 "Paid Amount : ",
                                 style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
-                            pw.Text(
-                                "${discountAmount}",
+
+
+                            discountAmount.isEmpty || discountAmount=="" || discountAmount==".00" ? pw.Text("0.00",
+                                style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold))
+                                : pw.Text("${discountAmount}",
                                 style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
+
+
                           ]),
 
                       pw.Row(

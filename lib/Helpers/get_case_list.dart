@@ -53,12 +53,12 @@ class GetCaseList{
                       child: ExpansionTile(title: Table(
                         columnWidths: {
                           0: FlexColumnWidth(1),
-                          1: FlexColumnWidth(7),
+                          1: FlexColumnWidth(6),
                           2: FlexColumnWidth(3),
                           3: FlexColumnWidth(3),
                           4: FlexColumnWidth(3),
                           5: FlexColumnWidth(3),
-                          6: FlexColumnWidth(.5),
+                          6: FlexColumnWidth(1.5),
                         },
                         children: [
                           TableRow(children: [
@@ -68,18 +68,38 @@ class GetCaseList{
                             Center(child: UiHelper.CustText(text: "Case Date : ${state.caseListModel.caseList![index].date}",size: 12.sp)),
                             Center(child: UiHelper.CustText(text: "Total Amt : ${state.caseListModel.caseList![index].afterDiscount!}",size: 12.sp)),
                             Center(child: UiHelper.CustText(text: "Status : ${state.caseListModel.caseList![index].balance! == "0" ? "Paid" : "Due"}",size: 12.sp)),
-                            Center(child: Tooltip(
-                                message: "Payment History",
-                                child: IconButton(onPressed: ()=>GetPaymentHistory.GetHistory(
-                                    context: context,
-                                    Case_no: state.caseListModel.caseList![index].caseNo!,
-                                    case_date: state.caseListModel.caseList![index].date!,
-                                    name: state.caseListModel.caseList![index].patientName!,
-                                  total: state.caseListModel.caseList![index].afterDiscount!,
-                                  balance: state.caseListModel.caseList![index].balance!,
-                                  status: "${state.caseListModel.caseList![index].balance! == "0" ? "Paid" : "Due"}"
+                            Center(child: Row(
+                              children: [
 
-                                ), icon  : Icon(Icons.list,color: Colors.blue.shade600,))),)
+                                // Tooltip(
+                                //     message: "Edit Case",
+                                //     child: IconButton(onPressed: (){
+                                //
+                                //       UiHelper.showSuccessToste(message: '''
+                                //         Name : ${state.caseListModel.caseList![index].patientName}
+                                //         Mobile : ${state.caseListModel.caseList![index].mobile}
+                                //         Agent : ${state.caseListModel.caseList![index].ag}
+                                //         Doctor : ${state.caseListModel.caseList![index].do}
+                                //         Test Name : ${state.caseListModel.caseList![index].items![0].testName}
+                                //       ''');
+                                //
+                                //
+                                //     }, icon: Icon(Icons.edit,color: Colors.green,))),
+
+                                Tooltip(
+                                    message: "Payment History",
+                                    child: IconButton(onPressed: ()=>GetPaymentHistory.GetHistory(
+                                        context: context,
+                                        Case_no: state.caseListModel.caseList![index].caseNo!,
+                                        case_date: state.caseListModel.caseList![index].date!,
+                                        name: state.caseListModel.caseList![index].patientName!,
+                                      total: state.caseListModel.caseList![index].afterDiscount!,
+                                      balance: state.caseListModel.caseList![index].balance!,
+                                      status: "${state.caseListModel.caseList![index].balance! == "0" ? "Paid" : "Due"}"
+
+                                    ), icon  : Icon(Icons.list,color: Colors.blue.shade600,))),
+                              ],
+                            ),)
                           ])
 
                         ],
@@ -138,7 +158,7 @@ class GetCaseList{
                                           Center(child: UiHelper.CustText(text: "${data.date}",size: 12.sp)),
                                           Center(child: UiHelper.CustText(text: "${total.isEmpty ? "0" : total}",size: 12.sp)),
                                           Center(child: UiHelper.CustText(text: "${advance.isEmpty ? "0" : advance}",size: 12.sp)),
-                                          Center(child: UiHelper.CustText(text: "${paid.isEmpty ? "0" : paid}",size: 12.sp)),
+                                          Center(child: UiHelper.CustText(text: "${paid.isEmpty || paid==".00" ? "0" : paid}",size: 12.sp)),
                                           Center(child: UiHelper.CustText(text: "${balance.isEmpty ? "0" : balance}",size: 12.sp)),
 
                                           Row(children: [

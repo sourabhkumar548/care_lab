@@ -1,4 +1,5 @@
 import 'package:care_lab_software/Controllers/RateListCtrl/Cubit/rate_list_cubit.dart';
+import 'package:care_lab_software/Controllers/RateListCtrl/DeleteRateListCubit/delete_rate_list_cubit.dart';
 import 'package:care_lab_software/Controllers/UpdateTestCtrl/Cubit/update_test_cubit.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -170,9 +171,27 @@ class _RateListManagementState extends State<RateListManagement> {
                                               onPressed: () => pickAndUploadWebFile(context: context, id: data.id.toString()),
                                               icon: Icon(Icons.edit, color: Colors.green),
                                             ),
-                                            IconButton(
-                                              onPressed: () {},
-                                              icon: Icon(Icons.delete, color: Colors.red),
+                                            BlocConsumer<DeleteRateListCubit, DeleteRateListState>(
+                                              listener: (context, state) {
+                                                if(state is DeleteRateListErrorState){
+                                                  UiHelper.showErrorToste(message: state.errorMsg);
+                                                }
+                                                if(state is DeleteRateListLoadedState){
+                                                  context.read<RateListCubit>().GetRateList();
+                                                  UiHelper.showSuccessToste(message: state.successMsg);
+                                                }
+                                              },
+                                              builder: (context, state) {
+                                                if(state is DeleteRateListLoadingState){
+                                                  return Center(child: CircularProgressIndicator(),);
+                                                }
+                                                return IconButton(
+                                                  onPressed: () {
+                                                    context.read<DeleteRateListCubit>().DeleteRateList(id: data.id.toString());
+                                                  },
+                                                  icon: Icon(Icons.delete, color: Colors.red),
+                                                );
+                                              },
                                             ),
                                           ],
                                         ),
@@ -369,9 +388,27 @@ class _RateListManagementState extends State<RateListManagement> {
                                               onPressed: () => pickAndUploadWebFile(context: context, id: data.id.toString()),
                                               icon: Icon(Icons.edit, color: Colors.green),
                                             ),
-                                            IconButton(
-                                              onPressed: () {},
-                                              icon: Icon(Icons.delete, color: Colors.red),
+                                            BlocConsumer<DeleteRateListCubit, DeleteRateListState>(
+                                              listener: (context, state) {
+                                                if(state is DeleteRateListErrorState){
+                                                  UiHelper.showErrorToste(message: state.errorMsg);
+                                                }
+                                                if(state is DeleteRateListLoadedState){
+                                                  context.read<RateListCubit>().GetRateList();
+                                                  UiHelper.showSuccessToste(message: state.successMsg);
+                                                }
+                                              },
+                                              builder: (context, state) {
+                                                if(state is DeleteRateListLoadingState){
+                                                  return Center(child: CircularProgressIndicator(),);
+                                                }
+                                                return IconButton(
+                                                  onPressed: () {
+                                                    context.read<DeleteRateListCubit>().DeleteRateList(id: data.id.toString());
+                                                  },
+                                                  icon: Icon(Icons.delete, color: Colors.red),
+                                                );
+                                              },
                                             ),
                                           ],
                                         ),
@@ -422,6 +459,12 @@ class _RateListManagementState extends State<RateListManagement> {
       ),
     );
   }
+}
+
+DeleteRateList({required BuildContext context, required String id}) async {
+
+
+
 }
 
 Future<void> pickAndUploadWebFile({required BuildContext context, required String id}) async {

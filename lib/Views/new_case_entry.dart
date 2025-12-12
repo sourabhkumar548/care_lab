@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:care_lab_software/Helpers/get_doctor_data.dart';
+import 'package:care_lab_software/Views/case_entry_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -79,9 +80,10 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
   double advance = 0;
   double afterDiscount = 0;
   double balance = 0;
+  bool zero = false;
 
   void updateBilling() {
-    total = AddTestDialogState.totalAmount;
+    total = zero ? 0 :AddTestDialogState.totalAmount;
 
     // discount is directly in rupees now
     discountAmount = double.tryParse(discountCtrl.text) ?? 0;
@@ -89,17 +91,18 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
     afterDiscount = total - discountAmount;
     advance = double.tryParse(advanceCtrl.text) ?? 0;
 
-    if(advance != 0){
-      balance = afterDiscount - advance;
-    }else{
-      balance = 0;
-    }
+    // Calculate balance: if advance is 0 or empty, balance = afterDiscount (full amount due)
+    // Otherwise, balance = afterDiscount - advance
+    balance = afterDiscount - advance;
 
     totalCtrl.text = total.toStringAsFixed(2);
     afterdiscountCtrl.text = afterDiscount.toStringAsFixed(2);
     balanceCtrl.text = balance.toStringAsFixed(2);
 
-    paidAmount.value = advance > 0 ? advance : afterDiscount;
+    // Paid amount logic:
+    // If advance > 0, paidAmount = advance
+    // If advance = 0, paidAmount = 0 (nothing paid, full amount in balance)
+    paidAmount.value = advance > 0 ? advance : 0;
   }
 
   @override
@@ -397,7 +400,9 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                     fillColor: Colors.grey.shade100,
                                     labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
                                     prefixIcon: Icon(Icons.person),
-                                    suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
+                                    suffixIcon: IconButton(onPressed: ()=>
+                                        UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList),
+                                        icon: Icon(Icons.arrow_drop_down_circle_outlined))
 
                                 ),
                               ),
@@ -430,6 +435,15 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                             title: "Tests List",
                             trailing: TextButton(
                               onPressed: () async {
+
+                                if(CaseEnteryData.agentZero.contains(agentCtrl.text)){
+                                  setState(() {
+                                    zero = true;
+                                  });
+
+                                }
+
+
                                 var result = await showDialog(
                                   context: context,
                                   builder: (_) => AddTestDialog(),
@@ -451,6 +465,8 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                   int index = entry.key;
                                   var item = entry.value;
 
+                                  // Replace the ListTile in your selectedTests.asMap().entries.map() section with this:
+
                                   return Card(
                                     color: Colors.grey.shade100,
                                     margin: EdgeInsets.symmetric(vertical: 4),
@@ -458,11 +474,51 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                       leading: UiHelper.CustText(text: "${index + 1} : "),
                                       title: UiHelper.CustText(text: item['Test Name']),
 
-                                      /// ✅ Only ONE trailing widget
+                                      /// ✅ Editable Test Rate Field
                                       trailing: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          UiHelper.CustText(text: "${item['Test Rate']}"),
+                                          SizedBox(
+                                            width: 100,
+                                            child: TextField(
+                                              controller: TextEditingController(text: zero ? "0" :"${item['Test Rate']}"),
+                                              keyboardType: TextInputType.number,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(color: Colors.black, fontSize: 14),
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter.digitsOnly,
+                                              ],
+                                              decoration: InputDecoration(
+                                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(5),
+                                                  borderSide: BorderSide(color: Colors.black45, width: 1),
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(5),
+                                                  borderSide: BorderSide(color: Colors.blue, width: 2),
+                                                ),
+                                              ),
+                                              onChanged: (newValue) {
+                                                setState(() {
+                                                  // Get old rate
+                                                  double oldRate = double.tryParse(item['Test Rate'].toString()) ?? 0;
+
+                                                  // Get new rate
+                                                  double newRate = double.tryParse(newValue) ?? 0;
+
+                                                  // Update the item
+                                                  item['Test Rate'] = newRate.toInt();
+
+                                                  // Update total amount
+                                                  AddTestDialogState.totalAmount = AddTestDialogState.totalAmount - oldRate + newRate;
+
+                                                  // Update billing
+                                                  updateBilling();
+                                                });
+                                              },
+                                            ),
+                                          ),
                                           SizedBox(width: 8),
                                           IconButton(
                                             icon: Icon(Icons.close, color: Colors.red),
@@ -563,7 +619,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                             fillColor: Colors.grey.shade100,
                                             labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
                                             prefixIcon: Icon(Icons.money),
-                                            labelText: "Advance Amount"),
+                                            labelText: "Paid Amount"),
                                         keyboardType: TextInputType.number,
                                         onChanged: (_) {
                                           updateBilling();
@@ -581,7 +637,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                     UiHelper.CustTextField(
                                       controller: balanceCtrl,
                                       label: "Balance Amount",
-                                      enabled: false,
+                                      enabled: true,
                                     ),
                                     SizedBox(width: 20),
                                     UiHelper.CustDropDown(
@@ -674,27 +730,51 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                               GetStorage userBox = GetStorage();
                                               String User = userBox.read("newUser") ?? "";
 
-                                              PrintCaseEntry.printBill(
-                                              receiptNo: receiptNo,
-                                              receiptDate: dateCtrl.text,
-                                              caseNo: caseNoCtrl.text,
-                                              caseDate: dateCtrl.text,
-                                              caseTime: timeCtrl.text,
-                                              patientName: nameCtrl.text,
-                                              mobile: mobileCtrl.text,
-                                              sex: SelectedGender,
-                                              age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
-                                              referredBy: doctorCtrl.text,
-                                              testName: testNames,
-                                              testRate: testRate,
-                                              date: dateCtrl.text,
-                                              totalAmount: TotalAmount,
-                                              discountAmount: afterdiscountCtrl.text,
-                                              balanceAmount: balanceCtrl.text,
-                                              advanceAmount: Advance,
-                                              receivedBy: User,
-                                              testDate: testDate
-                                              );
+                                              if(CaseEnteryData.agentZero.contains(agentCtrl.text)){
+                                                PrintCaseEntry.printBill(
+                                                    receiptNo: receiptNo,
+                                                    receiptDate: dateCtrl.text,
+                                                    caseNo: caseNoCtrl.text,
+                                                    caseDate: dateCtrl.text,
+                                                    caseTime: timeCtrl.text,
+                                                    patientName: nameCtrl.text,
+                                                    mobile: mobileCtrl.text,
+                                                    sex: SelectedGender,
+                                                    age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
+                                                    referredBy: doctorCtrl.text,
+                                                    testName: testNames,
+                                                    testRate: testRate,
+                                                    date: dateCtrl.text,
+                                                    totalAmount: "0",
+                                                    discountAmount: "0",
+                                                    balanceAmount: "0",
+                                                    advanceAmount: "0",
+                                                    receivedBy: User,
+                                                    testDate: testDate
+                                                );
+                                              }else{
+                                                PrintCaseEntry.printBill(
+                                                    receiptNo: receiptNo,
+                                                    receiptDate: dateCtrl.text,
+                                                    caseNo: caseNoCtrl.text,
+                                                    caseDate: dateCtrl.text,
+                                                    caseTime: timeCtrl.text,
+                                                    patientName: nameCtrl.text,
+                                                    mobile: mobileCtrl.text,
+                                                    sex: SelectedGender,
+                                                    age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
+                                                    referredBy: doctorCtrl.text,
+                                                    testName: testNames,
+                                                    testRate: testRate,
+                                                    date: dateCtrl.text,
+                                                    totalAmount: TotalAmount,
+                                                    discountAmount: "${paidAmount.value.toStringAsFixed(2)}",
+                                                    balanceAmount: balance.toString(),
+                                                    advanceAmount: Advance,
+                                                    receivedBy: User,
+                                                    testDate: testDate
+                                                );
+                                              }
 
                                               // Clear the tests after printing
                                               setState(() {
@@ -1071,7 +1151,12 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                     fillColor: Colors.grey.shade100,
                                     labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
                                     prefixIcon: Icon(Icons.person),
-                                    suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
+                                    suffixIcon: IconButton(onPressed: ()=>
+                                        UiHelper.CustEditableDropDown(context, (data)
+                                        {
+                                          agentCtrl.text = data;
+                                        },CaseEnteryData.agentList),
+                                        icon: Icon(Icons.arrow_drop_down_circle_outlined))
 
                                 ),
                               ),
@@ -1104,6 +1189,14 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                             title: "Tests List",
                             trailing: TextButton(
                               onPressed: () async {
+
+                                if(CaseEnteryData.agentZero.contains(agentCtrl.text)){
+                                  setState(() {
+                                    zero = true;
+                                  });
+
+                                }
+
                                 var result = await showDialog(
                                   context: context,
                                   builder: (_) => AddTestDialog(),
@@ -1132,11 +1225,51 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                       leading: UiHelper.CustText(text: "${index + 1} : "),
                                       title: UiHelper.CustText(text: item['Test Name']),
 
-                                      /// ✅ Only ONE trailing widget
+                                      /// ✅ Editable Test Rate Field
                                       trailing: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          UiHelper.CustText(text: "${item['Test Rate']}"),
+                                          SizedBox(
+                                            width: 100,
+                                            child: TextField(
+                                              controller: TextEditingController(text: zero ? "0" :"${item['Test Rate']}"),
+                                              keyboardType: TextInputType.number,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(color: Colors.black, fontSize: 14),
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter.digitsOnly,
+                                              ],
+                                              decoration: InputDecoration(
+                                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                                border: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(5),
+                                                  borderSide: BorderSide(color: Colors.black45, width: 1),
+                                                ),
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(5),
+                                                  borderSide: BorderSide(color: Colors.blue, width: 2),
+                                                ),
+                                              ),
+                                              onChanged: (newValue) {
+                                                setState(() {
+                                                  // Get old rate
+                                                  double oldRate = double.tryParse(item['Test Rate'].toString()) ?? 0;
+
+                                                  // Get new rate
+                                                  double newRate = double.tryParse(newValue) ?? 0;
+
+                                                  // Update the item
+                                                  item['Test Rate'] = newRate.toInt();
+
+                                                  // Update total amount
+                                                  AddTestDialogState.totalAmount = AddTestDialogState.totalAmount - oldRate + newRate;
+
+                                                  // Update billing
+                                                  updateBilling();
+                                                });
+                                              },
+                                            ),
+                                          ),
                                           SizedBox(width: 8),
                                           IconButton(
                                             icon: Icon(Icons.close, color: Colors.red),
@@ -1237,7 +1370,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                             fillColor: Colors.grey.shade100,
                                             labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
                                             prefixIcon: Icon(Icons.money),
-                                            labelText: "Advance Amount"),
+                                            labelText: "Paid Amount"),
                                         keyboardType: TextInputType.number,
                                         onChanged: (_) {
                                           updateBilling();
@@ -1255,7 +1388,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                     UiHelper.CustTextField(
                                       controller: balanceCtrl,
                                       label: "Balance Amount",
-                                      enabled: false,
+                                      enabled: true,
                                     ),
                                     SizedBox(width: 20),
                                     UiHelper.CustDropDown(
@@ -1348,27 +1481,51 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                       GetStorage userBox = GetStorage();
                                                       String User = userBox.read("newUser") ?? "";
 
-                                                      PrintCaseEntry.printBill(
-                                                          receiptNo: receiptNo,
-                                                          receiptDate: dateCtrl.text,
-                                                          caseNo: caseNoCtrl.text,
-                                                          caseDate: dateCtrl.text,
-                                                          caseTime: timeCtrl.text,
-                                                          patientName: nameCtrl.text,
-                                                          mobile: mobileCtrl.text,
-                                                          sex: SelectedGender,
-                                                          age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
-                                                          referredBy: doctorCtrl.text,
-                                                          testName: testNames,
-                                                          testRate: testRate,
-                                                          date: dateCtrl.text,
-                                                          totalAmount: TotalAmount,
-                                                          discountAmount: afterdiscountCtrl.text,
-                                                          balanceAmount: balanceCtrl.text,
-                                                          advanceAmount: Advance,
-                                                          receivedBy: User,
-                                                          testDate: testDate
-                                                      );
+                                                      if(CaseEnteryData.agentZero.contains(agentCtrl.text)){
+                                                        PrintCaseEntry.printBill(
+                                                            receiptNo: receiptNo,
+                                                            receiptDate: dateCtrl.text,
+                                                            caseNo: caseNoCtrl.text,
+                                                            caseDate: dateCtrl.text,
+                                                            caseTime: timeCtrl.text,
+                                                            patientName: nameCtrl.text,
+                                                            mobile: mobileCtrl.text,
+                                                            sex: SelectedGender,
+                                                            age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
+                                                            referredBy: doctorCtrl.text,
+                                                            testName: testNames,
+                                                            testRate: testRate,
+                                                            date: dateCtrl.text,
+                                                            totalAmount: "0",
+                                                            discountAmount: "0",
+                                                            balanceAmount: "0",
+                                                            advanceAmount: "0",
+                                                            receivedBy: User,
+                                                            testDate: testDate
+                                                        );
+                                                      }else{
+                                                        PrintCaseEntry.printBill(
+                                                            receiptNo: receiptNo,
+                                                            receiptDate: dateCtrl.text,
+                                                            caseNo: caseNoCtrl.text,
+                                                            caseDate: dateCtrl.text,
+                                                            caseTime: timeCtrl.text,
+                                                            patientName: nameCtrl.text,
+                                                            mobile: mobileCtrl.text,
+                                                            sex: SelectedGender,
+                                                            age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
+                                                            referredBy: doctorCtrl.text,
+                                                            testName: testNames,
+                                                            testRate: testRate,
+                                                            date: dateCtrl.text,
+                                                            totalAmount: TotalAmount,
+                                                            discountAmount: "${paidAmount.value.toStringAsFixed(2)}",
+                                                            balanceAmount: balance.toString(),
+                                                            advanceAmount: Advance,
+                                                            receivedBy: User,
+                                                            testDate: testDate
+                                                        );
+                                                      }
 
                                                       // Clear the tests after printing
                                                       setState(() {
@@ -1404,6 +1561,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                 GetStorage userBox = GetStorage();
                                                 String User = userBox.read("newUser") ?? "";
 
+
                                                 String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" ? "Paid" : "Due";
                                                 List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
                                                 List<int> testRates = selectedTests.map((test) => test["Test Rate"] as int).toList();
@@ -1414,6 +1572,8 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
 
                                               }
                                               else{
+
+
                                                 String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" ? "Paid" : "Due";
                                                 List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
                                                 List<int> testRates = selectedTests.map((test) => test["Test Rate"] as int).toList();
