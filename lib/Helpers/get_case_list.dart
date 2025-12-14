@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:care_lab_software/Helpers/get_payment_history.dart';
 import 'package:care_lab_software/Helpers/print_case_entry.dart';
 import 'package:care_lab_software/Helpers/uiHelper.dart';
+import 'package:care_lab_software/Views/edit_case_entry.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -71,20 +72,10 @@ class GetCaseList{
                             Center(child: Row(
                               children: [
 
-                                // Tooltip(
-                                //     message: "Edit Case",
-                                //     child: IconButton(onPressed: (){
-                                //
-                                //       UiHelper.showSuccessToste(message: '''
-                                //         Name : ${state.caseListModel.caseList![index].patientName}
-                                //         Mobile : ${state.caseListModel.caseList![index].mobile}
-                                //         Agent : ${state.caseListModel.caseList![index].ag}
-                                //         Doctor : ${state.caseListModel.caseList![index].do}
-                                //         Test Name : ${state.caseListModel.caseList![index].items![0].testName}
-                                //       ''');
-                                //
-                                //
-                                //     }, icon: Icon(Icons.edit,color: Colors.green,))),
+                                Tooltip(
+                                    message: "Edit Case",
+                                    child: IconButton(onPressed: ()=>Get.to(EditCaseEntry(case_no: state.caseListModel.caseList![index].caseNo!)),
+                                        icon: Icon(Icons.edit,color: Colors.green,))),
 
                                 Tooltip(
                                     message: "Payment History",

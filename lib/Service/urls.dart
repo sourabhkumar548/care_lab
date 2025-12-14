@@ -97,6 +97,8 @@ class Urls {
   static const DeleteStaff = "${BaseUrl}delete-staff";
   static const DeleteRateList = "${BaseUrl}delete-test/";
 
+  static const GetSingleCase = "${BaseUrl}get-single-case/";
+
 
 
 }

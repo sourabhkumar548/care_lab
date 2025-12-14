@@ -4,6 +4,7 @@ import 'package:care_lab_software/Controllers/CheckReportCtrl/check_report_cubit
 import 'package:care_lab_software/Controllers/DoctorCollectionCtrl/doctor_collection_cubit.dart';
 import 'package:care_lab_software/Controllers/DoctorCtrl/cibit/doctor_cubit.dart';
 import 'package:care_lab_software/Controllers/ExpansesCtrl/Cubit/expanses_cubit.dart';
+import 'package:care_lab_software/Controllers/GetSingleCase/single_case_cubit.dart';
 import 'package:care_lab_software/Controllers/PaymentHistoryCtrl/cubit/payment_history_cubit.dart';
 import 'package:care_lab_software/Controllers/RateListCtrl/DeleteRateListCubit/delete_rate_list_cubit.dart';
 import 'package:care_lab_software/Controllers/RevenueCtrl/revenue_cubit.dart';
@@ -12,6 +13,7 @@ import 'package:care_lab_software/Views/agent_management.dart';
 import 'package:care_lab_software/Views/collection_between_date.dart';
 import 'package:care_lab_software/Views/doctor_collection.dart';
 import 'package:care_lab_software/Views/doctor_management.dart';
+import 'package:care_lab_software/Views/edit_case_entry.dart';
 import 'package:care_lab_software/Views/expanses.dart';
 import 'package:care_lab_software/Views/rate_list_management.dart';
 import 'package:care_lab_software/Views/staff_management.dart';
@@ -82,6 +84,7 @@ class MyApp extends StatelessWidget {
                 BlocProvider(create: (_)=>UpdateTestCubit()),
                 BlocProvider(create: (_)=>ExpansesCubit()),
                 BlocProvider(create: (_)=>DeleteRateListCubit()),
+                BlocProvider(create: (_)=>SingleCaseCubit()),
                 BlocProvider(create: (_)=>CaseListCubit()..getCaseList(date: "${DateTime.now().day.toString()}-${DateTime.now().month.toString()}-${DateTime.now().year.toString()}",type: "All")),
               ],
               child: GetMaterialApp(
