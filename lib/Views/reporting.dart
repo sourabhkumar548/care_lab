@@ -24,6 +24,11 @@ class Reporting extends StatefulWidget {
 }
 
 class _ReportingState extends State<Reporting> {
+
+  TextEditingController searchCtrl = TextEditingController();
+  ValueNotifier<String> searchQuery = ValueNotifier("");
+
+
   TextEditingController dateCtrl = TextEditingController(
       text: "${DateTime.now().day.toString()}-${DateTime.now().month.toString()}-${DateTime.now().year.toString()}");
 
@@ -96,6 +101,27 @@ class _ReportingState extends State<Reporting> {
                 children: [
                   _buildTopBar(),
                   SizedBox(height: 5),
+                  SizedBox(height: 8),
+
+                  TextField(
+                    controller: searchCtrl,
+                    decoration: InputDecoration(
+                      hintText: "Search Case No / Patient Name",
+                      prefixIcon: Icon(Icons.search),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      suffixIcon: IconButton(onPressed: (){searchCtrl.clear();searchQuery.value = "";}, icon: Icon(Icons.close))
+                    ),
+                    onChanged: (val) {
+                      searchQuery.value = val.toLowerCase();
+                    },
+                  ),
+
+                  SizedBox(height: 10),
+
                   _buildCaseList(isMobile: false),
                 ],
               ),
@@ -172,15 +198,58 @@ class _ReportingState extends State<Reporting> {
               );
             }
             if (state is CaseListLoadedState) {
-              return ListView.builder(
-                shrinkWrap: true,
-                itemBuilder: (_, index) {
-                  var mainData = state.caseListModel.caseList![index];
-                  return _buildCaseItem(mainData, index, isMobile);
+
+              return ValueListenableBuilder<String>(
+                valueListenable: searchQuery,
+                builder: (context, query, _) {
+
+                  final filteredList = state.caseListModel.caseList!.where((caseData) {
+
+                    final caseNo =
+                        caseData.caseNo?.toLowerCase() ?? "";
+
+                    final patient =
+                        caseData.patientName?.toLowerCase() ?? "";
+
+                    final mobile =
+                        caseData.mobile?.toLowerCase() ?? "";
+
+                    final tests = caseData.items!
+                        .map((e) => e.testName ?? "")
+                        .join(",")
+                        .toLowerCase();
+
+                    return caseNo.contains(query) ||
+                        patient.contains(query) ||
+                        mobile.contains(query) ||
+                        tests.contains(query);
+
+                  }).toList();
+
+                  if (filteredList.isEmpty) {
+                    return Center(
+                      child: UiHelper.CustText(
+                        text: "No matching records found",
+                        size: 12.sp,
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: filteredList.length,
+                    itemBuilder: (_, index) {
+                      return _buildCaseItem(
+                        filteredList[index],
+                        index,
+                        isMobile,
+                      );
+                    },
+                  );
                 },
-                itemCount: state.caseListModel.caseList!.length,
               );
             }
+
             return Container();
           },
         )

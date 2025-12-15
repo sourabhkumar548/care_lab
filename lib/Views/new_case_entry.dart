@@ -730,6 +730,13 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                               String User = userBox.read("newUser") ?? "";
 
                                               if(CaseEnteryData.agentZero.contains(agentCtrl.text)){
+
+                                                List<String> rateList=[];
+
+                                                for(int i=0;i<testRate.length;i++){
+                                                  rateList.add("0.00");
+                                                }
+
                                                 PrintCaseEntry.printBill(
                                                     receiptNo: receiptNo,
                                                     receiptDate: dateCtrl.text,
@@ -742,7 +749,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                     age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
                                                     referredBy: doctorCtrl.text,
                                                     testName: testNames,
-                                                    testRate: testRate,
+                                                    testRate: rateList,
                                                     date: dateCtrl.text,
                                                     totalAmount: "0",
                                                     discountAmount: "0",
@@ -1481,6 +1488,14 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                       String User = userBox.read("newUser") ?? "";
 
                                                       if(CaseEnteryData.agentZero.contains(agentCtrl.text)){
+
+                                                        List<String> rateList=[];
+
+                                                        for(int i=0;i<testRate.length;i++){
+                                                          rateList.add("0.00");
+                                                        }
+
+
                                                         PrintCaseEntry.printBill(
                                                             receiptNo: receiptNo,
                                                             receiptDate: dateCtrl.text,
@@ -1493,7 +1508,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                             age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
                                                             referredBy: doctorCtrl.text,
                                                             testName: testNames,
-                                                            testRate: testRate,
+                                                            testRate: rateList,
                                                             date: dateCtrl.text,
                                                             totalAmount: "0",
                                                             discountAmount: "0",
