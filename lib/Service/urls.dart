@@ -100,5 +100,8 @@ class Urls {
   static const GetSingleCase = "${BaseUrl}get-single-case/";
 
 
+  static const UpdateCase = "${BaseUrl}update-case/";
+
+
 
 }

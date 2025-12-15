@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:care_lab_software/Helpers/get_doctor_data.dart';
-import 'package:care_lab_software/Views/case_entry_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -206,7 +205,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                          borderSide: BorderSide(color: Colors.red, width: 2),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
@@ -228,7 +227,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                          borderSide: BorderSide(color: Colors.red, width: 2),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
@@ -259,7 +258,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                          borderSide: BorderSide(color: Colors.red, width: 2),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
@@ -288,7 +287,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                          borderSide: BorderSide(color: Colors.red, width: 2),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
@@ -329,7 +328,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                          borderSide: BorderSide(color: Colors.red, width: 2),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
@@ -355,7 +354,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                          borderSide: BorderSide(color: Colors.red, width: 2),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
@@ -391,7 +390,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                     filled: true,
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(color: Colors.green, width: 2),
+                                      borderSide: BorderSide(color: Colors.red, width: 2),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -569,7 +568,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                             filled: true,
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
-                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                              borderSide: BorderSide(color: Colors.red, width: 2),
                                             ),
                                             enabledBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
@@ -610,7 +609,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                             filled: true,
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
-                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                              borderSide: BorderSide(color: Colors.red, width: 2),
                                             ),
                                             enabledBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
@@ -665,7 +664,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                             filled: true,
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
-                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                              borderSide: BorderSide(color: Colors.red, width: 2),
                                             ),
                                             enabledBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
@@ -767,7 +766,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                     testName: testNames,
                                                     testRate: testRate,
                                                     date: dateCtrl.text,
-                                                    totalAmount: TotalAmount,
+                                                    totalAmount: "${double.parse(TotalAmount)-double.parse(discountCtrl.text)}.00",
                                                     discountAmount: "${paidAmount.value.toStringAsFixed(2)}",
                                                     balanceAmount: balance.toString(),
                                                     advanceAmount: Advance,
@@ -810,7 +809,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                 GetStorage userBox = GetStorage();
                                                 String User = userBox.read("newUser") ?? "";
 
-                                                String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" ? "Paid" : "Due";
+                                                String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" || balanceCtrl.text == "0.00" ? "Paid" : "Due";
                                                 List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
                                                 List<int> testRates = selectedTests.map((test) => test["Test Rate"] as int).toList();
                                                 List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
@@ -957,7 +956,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                          borderSide: BorderSide(color: Colors.red, width: 2),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
@@ -979,7 +978,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                          borderSide: BorderSide(color: Colors.red, width: 2),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
@@ -1010,7 +1009,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                          borderSide: BorderSide(color: Colors.red, width: 2),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
@@ -1039,7 +1038,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                          borderSide: BorderSide(color: Colors.red, width: 2),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
@@ -1080,7 +1079,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                          borderSide: BorderSide(color: Colors.red, width: 2),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
@@ -1106,7 +1105,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         filled: true,
                                         focusedBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                          borderSide: BorderSide(color: Colors.red, width: 2),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(10),
@@ -1142,7 +1141,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                     filled: true,
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(color: Colors.green, width: 2),
+                                      borderSide: BorderSide(color: Colors.red, width: 2),
                                     ),
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -1320,7 +1319,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                             filled: true,
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
-                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                              borderSide: BorderSide(color: Colors.red, width: 2),
                                             ),
                                             enabledBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
@@ -1361,7 +1360,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                             filled: true,
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
-                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                              borderSide: BorderSide(color: Colors.red, width: 2),
                                             ),
                                             enabledBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
@@ -1416,7 +1415,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                             filled: true,
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
-                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                              borderSide: BorderSide(color: Colors.red, width: 2),
                                             ),
                                             enabledBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
@@ -1518,7 +1517,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                             testName: testNames,
                                                             testRate: testRate,
                                                             date: dateCtrl.text,
-                                                            totalAmount: TotalAmount,
+                                                            totalAmount: "${double.parse(TotalAmount)-double.parse(discountCtrl.text)}.00",
                                                             discountAmount: "${paidAmount.value.toStringAsFixed(2)}",
                                                             balanceAmount: balance.toString(),
                                                             advanceAmount: Advance,
@@ -1562,7 +1561,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                 String User = userBox.read("newUser") ?? "";
 
 
-                                                String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" ? "Paid" : "Due";
+                                                String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" || balanceCtrl.text == "0.00" ? "Paid" : "Due";
                                                 List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
                                                 List<int> testRates = selectedTests.map((test) => test["Test Rate"] as int).toList();
                                                 List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();

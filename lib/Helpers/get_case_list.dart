@@ -159,8 +159,7 @@ class GetCaseList{
                                               child: IconButton(onPressed: (){
 
                                                 String? status = GetCaseList.pay_status
-                                                    .firstWhere(
-                                                      (element) => element["case_no"] == data.caseNo,
+                                                    .firstWhere((element) => element["case_no"] == data.caseNo,
                                                   orElse: () => {},
                                                 )["status"];
 
@@ -288,7 +287,7 @@ class GetCaseList{
                 ),
                 SizedBox(height: .5.h),
                 UiHelper.CustText(
-                  text: "PH : 0326-2254788   |   Email : ede.dhn@gmail.com",
+                  text: "PH : 9708035306, 9708046999   |   Email : ede.dhn@gmail.com",
                   size: 11.sp,
                   maxline: 3,
                 ),
@@ -400,7 +399,14 @@ class GetCaseList{
 
                   String pay_status = balance == paidCtrl.text ? "Paid" : "Due";
 
-                  String adv = balance == ".00" || balance == "0" || balance == "" ? advance : "${int.parse(advance)+int.parse(paidCtrl.text)}";
+                  // String adv = balance == ".00" || balance == "0" || balance == "" ? advance : "${int.parse(advance)+int.parse(paidCtrl.text)}";
+
+                  String adv =
+                  balance == ".00" || balance == "0" || balance.isEmpty
+                      ? advance
+                      : "${(int.tryParse(advance) ?? 0) + (int.tryParse(paidCtrl.text) ?? 0)}";
+
+
 
                   CaseEntryCtrl.CaseEntry(context : context,case_date: case_date, time: newTime, date: newDate, case_no: case_no, slip_no: receiptNo, received_by: receivedBy, patient_name: patient_name, year: year, month: month, gender: gender, mobile: mobile, child_male: child_male, child_female: child_female, address: address, agent: agent, doctor: doctor, test_name: test_name, test_rate: test_rate, total_amount: total_amount, discount: discount, after_discount: after_discount, advance: adv, balance: "${int.parse(balance) - int.parse(paidCtrl.text)}",paid_amount: paidCtrl.text,pay_status: pay_status, pay_mode: PayMode, discount_type: discount_type,test_date: test_date,test_file: test_file,narration: narration,name_title: name_title);
 

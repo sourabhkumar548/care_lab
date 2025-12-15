@@ -171,6 +171,7 @@ class AddTestDialogState extends State<AddTestDialog> {
                                 toastification.show(
                                   title: UiHelper.CustText(text: "Already selected"),
                                   type: ToastificationType.warning,
+                                  autoCloseDuration: Duration(seconds: 2),
                                   alignment: Alignment.center,
                                   backgroundColor: Colors.orange.shade100,
                                 );

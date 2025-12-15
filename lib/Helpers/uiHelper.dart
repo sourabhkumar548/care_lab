@@ -530,7 +530,7 @@ class UiHelper{
           filled: true,
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.green, width: 2),
+            borderSide: BorderSide(color: Colors.red, width: 2),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
@@ -552,7 +552,7 @@ class UiHelper{
         decoration:  InputDecoration(
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.green, width: 2),
+            borderSide: BorderSide(color: Colors.red, width: 2),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),

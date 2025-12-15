@@ -1,5 +1,7 @@
 import 'dart:math';
 import 'package:care_lab_software/Controllers/GetSingleCase/single_case_cubit.dart';
+import 'package:care_lab_software/Controllers/UpdateCaseCtrl/update_case_bloc.dart';
+import 'package:care_lab_software/Controllers/UpdateCaseCtrl/update_case_ctrl.dart';
 import 'package:care_lab_software/Helpers/get_doctor_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,13 +35,36 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
 
   RxDouble paidAmount = 0.0.obs;
 
+  // ✅ ADD: Store billing controllers as state variables
+  late TextEditingController totalCtrl;
+  late TextEditingController discountCtrl;
+  late TextEditingController afterdiscountCtrl;
+  late TextEditingController advanceCtrl;
+  late TextEditingController balanceCtrl;
+
   @override
   void initState() {
     super.initState();
-    // Initialize billing
+
+    // ✅ Initialize controllers here
+    totalCtrl = TextEditingController();
+    discountCtrl = TextEditingController();
+    afterdiscountCtrl = TextEditingController();
+    advanceCtrl = TextEditingController();
+    balanceCtrl = TextEditingController();
 
     context.read<SingleCaseCubit>().getSingleCase(caseno: widget.case_no);
-    // updateBilling();
+  }
+
+  @override
+  void dispose() {
+    // ✅ Don't forget to dispose controllers
+    totalCtrl.dispose();
+    discountCtrl.dispose();
+    afterdiscountCtrl.dispose();
+    advanceCtrl.dispose();
+    balanceCtrl.dispose();
+    super.dispose();
   }
 
   double total = 0;
@@ -98,14 +123,16 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                   // Parse existing tests
                   List<String> names = data.testName!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
                   List<String> rate = data.testRate!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
+                  List<String> time = data.testDate!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
+                  List<String> file = data.testFile!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
 
                   selectedTests.clear();
                   for (int i = 0; i < names.length && i < rate.length; i++) {
                     selectedTests.add({
                       'Test Name': names[i],
                       'Test Rate': int.tryParse(rate[i]) ?? 0,
-                      'Test Time': '',
-                      'Test File': '',
+                      'Test Time': time[i],
+                      'Test File': file[i],
                     });
                   }
 
@@ -114,19 +141,21 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                   sum + (double.tryParse(test['Test Rate'].toString()) ?? 0)
                   );
 
+                  // ✅ Set initial controller values
+                  double initialTotal = zero ? 0 : AddTestDialogState.totalAmount;
+                  double initialDiscount = double.tryParse(data.discount!) ?? 0;
+                  double initialAfterDiscount = initialTotal - initialDiscount;
+                  double initialAdvance = double.tryParse(data.advance!) ?? 0;
+                  double initialBalance = initialAfterDiscount - initialAdvance;
+
+                  totalCtrl.text = initialTotal.toStringAsFixed(2);
+                  discountCtrl.text = data.discount!;
+                  afterdiscountCtrl.text = initialAfterDiscount.toStringAsFixed(2);
+                  advanceCtrl.text = data.advance!;
+                  balanceCtrl.text = initialBalance.toStringAsFixed(2);
+
                   isInitialized = true;
                 }
-                double initialTotal = zero ? 0 : AddTestDialogState.totalAmount;
-                double initialDiscount = double.tryParse(data.discount!) ?? 0;
-                double initialAfterDiscount = initialTotal - initialDiscount;
-                double initialAdvance = double.tryParse(data.advance!) ?? 0;
-                double initialBalance = initialAfterDiscount - initialAdvance;
-
-                TextEditingController totalCtrl = TextEditingController(text: initialTotal.toStringAsFixed(2));
-                TextEditingController discountCtrl = TextEditingController(text: data.discount);
-                TextEditingController afterdiscountCtrl = TextEditingController(text: initialAfterDiscount.toStringAsFixed(2));
-                TextEditingController advanceCtrl = TextEditingController(text: data.advance);
-                TextEditingController balanceCtrl = TextEditingController(text: initialBalance.toStringAsFixed(2));
 
 
                 String SelectedGender = data.gender!;
@@ -756,9 +785,9 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
-                                          BlocConsumer<CaseEntryBloc, CaseEntryState>(
+                                          BlocConsumer<UpdateCaseBloc, UpdateCaseState>(
                                             listener: (context, state) {
-                                              if(state is CaseEntryLoadedState){
+                                              if(state is UpdateCaseLoadedState){
 
                                                 List<String> testNames = AddTestDialogState.selectedTests.map((item) => item["Test Name"].toString()).toList();
                                                 List<String> testRate = AddTestDialogState.selectedTests.map((item) => item["Test Rate"].toString()).toList();
@@ -776,7 +805,7 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                                   builder: (BuildContext context) {
                                                     return AlertDialog(
                                                       title: UiHelper.CustText(text: "Success",size: 10.5.sp),
-                                                      content: Text("Case Entry Successfully Updated. Do You Print Receipt?"),
+                                                      content: Text("Case Successfully Updated. Do You Print Receipt?"),
                                                       actions: <Widget>[
                                                         TextButton(
                                                           child: const Text("No"),
@@ -835,7 +864,7 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                                                   testName: testNames,
                                                                   testRate: testRate,
                                                                   date: dateCtrl.text,
-                                                                  totalAmount: TotalAmount,
+                                                                  totalAmount: "${double.parse(TotalAmount)-double.parse(discountCtrl.text)}.00",
                                                                   discountAmount: "${paidAmount.value.toStringAsFixed(2)}",
                                                                   balanceAmount: balance.toString(),
                                                                   advanceAmount: Advance,
@@ -862,41 +891,26 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
 
 
                                               }
-                                              if(state is CaseEntryErrorState){
-                                                UiHelper.showErrorToste(message: state.errorMessage);
+                                              if(state is UpdateCaseErrorState){
+                                                UiHelper.showErrorToste(message: state.errorMsg);
                                               }
                                             },
                                             builder: (context, state) {
-                                              if(state is CaseEntryLoadingState){
+                                              if(state is UpdateCaseLoadingState){
                                                 return Center(child: CircularProgressIndicator());
                                               }
                                               return Obx(() {
                                                 return InkWell(
                                                   onTap: (){
-                                                    if(receivedByCtrl.text.isEmpty || receivedByCtrl.text == null){
 
-                                                      GetStorage userBox = GetStorage();
-                                                      String User = userBox.read("newUser") ?? "";
-
-                                                      String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" ? "Paid" : "Due";
+                                                      String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" || balanceCtrl.text == "0.00" ? "Paid" : "Due";
                                                       List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
                                                       List<int> testRates = selectedTests.map((test) => int.tryParse(test["Test Rate"].toString()) ?? 0).toList();
                                                       List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
                                                       List<String> testFile = selectedTests.map((test) => test["Test File"] as String).toList();
 
-                                                      CaseEntryCtrl.CaseEntry(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: User, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: total.toString(), discount: discountAmount.toString(), after_discount: afterDiscount.toString(), advance: advance.toString(), balance: balance.toString(),paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
+                                                      UpdateCaseCtrl.UpdateCase(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: receivedByCtrl.text, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: totalCtrl.text, discount: discountCtrl.text, after_discount: afterdiscountCtrl.text, advance: advanceCtrl.text, balance: balanceCtrl.text,paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
 
-                                                    }
-                                                    else{
-                                                      String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" ? "Paid" : "Due";
-                                                      List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
-                                                      List<int> testRates = selectedTests.map((test) => int.tryParse(test["Test Rate"].toString()) ?? 0).toList();
-                                                      List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
-                                                      List<String> testFile = selectedTests.map((test) => test["Test File"] as String).toList();
-
-                                                      CaseEntryCtrl.CaseEntry(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: receivedByCtrl.text, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: total.toString(), discount: discountAmount.toString(), after_discount: afterDiscount.toString(), advance: advance.toString(), balance: balance.toString(),paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
-
-                                                    }
                                                   },
                                                   child: Card(
                                                     elevation: 5,
@@ -962,14 +976,16 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                 // Parse existing tests
                 List<String> names = data.testName!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
                 List<String> rate = data.testRate!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
+                List<String> time = data.testDate!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
+                List<String> file = data.testFile!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
 
                 selectedTests.clear();
                 for (int i = 0; i < names.length && i < rate.length; i++) {
                   selectedTests.add({
                     'Test Name': names[i],
                     'Test Rate': int.tryParse(rate[i]) ?? 0,
-                    'Test Time': '',
-                    'Test File': '',
+                    'Test Time': time[i],
+                    'Test File': file[i],
                   });
                 }
 
@@ -978,20 +994,21 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                 sum + (double.tryParse(test['Test Rate'].toString()) ?? 0)
                 );
 
+                // ✅ Set initial controller values
+                double initialTotal = zero ? 0 : AddTestDialogState.totalAmount;
+                double initialDiscount = double.tryParse(data.discount!) ?? 0;
+                double initialAfterDiscount = initialTotal - initialDiscount;
+                double initialAdvance = double.tryParse(data.advance!) ?? 0;
+                double initialBalance = initialAfterDiscount - initialAdvance;
+
+                totalCtrl.text = initialTotal.toStringAsFixed(2);
+                discountCtrl.text = data.discount!;
+                afterdiscountCtrl.text = initialAfterDiscount.toStringAsFixed(2);
+                advanceCtrl.text = data.advance!;
+                balanceCtrl.text = initialBalance.toStringAsFixed(2);
+
                 isInitialized = true;
               }
-              double initialTotal = zero ? 0 : AddTestDialogState.totalAmount;
-              double initialDiscount = double.tryParse(data.discount!) ?? 0;
-              double initialAfterDiscount = initialTotal - initialDiscount;
-              double initialAdvance = double.tryParse(data.advance!) ?? 0;
-              double initialBalance = initialAfterDiscount - initialAdvance;
-
-              TextEditingController totalCtrl = TextEditingController(text: initialTotal.toStringAsFixed(2));
-              TextEditingController discountCtrl = TextEditingController(text: data.discount);
-              TextEditingController afterdiscountCtrl = TextEditingController(text: initialAfterDiscount.toStringAsFixed(2));
-              TextEditingController advanceCtrl = TextEditingController(text: data.advance);
-              TextEditingController balanceCtrl = TextEditingController(text: initialBalance.toStringAsFixed(2));
-
 
               String SelectedGender = data.gender!;
               String PayMode = data.payMode!;
@@ -1618,9 +1635,9 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.end,
                                           children: [
-                                            BlocConsumer<CaseEntryBloc, CaseEntryState>(
+                                            BlocConsumer<UpdateCaseBloc, UpdateCaseState>(
                                               listener: (context, state) {
-                                                if(state is CaseEntryLoadedState){
+                                                if(state is UpdateCaseLoadedState){
 
                                                   List<String> testNames = AddTestDialogState.selectedTests.map((item) => item["Test Name"].toString()).toList();
                                                   List<String> testRate = AddTestDialogState.selectedTests.map((item) => item["Test Rate"].toString()).toList();
@@ -1638,7 +1655,7 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                                     builder: (BuildContext context) {
                                                       return AlertDialog(
                                                         title: UiHelper.CustText(text: "Success",size: 10.5.sp),
-                                                        content: Text("Case Entry Successfully Updated. Do You Print Receipt?"),
+                                                        content: Text("Case Successfully Updated. Do You Print Receipt?"),
                                                         actions: <Widget>[
                                                           TextButton(
                                                             child: const Text("No"),
@@ -1697,7 +1714,7 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                                                     testName: testNames,
                                                                     testRate: testRate,
                                                                     date: dateCtrl.text,
-                                                                    totalAmount: TotalAmount,
+                                                                    totalAmount: "${double.parse(TotalAmount)-double.parse(discountCtrl.text)}.00",
                                                                     discountAmount: "${paidAmount.value.toStringAsFixed(2)}",
                                                                     balanceAmount: balance.toString(),
                                                                     advanceAmount: Advance,
@@ -1724,41 +1741,26 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
 
 
                                                 }
-                                                if(state is CaseEntryErrorState){
-                                                  UiHelper.showErrorToste(message: state.errorMessage);
+                                                if(state is UpdateCaseErrorState){
+                                                  UiHelper.showErrorToste(message: state.errorMsg);
                                                 }
                                               },
                                               builder: (context, state) {
-                                                if(state is CaseEntryLoadingState){
+                                                if(state is UpdateCaseLoadingState){
                                                   return Center(child: CircularProgressIndicator());
                                                 }
                                                 return Obx(() {
                                                   return InkWell(
                                                     onTap: (){
-                                                      if(receivedByCtrl.text.isEmpty || receivedByCtrl.text == null){
 
-                                                        GetStorage userBox = GetStorage();
-                                                        String User = userBox.read("newUser") ?? "";
-
-                                                        String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" ? "Paid" : "Due";
+                                                        String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" || balanceCtrl.text == "0.00" ? "Paid" : "Due";
                                                         List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
                                                         List<int> testRates = selectedTests.map((test) => int.tryParse(test["Test Rate"].toString()) ?? 0).toList();
                                                         List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
                                                         List<String> testFile = selectedTests.map((test) => test["Test File"] as String).toList();
 
-                                                        CaseEntryCtrl.CaseEntry(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: User, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: total.toString(), discount: discountAmount.toString(), after_discount: afterDiscount.toString(), advance: advance.toString(), balance: balance.toString(),paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
+                                                        UpdateCaseCtrl.UpdateCase(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: receivedByCtrl.text, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: totalCtrl.text, discount: discountCtrl.text, after_discount: afterdiscountCtrl.text, advance: advanceCtrl.text, balance: balanceCtrl.text,paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
 
-                                                      }
-                                                      else{
-                                                        String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" ? "Paid" : "Due";
-                                                        List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
-                                                        List<int> testRates = selectedTests.map((test) => int.tryParse(test["Test Rate"].toString()) ?? 0).toList();
-                                                        List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
-                                                        List<String> testFile = selectedTests.map((test) => test["Test File"] as String).toList();
-
-                                                        CaseEntryCtrl.CaseEntry(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: receivedByCtrl.text, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: total.toString(), discount: discountAmount.toString(), after_discount: afterDiscount.toString(), advance: advance.toString(), balance: balance.toString(),paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
-
-                                                      }
                                                     },
                                                     child: Card(
                                                       elevation: 5,

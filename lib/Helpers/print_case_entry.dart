@@ -221,7 +221,7 @@ class PrintCaseEntry {
                             "Discount Amount : ",
                             style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                         pw.Text(
-                            "${mainAmount - int.parse(totalAmount)}.00",
+                            "${mainAmount - double.parse(totalAmount)}",
                             style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                       ]),
 
@@ -229,10 +229,10 @@ class PrintCaseEntry {
                           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                           children: [
                             pw.Text(
-                                "Total Paid Amount : ",
+                                "Payable Amount : ",
                                 style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                             pw.Text(
-                                "${totalAmount}.00",
+                                "${totalAmount}",
                                 style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                       ]),
 
@@ -260,11 +260,12 @@ class PrintCaseEntry {
                                 style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
 
                             balanceAmount == ".00" ||
+                            balanceAmount == "0.00" ||
                                 balanceAmount == "0"
                             ?  pw.Text("Full & Final Payment Received",
                                 style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold))
                             : pw.Text(
-                                "Due Amount : ${balanceAmount}.00",
+                                "Due Amount : ${balanceAmount}",
                                 style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                           ]),
                       pw.Row(
