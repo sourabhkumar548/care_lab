@@ -22,6 +22,14 @@ class _RateListManagementState extends State<RateListManagement> {
   TextEditingController searchCtrl = TextEditingController();
   String searchText = "";
 
+  void _refreshData() {
+    context.read<RateListCubit>().GetRateList();
+    setState(() {
+      searchText = "";
+      searchCtrl.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,9 +53,38 @@ class _RateListManagementState extends State<RateListManagement> {
                 child: ListView(
                   children: [
                     UiHelper.CustTopBar(title: "Rate List Management",
-                        widget: SizedBox(width: 300,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 10),
+                      widget: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 300,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(color: Colors.black12, blurRadius: 4),
+                                ],
+                              ),
+                              child: TextField(
+                                controller: searchCtrl,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "Search Test Name...",
+                                  icon: Icon(Icons.search),
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    searchText = value.trim().toLowerCase();
+                                    currentPage = 0;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
@@ -55,22 +92,14 @@ class _RateListManagementState extends State<RateListManagement> {
                                 BoxShadow(color: Colors.black12, blurRadius: 4),
                               ],
                             ),
-                            child: TextField(
-                              controller: searchCtrl,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: "Search Test Name...",
-                                icon: Icon(Icons.search),
-                              ),
-                              onChanged: (value) {
-                                setState(() {
-                                  searchText = value.trim().toLowerCase();
-                                  currentPage = 0; // Reset to first page after search
-                                });
-                              },
+                            child: IconButton(
+                              icon: Icon(Icons.refresh, color: Colors.blue),
+                              onPressed: _refreshData,
+                              tooltip: "Refresh",
                             ),
                           ),
-                        ),
+                        ],
+                      ),
                     ),
 
                     const SizedBox(height: 20,),
@@ -260,8 +289,11 @@ class _RateListManagementState extends State<RateListManagement> {
                 padding: const EdgeInsets.all(10.0),
                 child: ListView(
                   children: [
-                      UiHelper.CustTopBar(title: "Rate List Management",
-                          widget: SizedBox(
+                    UiHelper.CustTopBar(title: "Rate List Management",
+                      widget: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
                             width: 300,
                             child: Container(
                               padding: EdgeInsets.symmetric(horizontal: 10),
@@ -282,48 +314,65 @@ class _RateListManagementState extends State<RateListManagement> {
                                 onChanged: (value) {
                                   setState(() {
                                     searchText = value.trim().toLowerCase();
-                                    currentPage = 0; // Reset to first page after search
+                                    currentPage = 0;
                                   });
                                 },
                               ),
                             ),
                           ),
+                          SizedBox(width: 10),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(color: Colors.black12, blurRadius: 4),
+                              ],
+                            ),
+                            child: IconButton(
+                              icon: Icon(Icons.refresh, color: Colors.blue),
+                              onPressed: _refreshData,
+                              tooltip: "Refresh",
+                            ),
+                          ),
+                        ],
                       ),
+                    ),
 
-                const SizedBox(height: 20,),
-                Container(
-                  color: Colors.blue.shade200,
-                  child: Table(
-                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                    border: TableBorder.all(width: 0.5, color: Colors.black),
-                    columnWidths: {
-                        0 : FlexColumnWidth(.5),
-                        1 : FlexColumnWidth(4),
-                        2 : FlexColumnWidth(2),
-                        3 : FlexColumnWidth(1),
-                        4 : FlexColumnWidth(1),
-                        5 : FlexColumnWidth(3),
-                        6 : FlexColumnWidth(1),
-                    },
-                    children: [
-                      TableRow(children: [
-                        SizedBox(
-                            height: 40,
-                            child: Center(child: UiHelper.CustText(text: "Sno"))),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: UiHelper.CustText(text: "Test Name"),
-                        ),
-                        Center(child: UiHelper.CustText(text: "Department")),
-                        Center(child: UiHelper.CustText(text: "Rate")),
-                        Center(child: UiHelper.CustText(text: "Report Time")),
-                        Center(child: UiHelper.CustText(text: "File")),
-                        Center(child: UiHelper.CustText(text: "Action")),
-                      ])
-                    ],
-                  ),
-                ),
-                BlocBuilder<RateListCubit, RateListState>(
+                    const SizedBox(height: 20,),
+                    Container(
+                      color: Colors.blue.shade200,
+                      child: Table(
+                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                        border: TableBorder.all(width: 0.5, color: Colors.black),
+                        columnWidths: {
+                          0 : FlexColumnWidth(.5),
+                          1 : FlexColumnWidth(4),
+                          2 : FlexColumnWidth(2),
+                          3 : FlexColumnWidth(1),
+                          4 : FlexColumnWidth(1),
+                          5 : FlexColumnWidth(3),
+                          6 : FlexColumnWidth(1),
+                        },
+                        children: [
+                          TableRow(children: [
+                            SizedBox(
+                                height: 40,
+                                child: Center(child: UiHelper.CustText(text: "Sno"))),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              child: UiHelper.CustText(text: "Test Name"),
+                            ),
+                            Center(child: UiHelper.CustText(text: "Department")),
+                            Center(child: UiHelper.CustText(text: "Rate")),
+                            Center(child: UiHelper.CustText(text: "Report Time")),
+                            Center(child: UiHelper.CustText(text: "File")),
+                            Center(child: UiHelper.CustText(text: "Action")),
+                          ])
+                        ],
+                      ),
+                    ),
+                    BlocBuilder<RateListCubit, RateListState>(
                       builder: (context, state) {
                         if(state is RateListLoadingState){
                           return Center(child: CircularProgressIndicator(),);

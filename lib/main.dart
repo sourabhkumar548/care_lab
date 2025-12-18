@@ -42,6 +42,7 @@ import 'Views/case_entry_list.dart';
 import 'Views/dashboard.dart';
 import 'Helpers/get_doctor_data.dart';
 import 'Views/loginscreen.dart';
+import 'Views/monthly_list.dart';
 import 'Views/new_case_entry.dart';
 import 'Views/reporting.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -109,6 +110,7 @@ class MyApp extends StatelessWidget {
                   "/agent_collection": (context) => AgentCollection(),
                   "/collection_between_date": (context) => CollectionBetweenDate(),
                   "/expanses": (context) => Expanses(),
+                  "/sale_report": (context) => SaleReport(),
                 },
               ),
             ),

@@ -109,10 +109,10 @@ class GetCaseList{
 
                       GetCaseList.pay_status.add({
                         "case_no": caseData.caseNo,
-                        "status": caseData.balance == "0" ? "Paid" : "Due"
+                        "status": caseData.balance == "0" || caseData.balance == ".00" || caseData.balance == "0.00"  ? "Paid" : "Due"
                       });
 
-                      /// ⬇️ BELOW CODE IS 100% SAME AS YOURS
+                      /// ⬇️ BELOW CODE IS 100% SAME AS YOURS00
                       return Container(
                         margin: EdgeInsets.only(bottom: 5),
                         color: index%2 == 0 ? Colors.grey.shade200 : Colors.white70,
@@ -133,7 +133,7 @@ class GetCaseList{
                               Center(child: UiHelper.CustText(text: "Mobile : ${caseData.mobile!}",size: 12.sp)),
                               Center(child: UiHelper.CustText(text: "Case Date : ${caseData.date}",size: 12.sp)),
                               Center(child: UiHelper.CustText(text: "Total Amt : ${caseData.afterDiscount!}",size: 12.sp)),
-                              Center(child: UiHelper.CustText(text: "Status : ${caseData.balance! == "0" ? "Paid" : "Due"}",size: 12.sp)),
+                              Center(child: UiHelper.CustText(text: "Status : ${caseData.balance! == "0"|| caseData.balance! == ".00" || caseData.balance! == "0.00" ? "Paid" : "Due"}",size: 12.sp)),
                               Center(child: Row(
                                 children: [
 
@@ -151,7 +151,7 @@ class GetCaseList{
                                           name: caseData.patientName!,
                                           total: caseData.afterDiscount!,
                                           balance: caseData.balance!,
-                                          status: "${caseData.balance! == "0" ? "Paid" : "Due"}"
+                                          status: "${caseData.balance! == "0" || caseData.balance! == ".00" || caseData.balance! == "0.00" ? "Paid" : "Due"}"
 
                                       ), icon  : Icon(Icons.list,color: Colors.blue.shade600,))),
                                 ],

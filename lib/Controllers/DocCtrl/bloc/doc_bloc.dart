@@ -32,7 +32,7 @@ class DocBloc extends Bloc<DocEvent, DocState> {
           emit(DocLoadedState(fileUrl: response.body));
         }
         else{
-          emit(DocErrorState(errorMsg: "Error...!"));
+          emit(DocErrorState(errorMsg: "Error Occurred"));
         }
       }
       on SocketException catch(e){

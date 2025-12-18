@@ -156,8 +156,12 @@ class PrintCaseEntry {
                     padding: const pw.EdgeInsets.symmetric(
                         horizontal: 10, vertical: 3),
                     child: pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                       children: [
                         pw.Text("Referred By : $referredBy",
+                            style: pw.TextStyle(fontSize: 9.5.sp)),
+
+                        pw.Text("Mobile No : ${mobile != "0" ? mobile : "N/A"}",
                             style: pw.TextStyle(fontSize: 9.5.sp)),
                       ],
                     ),

@@ -91,7 +91,7 @@ class _LabLoginScreenState extends State<LabLoginScreen> {
             ),
             const SizedBox(height: 10),
             Text(
-              "Care Diagnostic Center",
+              "Care Diagnostic Centre",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 22.sp,
