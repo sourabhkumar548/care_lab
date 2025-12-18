@@ -472,7 +472,7 @@ class GetCaseList{
 
 
 
-                  CaseEntryCtrl.CaseEntry(context : context,case_date: case_date, time: newTime, date: newDate, case_no: case_no, slip_no: receiptNo, received_by: receivedBy, patient_name: patient_name, year: year, month: month, gender: gender, mobile: mobile, child_male: child_male, child_female: child_female, address: address, agent: agent, doctor: doctor, test_name: test_name, test_rate: test_rate, total_amount: total_amount, discount: discount, after_discount: after_discount, advance: adv, balance: "${int.parse(balance) - int.parse(paidCtrl.text)}",paid_amount: paidCtrl.text,pay_status: pay_status, pay_mode: PayMode, discount_type: discount_type,test_date: test_date,test_file: test_file,narration: narration,name_title: name_title);
+                  CaseEntryCtrl.CaseEntry(context : context,case_date: case_date, time: newTime, date: newDate, case_no: case_no, slip_no: receiptNo, received_by: receivedBy, patient_name: patient_name, year: year, month: month, gender: gender, mobile: mobile, child_male: child_male, child_female: child_female, address: address, agent: agent, doctor: doctor, test_name: test_name, test_rate: test_rate, total_amount: total_amount, discount: discount, after_discount: after_discount, advance: adv, balance: "${double.parse(balance) - double.parse(paidCtrl.text)}",paid_amount: paidCtrl.text,pay_status: pay_status, pay_mode: PayMode, discount_type: discount_type,test_date: test_date,test_file: test_file,narration: narration,name_title: name_title);
 
 
                 }, child: UiHelper.CustText(text: "Pay Now",fontfamily: 'font-bold',size: 12.sp,color: Colors.green),);
