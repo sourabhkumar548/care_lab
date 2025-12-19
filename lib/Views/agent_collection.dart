@@ -1,4 +1,5 @@
 import 'package:care_lab_software/Controllers/AgentCollectionCtrl/agent_collection_cubit.dart';
+import 'package:care_lab_software/Views/monthly_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
@@ -16,40 +17,9 @@ class AgentCollection extends StatefulWidget {
 
 class _AgentCollectionState extends State<AgentCollection> {
 
-  TextEditingController agentCtrl = TextEditingController(text: "0");
-  TextEditingController dateCtrl = TextEditingController(text: "0");
-
-  String Selectedyear="0";
-  String Selectedmonth="0";
-
-  List<DropdownMenuItem<String>> yearList = [
-    DropdownMenuItem(value: "0", child: Text("None")),
-    DropdownMenuItem(value: "2020", child: Text("2020")),
-    DropdownMenuItem(value: "2021", child: Text("2021")),
-    DropdownMenuItem(value: "2022", child: Text("2022")),
-    DropdownMenuItem(value: "2023", child: Text("2023")),
-    DropdownMenuItem(value: "2024", child: Text("2024")),
-    DropdownMenuItem(value: "2025", child: Text("2025")),
-    DropdownMenuItem(value: "2026", child: Text("2026")),
-  ];
-
-  List<DropdownMenuItem<String>> monthList = [
-    DropdownMenuItem(value: "0", child: Text("None")),
-    DropdownMenuItem(value: "1", child: Text("January")),
-    DropdownMenuItem(value: "2", child: Text("February")),
-    DropdownMenuItem(value: "3", child: Text("March")),
-    DropdownMenuItem(value: "4", child: Text("April")),
-    DropdownMenuItem(value: "5", child: Text("May")),
-    DropdownMenuItem(value: "6", child: Text("June")),
-    DropdownMenuItem(value: "7", child: Text("July")),
-    DropdownMenuItem(value: "8", child: Text("August")),
-    DropdownMenuItem(value: "9", child: Text("September")),
-    DropdownMenuItem(value: "10", child: Text("October")),
-    DropdownMenuItem(value: "11", child: Text("November")),
-    DropdownMenuItem(value: "12", child: Text("December")),
-  ];
-
-
+  TextEditingController agentCtrl = TextEditingController();
+  TextEditingController fromdateCtrl = TextEditingController();
+  TextEditingController todateCtrl = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -79,10 +49,10 @@ class _AgentCollectionState extends State<AgentCollection> {
                     Row(children: [
                       Expanded(
                         child: TextField(
-                          controller: dateCtrl,
+                          controller: fromdateCtrl,
                           style: TextStyle(color: Colors.black),
                           decoration: InputDecoration(
-                              labelText: "Select Date",
+                              labelText: "Select From Date",
                               filled: true,
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -102,12 +72,47 @@ class _AgentCollectionState extends State<AgentCollection> {
                                     if (pickedDate != null) {
                                       String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
                                       setState(() {
-                                        dateCtrl.text = formattedDate;
+                                        fromdateCtrl.text = formattedDate;
                                       });
 
                                     }
                                   },
-                                  child: Icon(Icons.search,))
+                                  child: Icon(Icons.calendar_month,))
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      Expanded(
+                        child: TextField(
+                          controller: todateCtrl,
+                          style: TextStyle(color: Colors.black),
+                          decoration: InputDecoration(
+                              labelText: "Select To Date",
+                              filled: true,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.green, width: 2),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                              ),
+                              fillColor: Colors.grey.shade100,
+                              labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                              prefixIcon: Icon(Icons.calendar_month),
+                              suffixIcon: GestureDetector(
+                                  onTap: ()async{
+                                    DateTime? pickedDate = await showOmniDateTimePicker(context: context,type: OmniDateTimePickerType.date,);
+
+                                    if (pickedDate != null) {
+                                      String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+                                      setState(() {
+                                        todateCtrl.text = formattedDate;
+                                      });
+
+                                    }
+                                  },
+                                  child: Icon(Icons.calendar_month,))
                           ),
                         ),
                       ),
@@ -136,96 +141,16 @@ class _AgentCollectionState extends State<AgentCollection> {
                         ),
                       ),
                       const SizedBox(width: 10,),
-                      UiHelper.CustDropDown(label: "Select Month", defaultValue: "0", list: monthList, onChanged: (val){
-                        setState(() {
-                          Selectedmonth = val!;
-                        });
-                      }),
-                      const SizedBox(width: 10,),
-                      UiHelper.CustDropDown(label: "Select Year", defaultValue: "0", list: yearList, onChanged: (val){
-                        setState(() {
-                          Selectedyear = val!;
-                        });
-                      }),
-                      const SizedBox(width: 10,),
                       GestureDetector(
-                        onTap: ()=>context.read<AgentCollectionCubit>().getAgentCollection(date: dateCtrl.text,month: Selectedmonth,year: Selectedyear,agent: agentCtrl.text),
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_)=>SaleReport(fromDate: fromdateCtrl.text, toDate: todateCtrl.text, agentName: agentCtrl.text,))),
                         child: Container(
                           height: 50,
                           width: 200,
                           decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(30)),color: Colors.green),
-                          child: Center(child: UiHelper.CustText(text: "Search Agent",color: Colors.white,size: 11.sp)),
+                          child: Center(child: UiHelper.CustText(text: "Get Collection",color: Colors.white,size: 11.sp)),
                         ),
                       ),
                     ],),
-
-                    BlocBuilder<AgentCollectionCubit, AgentCollectionState>(
-                      builder: (context, state) {
-                        if(state is AgentCollectionLoadingState){
-                          return Center(child: CircularProgressIndicator());
-                        }
-                        if(state is AgentCollectionErrorState){
-                          return Center(child: UiHelper.CustText(text: state.errorMsg));
-                        }
-                        if(state is AgentCollectionLoadedState){
-
-                          var list = state.agentCollectionModel.agentWise;
-
-                          return SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Padding(
-                                padding: const EdgeInsets.only(top: 20),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        UiHelper.CustText(
-                                            text: "Total Collection : ₹${state.agentCollectionModel.totalCollection}.00"
-                                        )
-                                      ],
-                                    ),
-
-                                    const SizedBox(height: 10),
-
-                                    Center(
-                                      child: SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: Card(
-                                          color: Colors.white,
-                                          child: DataTable(
-                                            columns: const [
-                                              DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
-                                              DataColumn(label: Text("Agent Name", style: TextStyle(fontWeight: FontWeight.bold))),
-                                              DataColumn(label: Text("Patient Count", style: TextStyle(fontWeight: FontWeight.bold))),
-                                              DataColumn(label: Text("Collection Amount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                            ],
-                                            rows: List.generate(list.length, (index) {
-                                              var data = list[index];
-
-                                              return DataRow(cells: [
-                                                DataCell(Text("${index + 1}")),
-                                                DataCell(Text(data.agent)),
-                                                DataCell(Center(child: Text(data.patientCount.toString()))),
-                                                DataCell(Center(child: Text("₹${data.totalCollection}.00")))
-                                              ]);
-                                            }),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-
-                            ),
-                          );
-                        }
-                        return Container();
-                      },
-                    )
-
-
-
                   ],
                 ),
               ),
@@ -256,10 +181,10 @@ class _AgentCollectionState extends State<AgentCollection> {
                     Row(children: [
                       Expanded(
                         child: TextField(
-                          controller: dateCtrl,
+                          controller: fromdateCtrl,
                           style: TextStyle(color: Colors.black),
                           decoration: InputDecoration(
-                              labelText: "Select Date",
+                              labelText: "Select From Date",
                               filled: true,
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -279,12 +204,47 @@ class _AgentCollectionState extends State<AgentCollection> {
                                     if (pickedDate != null) {
                                       String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
                                       setState(() {
-                                        dateCtrl.text = formattedDate;
+                                        fromdateCtrl.text = formattedDate;
                                       });
 
                                     }
                                   },
-                                  child: Icon(Icons.search,))
+                                  child: Icon(Icons.calendar_month,))
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10,),
+                      Expanded(
+                        child: TextField(
+                          controller: todateCtrl,
+                          style: TextStyle(color: Colors.black),
+                          decoration: InputDecoration(
+                              labelText: "Select To Date",
+                              filled: true,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.green, width: 2),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                              ),
+                              fillColor: Colors.grey.shade100,
+                              labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                              prefixIcon: Icon(Icons.calendar_month),
+                              suffixIcon: GestureDetector(
+                                  onTap: ()async{
+                                    DateTime? pickedDate = await showOmniDateTimePicker(context: context,type: OmniDateTimePickerType.date,);
+
+                                    if (pickedDate != null) {
+                                      String formattedDate = "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+                                      setState(() {
+                                        todateCtrl.text = formattedDate;
+                                      });
+
+                                    }
+                                  },
+                                  child: Icon(Icons.calendar_month,))
                           ),
                         ),
                       ),
@@ -313,95 +273,16 @@ class _AgentCollectionState extends State<AgentCollection> {
                         ),
                       ),
                       const SizedBox(width: 10,),
-                      UiHelper.CustDropDown(label: "Select Month", defaultValue: "0", list: monthList, onChanged: (val){
-                        setState(() {
-                          Selectedmonth = val!;
-                        });
-                      }),
-                      const SizedBox(width: 10,),
-                      UiHelper.CustDropDown(label: "Select Year", defaultValue: "0", list: yearList, onChanged: (val){
-                        setState(() {
-                          Selectedyear = val!;
-                        });
-                      }),
-                      const SizedBox(width: 10,),
                        GestureDetector(
-                         onTap: ()=>context.read<AgentCollectionCubit>().getAgentCollection(date: dateCtrl.text,month: Selectedmonth,year: Selectedyear,agent: agentCtrl.text),
+                         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_)=>SaleReport(fromDate: fromdateCtrl.text, toDate: todateCtrl.text, agentName: agentCtrl.text,))),
                          child: Container(
                             height: 50,
                             width: 200,
                             decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(30)),color: Colors.green),
-                           child: Center(child: UiHelper.CustText(text: "Search Agent",color: Colors.white,size: 11.sp)),
+                           child: Center(child: UiHelper.CustText(text: "Get Collection",color: Colors.white,size: 11.sp)),
                           ),
                        ),
                     ],),
-
-                    BlocBuilder<AgentCollectionCubit, AgentCollectionState>(
-                      builder: (context, state) {
-                        if(state is AgentCollectionLoadingState){
-                          return Center(child: CircularProgressIndicator());
-                        }
-                        if(state is AgentCollectionErrorState){
-                          return Center(child: UiHelper.CustText(text: state.errorMsg));
-                        }
-                        if(state is AgentCollectionLoadedState){
-
-                          var list = state.agentCollectionModel.agentWise;
-
-                          return SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Padding(
-                                padding: const EdgeInsets.only(top: 20),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        UiHelper.CustText(
-                                            text: "Total Collection : ₹${state.agentCollectionModel.totalCollection}.00"
-                                        )
-                                      ],
-                                    ),
-
-                                    const SizedBox(height: 10),
-
-                                    Center(
-                                      child: SingleChildScrollView(
-                                        scrollDirection: Axis.horizontal,
-                                        child: Card(
-                                          color: Colors.white,
-                                          child: DataTable(
-                                            columns: const [
-                                              DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
-                                              DataColumn(label: Text("Agent Name", style: TextStyle(fontWeight: FontWeight.bold))),
-                                              DataColumn(label: Text("Patient Count", style: TextStyle(fontWeight: FontWeight.bold))),
-                                              DataColumn(label: Text("Collection Amount", style: TextStyle(fontWeight: FontWeight.bold))),
-                                            ],
-                                            rows: List.generate(list.length, (index) {
-                                              var data = list[index];
-
-                                              return DataRow(cells: [
-                                                DataCell(Text("${index + 1}")),
-                                                DataCell(Text(data.agent)),
-                                                DataCell(Center(child: Text(data.patientCount.toString()))),
-                                                DataCell(Center(child: Text("₹${data.totalCollection}.00")))
-                                              ]);
-                                            }),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                )
-
-                            ),
-                          );
-                        }
-                        return Container();
-                      },
-                    )
-
-
 
                   ],
                 ),

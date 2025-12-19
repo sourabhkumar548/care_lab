@@ -110,7 +110,6 @@ class MyApp extends StatelessWidget {
                   "/agent_collection": (context) => AgentCollection(),
                   "/collection_between_date": (context) => CollectionBetweenDate(),
                   "/expanses": (context) => Expanses(),
-                  "/sale_report": (context) => SaleReport(),
                 },
               ),
             ),

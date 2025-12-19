@@ -6,8 +6,8 @@ sealed class AgentCollectionState {}
 final class AgentCollectionInitialState extends AgentCollectionState {}
 final class AgentCollectionLoadingState extends AgentCollectionState {}
 final class AgentCollectionLoadedState extends AgentCollectionState {
-  final AgentCollectionModel agentCollectionModel;
-  AgentCollectionLoadedState({required this.agentCollectionModel});
+  final SaleModel saleModel;
+  AgentCollectionLoadedState({required this.saleModel});
 }
 final class AgentCollectionErrorState extends AgentCollectionState {
   final String errorMsg;
