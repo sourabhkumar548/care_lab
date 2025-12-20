@@ -1,3 +1,4 @@
+import 'dart:convert';
 
 import 'package:care_lab_software/Controllers/AgentCollectionCtrl/agent_collection_cubit.dart';
 import 'package:care_lab_software/Controllers/DoctorCollectionCtrl/doctor_collection_cubit.dart';
@@ -13,26 +14,25 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:sizer/sizer.dart';
 
-class SaleReport extends StatelessWidget {
+class DoctorSaleReport extends StatelessWidget {
   String fromDate;
   String toDate;
-  String agentName;
+  String doctorName;
 
-  SaleReport({
+  DoctorSaleReport({
     super.key,
     required this.fromDate,
     required this.toDate,
-    required this.agentName,
+    required this.doctorName
   });
 
   @override
   Widget build(BuildContext context) {
 
-
-    context.read<AgentCollectionCubit>().getAgentCollection(
+    context.read<DoctorCollectionCubit>().getDoctorCollection(
       fromdate: fromDate,
       todate: toDate,
-      agent: agentName,
+      doctor: doctorName,
     );
 
     return Scaffold(
@@ -42,12 +42,12 @@ class SaleReport extends StatelessWidget {
             onTap: (){
               Navigator.popUntil(
                 context,
-                ModalRoute.withName('/agent_collection'),
+                ModalRoute.withName('/doctor_collection'),
               );
 
             },
             child: Icon(Icons.arrow_back,color: Colors.black,)),
-        title: Text('Agent Wise Sale Report ( From :   $fromDate   To :   $toDate )',style: TextStyle(fontWeight: FontWeight.bold),),
+        title: Text('Doctor Wise Sale Report ( From :   $fromDate   To :   $toDate )',style: TextStyle(fontWeight: FontWeight.bold),),
         actions: [
           IconButton(
             icon: Icon(Icons.table_chart),
@@ -76,19 +76,19 @@ class SaleReport extends StatelessWidget {
                 /// ---------- AGENT NAME ----------
                 Center(
                   child: Text(
-                    "Agent Name : $agentName",
+                    "Doctor Name : $doctorName",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp,color: Colors.blue),
                   ),
                 ),
                 const SizedBox(height: 12),
 
                 /// ---------- TABLE ----------
-                BlocBuilder<AgentCollectionCubit, AgentCollectionState>(
+                BlocBuilder<DoctorCollectionCubit, DoctorCollectionState>(
                   builder: (context, state) {
-                    if (state is AgentCollectionLoadingState) {
+                    if (state is DoctorCollectionLoadingState) {
                       return Center(child: CircularProgressIndicator());
                     }
-                    if (state is AgentCollectionErrorState) {
+                    if (state is DoctorCollectionErrorState) {
                       return Center(
                         child: UiHelper.CustText(
                           text: state.errorMsg,
@@ -96,7 +96,7 @@ class SaleReport extends StatelessWidget {
                         ),
                       );
                     }
-                    if (state is AgentCollectionLoadedState) {
+                    if (state is DoctorCollectionLoadedState) {
                       return Column(
                         children: [
                           _buildTable(state),
@@ -167,7 +167,7 @@ class SaleReport extends StatelessWidget {
     );
   }
 
-  Widget _buildTable(AgentCollectionLoadedState state) {
+  Widget _buildTable(DoctorCollectionLoadedState state) {
     // Safely handle data list
     final dataList = state.saleModel.data ?? [];
 
@@ -209,7 +209,7 @@ class SaleReport extends StatelessWidget {
               _tableCell(data.caseNo?.toString() ?? ''),
               _tableCell(data.caseDate?.toString() ?? ''),
               _tableCell(data.patientName?.toString() ?? ''),
-              _tableCell("* ${data.testName?.toString()}".replaceAll(",", "\n*").replaceAll("[", "").replaceAll("]", "") ?? ''),
+              _tableCell("* ${data.testName?.toString()}".replaceAll(",", "\n*").replaceAll("[", "").replaceAll("]", "")),
               _tableCell(data.totalAmount?.toString() ?? '', align: TextAlign.right),
               _tableCell(data.discount?.toString() ?? '', align: TextAlign.right),
               _tableCell(data.afterDiscount?.toString() ?? '', align: TextAlign.right),
@@ -256,7 +256,7 @@ class SaleReport extends StatelessWidget {
         ),
         pw.SizedBox(height: 12),
         pw.Text(
-          "AGENT WISE SALE REPORT (DETAIL)",
+          "DOCTOR WISE SALE REPORT (DETAIL)",
           style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
         ),
         pw.SizedBox(height: 6),
@@ -268,7 +268,7 @@ class SaleReport extends StatelessWidget {
         pw.Align(
           alignment: pw.Alignment.centerLeft,
           child: pw.Text(
-            "Agent Name : $agentName",
+            "Doctor Name : $doctorName",
             style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 13),
           ),
         ),
@@ -276,10 +276,10 @@ class SaleReport extends StatelessWidget {
       ],
     );
   }
-  
+
   Future<void> _printReport(BuildContext context) async {
-    final state = context.read<AgentCollectionCubit>().state;
-    if (state is! AgentCollectionLoadedState) {
+    final state = context.read<DoctorCollectionCubit>().state;
+    if (state is! DoctorCollectionLoadedState) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('No data available to print')),
       );
@@ -464,7 +464,7 @@ class SaleReport extends StatelessWidget {
                             fontSize: 14, fontWeight: pw.FontWeight.bold),
                       ),
                       pw.Text(
-                        "Agent: $agentName | Period: $fromDate - $toDate",
+                        "Doctor: $doctorName | Period: $fromDate - $toDate",
                         style: pw.TextStyle(fontSize: 10),
                       ),
                       pw.SizedBox(height: 10),
@@ -506,8 +506,8 @@ class SaleReport extends StatelessWidget {
   }
 
   Future<void> _exportToExcel(BuildContext context) async {
-    final state = context.read<AgentCollectionCubit>().state;
-    if (state is! AgentCollectionLoadedState) {
+    final state = context.read<DoctorCollectionCubit>().state;
+    if (state is! DoctorCollectionLoadedState) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('No data to export')),
       );
@@ -558,7 +558,7 @@ class SaleReport extends StatelessWidget {
       sheetObject.merge(
           CellIndex.indexByString('A5'), CellIndex.indexByString('I5'));
       var titleCell = sheetObject.cell(CellIndex.indexByString('A5'));
-      titleCell.value = TextCellValue('AGENT WISE SALE REPORT (DETAIL)');
+      titleCell.value = TextCellValue('DOCTOR WISE SALE REPORT (DETAIL)');
       titleCell.cellStyle = CellStyle(
         bold: true,
         fontSize: 14,
@@ -574,7 +574,7 @@ class SaleReport extends StatelessWidget {
 
       // Agent Name
       var agentCell = sheetObject.cell(CellIndex.indexByString('A8'));
-      agentCell.value = TextCellValue('Agent Name : $agentName');
+      agentCell.value = TextCellValue('DOCTOR Name : $doctorName');
       agentCell.cellStyle = CellStyle(bold: true);
 
       // Table Headers (Row 10)
@@ -731,7 +731,7 @@ class SaleReport extends StatelessWidget {
         }
 
         // Create filename with agent name and date range
-        String sanitizedAgentName = agentName.replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(' ', '_');
+        String sanitizedAgentName = doctorName.replaceAll(RegExp(r'[^\w\s-]'), '').replaceAll(' ', '_');
         String sanitizedFromDate = fromDate.replaceAll('/', '-');
         String sanitizedToDate = toDate.replaceAll('/', '-');
         String fileName = 'SaleReport_${sanitizedAgentName}_${sanitizedFromDate}_to_${sanitizedToDate}.xlsx';

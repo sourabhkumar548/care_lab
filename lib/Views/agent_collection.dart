@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 
 import '../Helpers/case_entry_data.dart';
 import '../Helpers/uiHelper.dart';
+import 'loginscreen.dart';
 
 class AgentCollection extends StatefulWidget {
   const AgentCollection({super.key});
@@ -23,6 +24,16 @@ class _AgentCollectionState extends State<AgentCollection> {
 
   @override
   Widget build(BuildContext context) {
+
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String accessCode = args["code"];
+
+    if(accessCode != "/agent_collection"){
+
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>LabLoginScreen()), (val)=>true);
+
+    }
+
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
       body: Device.width < 1100 ?

@@ -8,6 +8,7 @@ import 'package:sizer/sizer.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../Helpers/uiHelper.dart';
+import 'loginscreen.dart';
 
 
 class DoctorData {
@@ -97,6 +98,16 @@ class _DoctorManagementState extends State<DoctorManagement> {
 
   @override
   Widget build(BuildContext context) {
+
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String accessCode = args["code"];
+
+    if(accessCode != "/doctor_list_management"){
+
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>LabLoginScreen()), (val)=>true);
+
+    }
+
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
       body: Device.width < 1100 ?

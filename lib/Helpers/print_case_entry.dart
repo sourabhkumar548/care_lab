@@ -225,7 +225,7 @@ class PrintCaseEntry {
                             "Discount Amount : ",
                             style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                         pw.Text(
-                            "${mainAmount - double.parse(totalAmount)}",
+                            "${totalAmount.isNotEmpty ? mainAmount - double.parse(totalAmount) : "0"}",
                             style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                       ]),
 
@@ -236,7 +236,7 @@ class PrintCaseEntry {
                                 "Payable Amount : ",
                                 style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                             pw.Text(
-                                "${totalAmount}",
+                                totalAmount.isEmpty ? "0" : totalAmount,
                                 style: pw.TextStyle(fontSize: 9.5.sp,fontWeight: pw.FontWeight.bold)),
                       ]),
 

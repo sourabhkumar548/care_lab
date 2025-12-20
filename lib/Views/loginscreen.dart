@@ -203,7 +203,7 @@ class _LabLoginScreenState extends State<LabLoginScreen> {
                   if(state is LoginLoadedState){
                     GetStorage userBox = GetStorage();
                     userBox.write("newUser", username.value);
-                    Get.toNamed('/');
+                    Get.toNamed('/dashboard',arguments: {"code" : "/dashboard"});
                   }
                 },
                 builder: (context, state) {

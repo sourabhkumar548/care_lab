@@ -6,6 +6,7 @@ import 'package:sizer/sizer.dart';
 import '../Controllers/CaseList/Cubit/case_list_cubit.dart';
 import '../Helpers/get_case_list.dart';
 import '../Helpers/uiHelper.dart';
+import 'loginscreen.dart';
 
 class CaseEntryList extends StatefulWidget {
   const CaseEntryList({super.key});
@@ -22,6 +23,15 @@ class _CaseEntryListState extends State<CaseEntryList> {
 
   @override
   Widget build(BuildContext context) {
+
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String accessCode = args["code"];
+
+    if(accessCode != "/case_entry_list"){
+
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>LabLoginScreen()), (val)=>true);
+
+    }
 
     return Scaffold(
       backgroundColor: Colors.blue.shade100,

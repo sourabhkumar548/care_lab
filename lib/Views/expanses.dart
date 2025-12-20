@@ -16,6 +16,7 @@ import '../Controllers/LoginScreenCtrl/UsernameCubit/username_cubit.dart';
 import '../Helpers/get_reporting_list.dart';
 import '../Helpers/print_case_entry.dart';
 import '../Helpers/uiHelper.dart';
+import 'loginscreen.dart';
 
 class Expanses extends StatefulWidget {
   Expanses({super.key});
@@ -36,6 +37,15 @@ class _ExpansesState extends State<Expanses> {
 
   @override
   Widget build(BuildContext context) {
+
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String accessCode = args["code"];
+
+    if(accessCode != "/expanses"){
+
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>LabLoginScreen()), (val)=>true);
+
+    }
 
     context.read<ExpansesCubit>().getExpanses(user: username);
 

@@ -479,7 +479,7 @@ class GetCaseList{
               },
             ),
             TextButton(
-              onPressed: () =>Navigator.pushReplacementNamed(context, '/case_entry_list'),
+              onPressed: () =>Navigator.pushReplacementNamed(context, '/case_entry_list',arguments: {"code" : "/case_entry_list"}),
               child: UiHelper.CustText(text: "Close",fontfamily: 'font-bold',size: 12.sp,color: Colors.red),
             ),
 

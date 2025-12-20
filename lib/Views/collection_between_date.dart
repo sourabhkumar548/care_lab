@@ -5,6 +5,7 @@ import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:sizer/sizer.dart';
 
 import '../Helpers/uiHelper.dart';
+import 'loginscreen.dart';
 
 class CollectionBetweenDate extends StatefulWidget {
   const CollectionBetweenDate({super.key});
@@ -20,6 +21,16 @@ class _CollectionBetweenDateState extends State<CollectionBetweenDate> {
 
   @override
   Widget build(BuildContext context) {
+
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String accessCode = args["code"];
+
+    if(accessCode != "/collection_between_date"){
+
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>LabLoginScreen()), (val)=>true);
+
+    }
+
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
       body: Device.width < 1100 ?

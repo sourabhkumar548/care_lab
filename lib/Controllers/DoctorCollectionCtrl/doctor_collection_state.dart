@@ -6,8 +6,8 @@ sealed class DoctorCollectionState {}
 final class DoctorCollectionInitialState extends DoctorCollectionState {}
 final class DoctorCollectionLoadingState extends DoctorCollectionState {}
 final class DoctorCollectionLoadedState extends DoctorCollectionState {
-  final DoctorCollectionModel doctorCollectionModel;
-  DoctorCollectionLoadedState({required this.doctorCollectionModel});
+  final SaleModel saleModel;
+  DoctorCollectionLoadedState({required this.saleModel});
 }
 final class DoctorCollectionErrorState extends DoctorCollectionState {
   final String errorMsg;

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import '../Helpers/uiHelper.dart';
+import 'loginscreen.dart';
 
 class RateListManagement extends StatefulWidget {
   const RateListManagement({super.key});
@@ -32,6 +33,16 @@ class _RateListManagementState extends State<RateListManagement> {
 
   @override
   Widget build(BuildContext context) {
+
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String accessCode = args["code"];
+
+    if(accessCode != "/rate_list_management"){
+
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>LabLoginScreen()), (val)=>true);
+
+    }
+
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
       body: Device.width < 1100 ?

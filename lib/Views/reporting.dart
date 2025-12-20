@@ -13,6 +13,7 @@ import '../Controllers/DocCtrl/bloc/doc_bloc.dart';
 import '../Controllers/DocCtrl/doc_ctrl.dart';
 import '../Helpers/print_case_entry.dart';
 import '../Helpers/uiHelper.dart';
+import 'loginscreen.dart';
 
 class Reporting extends StatefulWidget {
   Reporting({super.key});
@@ -51,6 +52,16 @@ class _ReportingState extends State<Reporting> {
 
   @override
   Widget build(BuildContext context) {
+
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String accessCode = args["code"];
+
+    if(accessCode != "/reporting_page"){
+
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>LabLoginScreen()), (val)=>true);
+
+    }
+
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
       body: Device.width < 1100 ?

@@ -96,7 +96,7 @@ class MyApp extends StatelessWidget {
                 debugShowCheckedModeBanner: false,
                 supportedLocales: [const Locale('en', 'US')],
                 routes : {
-                  "/": (context) => Dashboard(),
+                  "/dashboard": (context) => DashboardScreen(),
                   "/login_page": (context) => LabLoginScreen(),
                   "/case_entry_page": (context) => NewCaseEntry(),
                   "/case_entry_list": (context) => CaseEntryList(),

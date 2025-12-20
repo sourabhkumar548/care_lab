@@ -818,7 +818,7 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                                             });
                                                             Navigator.popAndPushNamed(
                                                                 context,
-                                                                '/case_entry_page');
+                                                                '/case_entry_page',arguments: {"code" : "/case_entry_page"});
                                                           },
                                                         ),
                                                         ElevatedButton(
@@ -881,7 +881,7 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
 
                                                             });
 
-                                                            Navigator.popAndPushNamed(context, '/case_entry_page');
+                                                            Navigator.popAndPushNamed(context, '/case_entry_page',arguments: {"code" : "/case_entry_page"});
                                                           },
                                                         ),
                                                       ],
@@ -1668,7 +1668,7 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                                               });
                                                               Navigator.popAndPushNamed(
                                                                   context,
-                                                                  '/case_entry_page');
+                                                                  '/case_entry_page',arguments: {"code" : "/case_entry_page"});
                                                             },
                                                           ),
                                                           ElevatedButton(
@@ -1731,7 +1731,7 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
 
                                                               });
 
-                                                              Navigator.popAndPushNamed(context, '/case_entry_page');
+                                                              Navigator.popAndPushNamed(context, '/case_entry_page',arguments: {"code" : "/case_entry_page"});
                                                             },
                                                           ),
                                                         ],

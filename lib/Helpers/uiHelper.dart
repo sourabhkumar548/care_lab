@@ -35,7 +35,7 @@ class UiHelper{
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8,),
             children: [
               InkWell(
-                onTap: ()=>Get.toNamed('/'),
+                onTap: ()=>Get.toNamed('/dashboard',arguments: {"code" : "/dashboard"}),
                 child: Container(
                   padding: EdgeInsets.only(top: 5),
                   color: container == "1" ? Colors.green.shade300 : Colors.transparent,
@@ -47,7 +47,7 @@ class UiHelper{
                 ),
               ),
               InkWell(
-                onTap: ()=>Get.toNamed('/case_entry_page'),
+                onTap: ()=>Get.toNamed('/case_entry_page',arguments: {"code" : "/case_entry_page"}),
                 child: Container(
                   padding: EdgeInsets.only(top: 5),
                   color: container == "2" ? Colors.green.shade300 : Colors.transparent,
@@ -59,7 +59,7 @@ class UiHelper{
                 ),
               ),
               InkWell(
-                onTap: ()=>Get.toNamed('/case_entry_list'),
+                onTap: ()=>Get.toNamed('/case_entry_list',arguments: {"code" : "/case_entry_list"}),
                 child: Container(
                   padding: EdgeInsets.only(top: 5),
                   color: container == "3" ? Colors.green.shade300 : Colors.transparent,
@@ -71,7 +71,7 @@ class UiHelper{
                 ),
               ),
               InkWell(
-                onTap: ()=>Get.toNamed('/reporting_page'),
+                onTap: ()=>Get.toNamed('/reporting_page',arguments: {"code" : "/reporting_page"}),
                 child: Container(
                   padding: EdgeInsets.only(top: 5),
                   color: container == "4" ? Colors.green.shade300 : Colors.transparent,
@@ -109,16 +109,16 @@ class UiHelper{
                   ).then((value) {
                     if (value != null){
                       if(value == "doctor"){
-                        Get.toNamed('/doctor_list_management');
+                        Get.toNamed('/doctor_list_management',arguments: {"code" : "/doctor_list_management"});
                       }
                       if(value == "agent"){
-                        Get.toNamed('/agent_list_management');
+                        Get.toNamed('/agent_list_management',arguments: {"code" : "/agent_list_management"});
                       }
                       if(value == "staff"){
-                        Get.toNamed('/staff_list_management');
+                        Get.toNamed('/staff_list_management',arguments: {"code" : "/staff_list_management"});
                       }
                       if(value == "rate"){
-                        Get.toNamed('/rate_list_management');
+                        Get.toNamed('/rate_list_management',arguments: {"code" : "/rate_list_management"});
                       }
                     }
                   });
@@ -162,30 +162,20 @@ class UiHelper{
                     items: [
                       PopupMenuItem(value: "doctor", child: Text("Doctor Collection")),
                       PopupMenuItem(value: "agent", child: Text("Agent Collection")),
-                      PopupMenuItem(value: "staff", child: Text("Staff Collection")),
                       PopupMenuItem(value: "date", child: Text("Collection By Date")),
-                      PopupMenuItem(value: "monthly", child: Text("Monthly Collection")),
-                      PopupMenuItem(value: "yearly", child: Text("Yearly Collection")),
                     ],
                   ).then((value) {
                     if (value != null){
                       if(value == "doctor"){
-                        Get.toNamed('/doctor_collection');
+                        Get.toNamed('/doctor_collection',arguments: {"code" : "/doctor_collection"});
                       }
                       if(value == "agent"){
-                        Get.toNamed('/agent_collection');
-                      }
-                      if(value == "staff"){
-                      }
-                      if(value == "rate"){
+                        Get.toNamed('/agent_collection',arguments: {"code" : "/agent_collection"});
                       }
                       if(value == "date"){
-                        Get.toNamed('/collection_between_date');
+                        Get.toNamed('/collection_between_date',arguments: {"code" : "/collection_between_date"});
                       }
-                      if(value == "monthly"){
-                      }
-                      if(value == "yearly"){
-                      }
+
                     }
                   });
                 },
@@ -210,7 +200,7 @@ class UiHelper{
 
               //DAILY EXPENSE
               InkWell(
-                onTap: ()=>Get.toNamed('/expanses'),
+                onTap: ()=>Get.toNamed('/expanses',arguments: {"code" :"/expanses"}),
                 child: Container(
                   padding: EdgeInsets.only(top: 5),
                   color: container == "7" ? Colors.green.shade300 : Colors.transparent,
@@ -280,7 +270,7 @@ class UiHelper{
           // Dashboard
           Container(
             color: container == '1' ? Colors.green.shade300 : Colors.transparent,
-            child: sidebarItem(Icons.dashboard, "Dashboard", "/"),
+            child: sidebarItem(Icons.dashboard, "Dashboard", "/dashboard"),
           ),
 
           // Case Entry
@@ -326,7 +316,7 @@ class UiHelper{
                     leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Doctor Management", style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      Get.toNamed('/doctor_list_management');
+                      Get.toNamed('/doctor_list_management',arguments: {"code" : "/doctor_list_management"});
                     },
                   ),
                 ),
@@ -336,7 +326,7 @@ class UiHelper{
                     leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Agent Management", style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      Get.toNamed('/agent_list_management');
+                      Get.toNamed('/agent_list_management',arguments: {"code" : "/agent_list_management"});
                     },
                   ),
                 ),
@@ -346,7 +336,7 @@ class UiHelper{
                     leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Staff Management", style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      Get.toNamed('/staff_list_management');
+                      Get.toNamed('/staff_list_management',arguments: {"code" : "/staff_list_management"});
                     },
                   ),
                 ),
@@ -356,7 +346,7 @@ class UiHelper{
                     leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Rate List Management", style: TextStyle(color: Colors.white)),
                     onTap: () {
-                        Get.toNamed('/rate_list_management');
+                        Get.toNamed('/rate_list_management',arguments: {"code" : "/rate_list_management"});
                     },
                   ),
                 ),
@@ -387,7 +377,7 @@ class UiHelper{
                     leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Doctor Collection", style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      Get.toNamed('/doctor_collection');
+                      Get.toNamed('/doctor_collection',arguments: {"code" : "/doctor_collection"});
                     },
                   ),
                 ),
@@ -397,17 +387,7 @@ class UiHelper{
                     leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Agent Collection", style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      Get.toNamed('/agent_collection');
-                    },
-                  ),
-                ),
-                Container(
-                  color: container == '11' ? Colors.green.shade300 : Colors.transparent,
-                  child: ListTile(
-                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
-                    title: const Text("Staff Collection", style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Get.toNamed('/');
+                      Get.toNamed('/agent_collection',arguments: {"code" : "/agent_collection"});
                     },
                   ),
                 ),
@@ -417,27 +397,7 @@ class UiHelper{
                     leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
                     title: const Text("Collection By Date", style: TextStyle(color: Colors.white)),
                     onTap: () {
-                      Get.toNamed('/collection_between_date');
-                    },
-                  ),
-                ),
-                Container(
-                  color: container == '13' ? Colors.green.shade300 : Colors.transparent,
-                  child: ListTile(
-                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
-                    title: const Text("Monthly Collection", style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Get.toNamed('/');
-                    },
-                  ),
-                ),
-                Container(
-                  color: container == '14' ? Colors.green.shade300 : Colors.transparent,
-                  child: ListTile(
-                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
-                    title: const Text("Yearly Collection", style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Get.toNamed('/');
+                      Get.toNamed('/collection_between_date',arguments: {"code" : "/collection_between_date"});
                     },
                   ),
                 ),
@@ -474,14 +434,14 @@ class UiHelper{
 
 
 
-  static Widget sidebarItem(IconData icon, String title,String routename) {
+  static Widget sidebarItem(IconData icon, String title,String routename,) {
     return Tooltip(
       message: title,
       child: ListTile(
         leading: Icon(icon, color: Colors.white),
         title: Text(title, style: const TextStyle(color: Colors.white)),
         onTap: () {
-          Get.toNamed(routename);
+          Get.toNamed(routename,arguments: {"code" : routename});
         },
       ),
     );

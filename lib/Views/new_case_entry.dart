@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:care_lab_software/Helpers/get_doctor_data.dart';
+import 'package:care_lab_software/Views/loginscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,13 +16,16 @@ import '../Helpers/ratedialog.dart';
 import '../Helpers/uiHelper.dart';
 
 class NewCaseEntry extends StatefulWidget {
-  const NewCaseEntry({super.key});
+
+
+  NewCaseEntry({super.key});
 
   @override
   State<NewCaseEntry> createState() => _NewCaseEntryState();
 }
 
 class _NewCaseEntryState extends State<NewCaseEntry> {
+
   List<Map<String, dynamic>> selectedTests = [];
   String SelectedGender = "Male";
   String PayMode = "Cash";
@@ -63,15 +67,18 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
   @override
   void initState() {
     super.initState();
-    GetStorage userBox = GetStorage();
-    String User = userBox.read("newUser") ?? "";
-    receivedByCtrl.text = User;
 
-    context.read<CaseNumberCubit>().getCaseNumber();
 
-    // Initialize billing
+      GetStorage userBox = GetStorage();
+      String User = userBox.read("newUser") ?? "";
+      receivedByCtrl.text = User;
 
-    updateBilling();
+      context.read<CaseNumberCubit>().getCaseNumber();
+
+      // Initialize billing
+
+      updateBilling();
+
   }
 
   double total = 0;
@@ -106,8 +113,17 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
 
   @override
   Widget build(BuildContext context) {
-    String receiptNo =
-        "${data.nextInt(99999)}/${twoDigitYear}-${int.parse(twoDigitYear) + 1}";
+
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String accessCode = args["code"];
+
+    if(accessCode != "/case_entry_page"){
+
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>LabLoginScreen()), (val)=>true);
+
+    }
+
+    String receiptNo = "${data.nextInt(99999)}/${twoDigitYear}-${int.parse(twoDigitYear) + 1}";
     slipNoCtrl.text = receiptNo;
 
     return Scaffold(
@@ -720,7 +736,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                       });
                                                       Navigator.popAndPushNamed(
                                                           context,
-                                                          '/case_entry_page');
+                                                          '/case_entry_page',arguments: {"code" : "/case_entry_page"});
                                                     },
                                                   ),
                                               ElevatedButton(
@@ -790,7 +806,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                               updateBilling();
                                               });
 
-                                              Navigator.popAndPushNamed(context, '/case_entry_page');
+                                              Navigator.popAndPushNamed(context, '/case_entry_page',arguments: {"code" : "/case_entry_page"});
                                               },
                                               ),
                                                 ],
@@ -1478,7 +1494,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                       });
                                                       Navigator.popAndPushNamed(
                                                           context,
-                                                          '/case_entry_page');
+                                                          '/case_entry_page',arguments: {"code" : "/case_entry_page"});
                                                     },
                                                   ),
                                                   ElevatedButton(
@@ -1499,7 +1515,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                         PrintCaseEntry.printBill(
                                                             receiptNo: receiptNo,
                                                             receiptDate: dateCtrl.text,
-                                                            caseNo: caseNoCtrl.text,
+                                                            caseNo: state.CaseNo,
                                                             caseDate: dateCtrl.text,
                                                             caseTime: timeCtrl.text,
                                                             patientName: nameCtrl.text,
@@ -1521,7 +1537,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                         PrintCaseEntry.printBill(
                                                             receiptNo: receiptNo,
                                                             receiptDate: dateCtrl.text,
-                                                            caseNo: caseNoCtrl.text,
+                                                            caseNo: state.CaseNo,
                                                             caseDate: dateCtrl.text,
                                                             caseTime: timeCtrl.text,
                                                             patientName: nameCtrl.text,
@@ -1549,7 +1565,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                         updateBilling();
                                                       });
 
-                                                      Navigator.popAndPushNamed(context, '/case_entry_page');
+                                                      Navigator.popAndPushNamed(context, '/case_entry_page',arguments: {"code" : "/case_entry_page"});
                                                     },
                                                   ),
                                                 ],
@@ -1570,6 +1586,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         return Obx(() {
                                           return InkWell(
                                             onTap: (){
+
                                               if(receivedByCtrl.text.isEmpty || receivedByCtrl.text == null){
 
                                                 GetStorage userBox = GetStorage();
@@ -1586,8 +1603,6 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
 
                                               }
                                               else{
-
-
                                                 String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" ? "Paid" : "Due";
                                                 List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
                                                 List<int> testRates = selectedTests.map((test) => test["Test Rate"] as int).toList();
@@ -1634,6 +1649,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
           ],
         ),
       ),
+
     );
   }
 }

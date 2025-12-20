@@ -4,12 +4,23 @@ import 'package:sizer/sizer.dart';
 
 import '../Controllers/AgentCtrl/cubit/agent_cubit.dart';
 import '../Helpers/uiHelper.dart';
+import 'loginscreen.dart';
 
 class AgentManagement extends StatelessWidget {
   const AgentManagement({super.key});
 
   @override
   Widget build(BuildContext context) {
+
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String accessCode = args["code"];
+
+    if(accessCode != "/agent_list_management"){
+
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>LabLoginScreen()), (val)=>true);
+
+    }
+
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
       body: Device.width < 1100 ?

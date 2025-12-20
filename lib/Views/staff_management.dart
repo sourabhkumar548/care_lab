@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 
 import '../Helpers/uiHelper.dart';
+import 'loginscreen.dart';
 
 class StaffManagement extends StatefulWidget {
   const StaffManagement({super.key});
@@ -15,6 +16,16 @@ class StaffManagement extends StatefulWidget {
 class _StaffManagementState extends State<StaffManagement> {
   @override
   Widget build(BuildContext context) {
+
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    String accessCode = args["code"];
+
+    if(accessCode != "/staff_list_management"){
+
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>LabLoginScreen()), (val)=>true);
+
+    }
+
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
       body: Device.width < 1100 ?
@@ -444,7 +455,7 @@ class _StaffManagementState extends State<StaffManagement> {
             BlocConsumer<StaffCubit, StaffState>(
               listener: (context, state) {
                 if (state is StaffSaveState) {
-                  Navigator.pushNamed(context, "/staff_list_management");
+                  Navigator.pushNamed(context, "/staff_list_management",arguments: {"code" : "/staff_list_management"});
                   UiHelper.showSuccessToste(message: state.successMsg);
                 }
                 if (state is StaffErrorState) {
@@ -495,7 +506,7 @@ class _StaffManagementState extends State<StaffManagement> {
             BlocConsumer<StaffCubit, StaffState>(
               listener: (context, state) {
                 if (state is StaffSaveState) {
-                  Navigator.pushNamed(context, "/staff_list_management");
+                  Navigator.pushNamed(context, "/staff_list_management",arguments: {"code" : "/staff_list_management"});
                   UiHelper.showSuccessToste(message: state.successMsg);
                 }
                 if (state is StaffErrorState) {
