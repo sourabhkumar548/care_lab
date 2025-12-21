@@ -298,6 +298,12 @@ class UiHelper{
             child: sidebarItem(Icons.list_alt, "Case Entry List", "/case_entry_list"),
           ),
 
+          Container(
+            color: container == '4' ? Colors.green.shade300 : Colors.transparent,
+            child: sidebarItem(Icons.upload, "Reporting", "/reporting_page"),
+
+          ),
+
           // Reporting
           Container(
             color: container == '20' ? Colors.green.shade300 : Colors.transparent,

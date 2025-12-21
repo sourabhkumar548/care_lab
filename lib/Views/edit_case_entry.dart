@@ -42,6 +42,40 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
   late TextEditingController advanceCtrl;
   late TextEditingController balanceCtrl;
 
+
+  ////
+  // bool isInitialized = false;
+  // List<Map<String, dynamic>> selectedTests = [];
+  // ValueNotifier<double> paidAmount = ValueNotifier(0.0);
+  // bool zero = false;
+
+  // ✅ Declare ALL controllers at class level
+  // late TextEditingController totalCtrl;
+  // late TextEditingController discountCtrl;
+  // late TextEditingController afterdiscountCtrl;
+  // late TextEditingController advanceCtrl;
+  // late TextEditingController balanceCtrl;
+  late TextEditingController timeCtrl;
+  late TextEditingController dateCtrl;
+  late TextEditingController caseNoCtrl;
+  late TextEditingController slipNoCtrl;
+  late TextEditingController receivedByCtrl;
+  late TextEditingController nameCtrl;
+  late TextEditingController mobileCtrl;
+  late TextEditingController addressCtrl;
+  late TextEditingController agentCtrl;
+  late TextEditingController doctorCtrl;  // ← This will fix your issue
+  late TextEditingController discountTypeCtrl;
+  late TextEditingController yearCtrl;
+  late TextEditingController monthCtrl;
+  late TextEditingController narrationCtrl;
+  late TextEditingController nametitleCtrl;
+
+  // These need to be stored as well since they're used in dropdowns
+  String SelectedGender = "";
+  String PayMode = "";
+  String DiscountType = "";
+
   @override
   void initState() {
     super.initState();
@@ -102,350 +136,167 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
 
     return Scaffold(
         backgroundColor: Colors.blue.shade100,
-        body: Device.width < 1100 ?
+        body: Device.width < 1100 ? MobileLayout() : DesktopLayout(),
+    );
+  }
 
-        BlocBuilder<SingleCaseCubit, SingleCaseState>(
-            builder: (context, state) {
-              if(state is SingleCaseLoadingState){
-                return Center(child: CircularProgressIndicator());
-              }
-              if(state is SingleCaseErrorState){
-                return Center(child: UiHelper.CustText(text: state.errorMsg));
-              }
-              if(state is SingleCaseLoadedState){
+  Widget MobileLayout() {
+    return BlocBuilder<SingleCaseCubit, SingleCaseState>(
+      builder: (context, state) {
+        if(state is SingleCaseLoadingState){
+          return Center(child: CircularProgressIndicator());
+        }
+        if(state is SingleCaseErrorState){
+          return Center(child: UiHelper.CustText(text: state.errorMsg));
+        }
+        if(state is SingleCaseLoadedState){
 
-                var data = state.caseModel.caseData!;
+          var data = state.caseModel.caseData!;
 
-                // ✅ ONLY initialize once
-                if (!isInitialized) {
-                  paidAmount.value = double.parse(data.advance!);
+          // ✅ ONLY initialize once
+          if (!isInitialized) {
+            paidAmount.value = double.parse(data.advance!);
 
-                  // Parse existing tests
-                  List<String> names = data.testName!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
-                  List<String> rate = data.testRate!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
-                  List<String> time = data.testDate!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
-                  List<String> file = data.testFile!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
+            // Parse existing tests
+            List<String> names = data.testName!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
+            List<String> rate = data.testRate!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
+            List<String> time = data.testDate!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
+            List<String> file = data.testFile!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
 
-                  selectedTests.clear();
-                  for (int i = 0; i < names.length && i < rate.length; i++) {
-                    selectedTests.add({
-                      'Test Name': names[i],
-                      'Test Rate': int.tryParse(rate[i]) ?? 0,
-                      'Test Time': time[i],
-                      'Test File': file[i],
-                    });
-                  }
+            selectedTests.clear();
+            for (int i = 0; i < names.length && i < rate.length; i++) {
+              selectedTests.add({
+                'Test Name': names[i],
+                'Test Rate': int.tryParse(rate[i]) ?? 0,
+                'Test Time': time[i],
+                'Test File': file[i],
+              });
+            }
 
-                  AddTestDialogState.selectedTests = List.from(selectedTests);
-                  AddTestDialogState.totalAmount = selectedTests.fold(0.0, (sum, test) =>
-                  sum + (double.tryParse(test['Test Rate'].toString()) ?? 0)
-                  );
+            AddTestDialogState.selectedTests = List.from(selectedTests);
+            AddTestDialogState.totalAmount = selectedTests.fold(0.0, (sum, test) =>
+            sum + (double.tryParse(test['Test Rate'].toString()) ?? 0)
+            );
 
-                  // ✅ Set initial controller values
-                  double initialTotal = zero ? 0 : AddTestDialogState.totalAmount;
-                  double initialDiscount = double.tryParse(data.discount!) ?? 0;
-                  double initialAfterDiscount = initialTotal - initialDiscount;
-                  double initialAdvance = double.tryParse(data.advance!) ?? 0;
-                  double initialBalance = initialAfterDiscount - initialAdvance;
+            // ✅ Set initial controller values
+            double initialTotal = zero ? 0 : AddTestDialogState.totalAmount;
+            double initialDiscount = double.tryParse(data.discount!) ?? 0;
+            double initialAfterDiscount = initialTotal - initialDiscount;
+            double initialAdvance = double.tryParse(data.advance!) ?? 0;
+            double initialBalance = initialAfterDiscount - initialAdvance;
 
-                  totalCtrl.text = initialTotal.toStringAsFixed(2);
-                  discountCtrl.text = data.discount!;
-                  afterdiscountCtrl.text = initialAfterDiscount.toStringAsFixed(2);
-                  advanceCtrl.text = data.advance!;
-                  balanceCtrl.text = initialBalance.toStringAsFixed(2);
+            totalCtrl.text = initialTotal.toStringAsFixed(2);
+            discountCtrl.text = data.discount!;
+            afterdiscountCtrl.text = initialAfterDiscount.toStringAsFixed(2);
+            advanceCtrl.text = data.advance!;
+            balanceCtrl.text = initialBalance.toStringAsFixed(2);
 
-                  isInitialized = true;
-                }
-
-
-                String SelectedGender = data.gender!;
-                String PayMode = data.payMode!;
-                String DiscountType = data.discountType!;
+            isInitialized = true;
+          }
 
 
-                TextEditingController timeCtrl = TextEditingController(text: data.time);
-                TextEditingController dateCtrl = TextEditingController(text: data.date);
-                TextEditingController caseNoCtrl = TextEditingController(text: data.caseNo);
-                TextEditingController slipNoCtrl = TextEditingController(text: data.slipNo);
-                TextEditingController receivedByCtrl = TextEditingController(text: data.receivedBy);
-                TextEditingController nameCtrl = TextEditingController(text: data.patientName);
-                TextEditingController mobileCtrl = TextEditingController(text: data.mobile);
-                TextEditingController addressCtrl = TextEditingController(text: data.address);
-                TextEditingController agentCtrl = TextEditingController(text: data.agent);
-                TextEditingController doctorCtrl = TextEditingController(text: data.doctor);
+          String SelectedGender = data.gender!;
+          String PayMode = data.payMode!;
+          String DiscountType = data.discountType!;
 
-                // Billing Controllers
 
-                TextEditingController discountTypeCtrl = TextEditingController(text: data.discountType);
+          TextEditingController timeCtrl = TextEditingController(text: data.time);
+          TextEditingController dateCtrl = TextEditingController(text: data.date);
+          TextEditingController caseNoCtrl = TextEditingController(text: data.caseNo);
+          TextEditingController slipNoCtrl = TextEditingController(text: data.slipNo);
+          TextEditingController receivedByCtrl = TextEditingController(text: data.receivedBy);
+          TextEditingController nameCtrl = TextEditingController(text: data.patientName);
+          TextEditingController mobileCtrl = TextEditingController(text: data.mobile);
+          TextEditingController addressCtrl = TextEditingController(text: data.address);
+          TextEditingController agentCtrl = TextEditingController(text: data.agent);
+          TextEditingController doctorCtrl = TextEditingController(text: data.doctor);
 
-                // Age Controllers
-                TextEditingController yearCtrl = TextEditingController(text: data.year);
-                TextEditingController monthCtrl = TextEditingController(text: data.month);
-                TextEditingController narrationCtrl = TextEditingController(text: data.narration);
-                TextEditingController nametitleCtrl = TextEditingController(text: data.nameTitle);
+          // Billing Controllers
 
-                return Center(
+          TextEditingController discountTypeCtrl = TextEditingController(text: data.discountType);
+
+          // Age Controllers
+          TextEditingController yearCtrl = TextEditingController(text: data.year);
+          TextEditingController monthCtrl = TextEditingController(text: data.month);
+          TextEditingController narrationCtrl = TextEditingController(text: data.narration);
+          TextEditingController nametitleCtrl = TextEditingController(text: data.nameTitle);
+
+          return Center(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                // Side Bar
+
+                Container(
+                  height: 120,
+                  child: UiHelper.custHorixontalTab(container: "2", context: context),),
+
+                // Main Content
+                Container(
+                  height: Adaptive.h(100),
+                  width: Device.width < 1100 ? 100.w :85.w,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
                     child: ListView(
-                      shrinkWrap: true,
                       children: [
-                      // Side Bar
-
-                      Container(
-                      height: 120,
-                      child: UiHelper.custHorixontalTab(container: "2", context: context),),
-
-                    // Main Content
-                    Container(
-                        height: Adaptive.h(100),
-                        width: Device.width < 1100 ? 100.w :85.w,
-                        child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: ListView(
-                                children: [
-                            UiHelper.CustTopBar(title: "EDIT CASE ENTRY"),
-                            ListView(
-                              shrinkWrap: true,
-                              children: [
-                                // Case Information
-                                Container(
-                                  width: 30.w,
-                                  child: UiHelper.Custcard(
-                                    title: "Case Information",
-                                    child: Column(
+                        UiHelper.CustTopBar(title: "EDIT CASE ENTRY"),
+                        ListView(
+                          shrinkWrap: true,
+                          children: [
+                            // Case Information
+                            Container(
+                              width: 30.w,
+                              child: UiHelper.Custcard(
+                                title: "Case Information",
+                                child: Column(
+                                  children: [
+                                    Row(
                                       children: [
-                                        Row(
-                                          children: [
-                                            UiHelper.CustTextField(
-                                                controller: timeCtrl,
-                                                enabled: false,
-                                                label: "Time"),
-                                            const SizedBox(width: 5),
-                                            UiHelper.CustTextField(
-                                                controller: dateCtrl,
-                                                enabled: false,
-                                                label: "Date"),
-                                            const SizedBox(width: 5),
-                                            UiHelper.CustTextField(
-                                                controller: caseNoCtrl,
-                                                label: "Case No",
-                                                enabled: false),
-                                            const SizedBox(width: 5),
-                                            UiHelper.CustTextField(
-                                                controller: slipNoCtrl,
-                                                label: "Slip No",
-                                                enabled: false),
-                                            const SizedBox(width: 5),
-                                            UiHelper.CustTextField(
-                                                controller: receivedByCtrl,
-                                                label: "Received By",
-                                                enabled: false),
-                                          ],
-                                        ),
-
+                                        UiHelper.CustTextField(
+                                            controller: timeCtrl,
+                                            enabled: false,
+                                            label: "Time"),
+                                        const SizedBox(width: 5),
+                                        UiHelper.CustTextField(
+                                            controller: dateCtrl,
+                                            enabled: false,
+                                            label: "Date"),
+                                        const SizedBox(width: 5),
+                                        UiHelper.CustTextField(
+                                            controller: caseNoCtrl,
+                                            label: "Case No",
+                                            enabled: false),
+                                        const SizedBox(width: 5),
+                                        UiHelper.CustTextField(
+                                            controller: slipNoCtrl,
+                                            label: "Slip No",
+                                            enabled: false),
+                                        const SizedBox(width: 5),
+                                        UiHelper.CustTextField(
+                                            controller: receivedByCtrl,
+                                            label: "Received By",
+                                            enabled: false),
                                       ],
                                     ),
-                                  ),
+                                  ],
                                 ),
-
-                                // Patient Details
-                                UiHelper.Custcard(
-                                  title: "Patient Details",
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 150,
-                                            child: TextField(
-                                              controller: nametitleCtrl,
-                                              style: TextStyle(color: Colors.black),
-                                              decoration: InputDecoration(
-                                                labelText: "Title",
-                                                filled: true,
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.green, width: 2),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                ),
-                                                fillColor: Colors.grey.shade100,
-                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
-                                                prefixIcon: Icon(Icons.person),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Expanded(
-                                            child: TextField(
-                                              controller: nameCtrl,
-                                              style: TextStyle(color: Colors.black),
-                                              decoration: InputDecoration(
-                                                labelText: "Patient Name",
-                                                filled: true,
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.green, width: 2),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                ),
-                                                fillColor: Colors.grey.shade100,
-                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
-                                                prefixIcon: Icon(Icons.person),
-                                              ),
-                                            ),
-                                          ),
-
-                                        ],
-                                      ),
-                                      SizedBox(height: 15),
-                                      Row(children: [
-                                        Expanded(
-                                          child: TextField(
-                                            controller: yearCtrl,
-                                            style: TextStyle(color: Colors.black),
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter.digitsOnly,
-                                              LengthLimitingTextInputFormatter(3),
-                                            ],
-                                            decoration: InputDecoration(
-                                                labelText: "Year",
-                                                filled: true,
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.green, width: 2),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                ),
-                                                fillColor: Colors.grey.shade100,
-                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
-                                                prefixIcon: Icon(Icons.calendar_month),
-                                                suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>yearCtrl.text=data,CaseEnteryData.yearList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
-                                            ),
-                                          ),
-                                        ),
-                                        SizedBox(width: 10),
-                                        Expanded(
-                                          child: TextField(
-                                            controller: monthCtrl,
-                                            style: TextStyle(color: Colors.black),
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter.digitsOnly,
-                                              LengthLimitingTextInputFormatter(3),
-                                            ],
-                                            decoration: InputDecoration(
-                                                labelText: "Month",
-                                                filled: true,
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.green, width: 2),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                ),
-                                                fillColor: Colors.grey.shade100,
-                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
-                                                prefixIcon: Icon(Icons.calendar_month),
-                                                suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>monthCtrl.text=data,CaseEnteryData.monthList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
-                                            ),
-                                          ),
-                                        ),
-                                      ],),
-                                      SizedBox(height: 15),
-                                      Row(
-                                        children: [
-                                          UiHelper.CustDropDown(
-                                              label: "Gender",
-                                              defaultValue: SelectedGender,
-                                              list: CaseEnteryData.genderList,
-                                              icon: Icon(Icons.male),
-                                              onChanged: (val) {
-                                                SelectedGender = val!;
-                                              }),
-                                          SizedBox(width: 10),
-                                          Expanded(
-                                            child: TextField(
-                                              controller: mobileCtrl,
-                                              style: TextStyle(color: Colors.black),
-                                              keyboardType: TextInputType.number,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter.digitsOnly,
-                                                LengthLimitingTextInputFormatter(10),
-                                              ],
-                                              decoration: InputDecoration(
-                                                labelText: "Mobile No",
-                                                filled: true,
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.green, width: 2),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                ),
-                                                fillColor: Colors.grey.shade100,
-                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
-                                                prefixIcon: Icon(Icons.phone),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 20),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: TextField(
-                                              controller: addressCtrl,
-                                              style: TextStyle(color: Colors.black),
-                                              decoration: InputDecoration(
-                                                labelText: "Patient Address",
-                                                filled: true,
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.green, width: 2),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                ),
-                                                fillColor: Colors.grey.shade100,
-                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
-                                                prefixIcon: Icon(Icons.location_history),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
 
-                            // Doctors & Agents
-                            Container(
-                              width: Adaptive.w(85),
-                              child: UiHelper.Custcard(
-                                title: "Doctors & Agents",
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextField(
-                                        controller: agentCtrl,
-                                        style: TextStyle(color: Colors.black),
-                                        decoration: InputDecoration(
-                                            labelText: "Enter Agent Name",
+                            // Patient Details
+                            UiHelper.Custcard(
+                              title: "Patient Details",
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 150,
+                                        child: TextField(
+                                          controller: nametitleCtrl,
+                                          style: TextStyle(color: Colors.black),
+                                          decoration: InputDecoration(
+                                            labelText: "Title",
                                             filled: true,
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
@@ -456,38 +307,222 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                               borderSide: BorderSide(color: Colors.black45, width: 1.5),
                                             ),
                                             fillColor: Colors.grey.shade100,
-                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
                                             prefixIcon: Icon(Icons.person),
-                                            suffixIcon: IconButton(onPressed: ()=>
-                                                UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList),
-                                                icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: TextField(
+                                          controller: nameCtrl,
+                                          style: TextStyle(color: Colors.black),
+                                          decoration: InputDecoration(
+                                            labelText: "Patient Name",
+                                            filled: true,
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                            ),
+                                            fillColor: Colors.grey.shade100,
+                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
+                                            prefixIcon: Icon(Icons.person),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 15),
+                                  Row(children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: yearCtrl,
+                                        style: TextStyle(color: Colors.black),
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                          LengthLimitingTextInputFormatter(3),
+                                        ],
+                                        decoration: InputDecoration(
+                                            labelText: "Year",
+                                            filled: true,
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                            ),
+                                            fillColor: Colors.grey.shade100,
+                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
+                                            prefixIcon: Icon(Icons.calendar_month),
+                                            suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>yearCtrl.text=data,CaseEnteryData.yearList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 20),
+                                    SizedBox(width: 10),
                                     Expanded(
-                                      child: DoctorInputField(
-                                        controller: doctorCtrl,
-                                        initialValue: data.doctor ?? "Self",
-                                        onDoctorSelected: (doctor) {
-                                          setState(() {
-                                            doctorCtrl.text = doctor;
-                                          });
-                                        },
+                                      child: TextField(
+                                        controller: monthCtrl,
+                                        style: TextStyle(color: Colors.black),
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                          LengthLimitingTextInputFormatter(3),
+                                        ],
+                                        decoration: InputDecoration(
+                                            labelText: "Month",
+                                            filled: true,
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                            ),
+                                            fillColor: Colors.grey.shade100,
+                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
+                                            prefixIcon: Icon(Icons.calendar_month),
+                                            suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>monthCtrl.text=data,CaseEnteryData.monthList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
+                                        ),
                                       ),
                                     ),
-                                  ],
-                                ),
+                                  ],),
+                                  SizedBox(height: 15),
+                                  Row(
+                                    children: [
+                                      UiHelper.CustDropDown(
+                                          label: "Gender",
+                                          defaultValue: SelectedGender,
+                                          list: CaseEnteryData.genderList,
+                                          icon: Icon(Icons.male),
+                                          onChanged: (val) {
+                                            setState(() {
+                                              SelectedGender = val!;
+                                            });
+                                          }),
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: TextField(
+                                          controller: mobileCtrl,
+                                          style: TextStyle(color: Colors.black),
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.digitsOnly,
+                                            LengthLimitingTextInputFormatter(10),
+                                          ],
+                                          decoration: InputDecoration(
+                                            labelText: "Mobile No",
+                                            filled: true,
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                            ),
+                                            fillColor: Colors.grey.shade100,
+                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
+                                            prefixIcon: Icon(Icons.phone),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 20),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: addressCtrl,
+                                          style: TextStyle(color: Colors.black),
+                                          decoration: InputDecoration(
+                                            labelText: "Patient Address",
+                                            filled: true,
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                            ),
+                                            fillColor: Colors.grey.shade100,
+                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
+                                            prefixIcon: Icon(Icons.location_history),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
+                          ],
+                        ),
 
-                            // Tests & Billing
-                            ListView(
-                              shrinkWrap: true,
+                        // Doctors & Agents
+                        Container(
+                          width: Adaptive.w(85),
+                          child: UiHelper.Custcard(
+                            title: "Doctors & Agents",
+                            child: Row(
                               children: [
-                              // Tests List
-                              Container(
+                                Expanded(
+                                  child: TextField(
+                                    controller: agentCtrl,
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                        labelText: "Enter Agent Name",
+                                        filled: true,
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                        ),
+                                        fillColor: Colors.grey.shade100,
+                                        labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                                        prefixIcon: Icon(Icons.person),
+                                        suffixIcon: IconButton(onPressed: ()=>
+                                            UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList),
+                                            icon: Icon(Icons.arrow_drop_down_circle_outlined))
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                Expanded(
+                                  child: DoctorInputField(
+                                    controller: doctorCtrl,  // ✅ Now uses persistent controller
+                                    // ✅ Removed initialValue - let controller handle it
+                                    onDoctorSelected: (doctor) {
+                                      setState(() {
+                                        print("Doctor Change : $doctor");
+                                        doctorCtrl.text = doctor;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // Tests & Billing (rest of your code continues...)
+                        ListView(
+                          shrinkWrap: true,
+                          children: [
+// Tests List
+                            Container(
                               width: 42.5.w,
                               child: UiHelper.Custcard(
                                 title: "Tests List",
@@ -500,7 +535,7 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                       });
                                     }
 
-                                    // ✅ Initialize AddTestDialogState with current tests before opening dialog
+// ✅ Initialize AddTestDialogState with current tests before opening dialog
                                     AddTestDialogState.selectedTests = List.from(selectedTests);
                                     AddTestDialogState.totalAmount = selectedTests.fold(0.0, (sum, test) =>
                                     sum + (double.tryParse(test['Test Rate'].toString()) ?? 0)
@@ -514,7 +549,7 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                     if (result != null) {
                                       setState(() {
                                         selectedTests = result;
-                                        // Recalculate total from the returned tests
+// Recalculate total from the returned tests
                                         AddTestDialogState.totalAmount = result.fold(0.0, (sum, test) =>
                                         sum + (double.tryParse(test['Test Rate'].toString()) ?? 0)
                                         );
@@ -572,19 +607,19 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                                   ),
                                                   onChanged: (newValue) {
                                                     setState(() {
-                                                      // Get old rate
+// Get old rate
                                                       double oldRate = double.tryParse(item['Test Rate'].toString()) ?? 0;
 
-                                                      // Get new rate
+// Get new rate
                                                       double newRate = double.tryParse(newValue) ?? 0;
 
-                                                      // Update the item
+// Update the item
                                                       item['Test Rate'] = newRate.toInt();
 
-                                                      // Update total amount
+// Update total amount
                                                       AddTestDialogState.totalAmount = AddTestDialogState.totalAmount - oldRate + newRate;
 
-                                                      // Update billing
+// Update billing
                                                       updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
                                                     });
                                                   },
@@ -595,21 +630,21 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                                 icon: Icon(Icons.close, color: Colors.red),
                                                 onPressed: () {
                                                   setState(() {
-                                                    // Get the rate before removing
+// Get the rate before removing
                                                     double rateToRemove = double.tryParse(item['Test Rate'].toString()) ?? 0;
 
-                                                    // Remove from both lists
+// Remove from both lists
                                                     selectedTests.removeAt(index);
 
-                                                    // Also remove from AddTestDialogState if it exists there
+// Also remove from AddTestDialogState if it exists there
                                                     AddTestDialogState.selectedTests.removeWhere((test) =>
                                                     test['Test Name'] == item['Test Name']
                                                     );
 
-                                                    // Update total
+// Update total
                                                     AddTestDialogState.totalAmount -= rateToRemove;
 
-                                                    // Ensure total doesn't go negative
+// Ensure total doesn't go negative
                                                     if (AddTestDialogState.totalAmount < 0) {
                                                       AddTestDialogState.totalAmount = 0;
                                                     }
@@ -636,666 +671,482 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                             ),
 
 
-                            // Billing Summary
+// Billing Summary
                             Container(
-                                width: 42.5.w,
-                                child: UiHelper.Custcard(
-                                  title: "Billing Summary",
-                                  child: Column(
-                                    children: [
-                                  // Total & Discount
-                                  Row(
+                              width: 42.5.w,
+                              child: UiHelper.Custcard(
+                                title: "Billing Summary",
+                                child: Column(
                                   children: [
-                                  UiHelper.CustTextField(
-                                    controller: totalCtrl,
-                                    label: "Total Amount",
-                                    enabled: false,
-                                  ),
-                                  SizedBox(width: 20),
-                                  Expanded(
-                                    child: TextField(
-                                      controller: discountCtrl,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                      ],
-                                      decoration: InputDecoration(
-                                          filled: true,
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color: Colors.green, width: 2),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                          ),
-                                          fillColor: Colors.grey.shade100,
-                                          labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                                          prefixIcon: Icon(Icons.discount),
-                                          labelText: "Discount (₹)"),
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (_) {
-                                        updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
+// Total & Discount
+                                    Row(
+                                      children: [
+                                        UiHelper.CustTextField(
+                                          controller: totalCtrl,
+                                          label: "Total Amount",
+                                          enabled: false,
+                                        ),
+                                        SizedBox(width: 20),
+                                        Expanded(
+                                          child: TextField(
+                                            controller: discountCtrl,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.digitsOnly,
+                                            ],
+                                            decoration: InputDecoration(
+                                                filled: true,
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.green, width: 2),
+                                                ),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                                ),
+                                                fillColor: Colors.grey.shade100,
+                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                                                prefixIcon: Icon(Icons.discount),
+                                                labelText: "Discount (₹)"),
+                                            keyboardType: TextInputType.number,
+                                            onChanged: (_) {
+                                              updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
 
-                                      },
+                                            },
+                                          ),
+                                        ),
+
+                                      ],
                                     ),
-                                  ),
 
-                                  ],
-                                ),
+                                    SizedBox(height: 15),
 
-                                SizedBox(height: 15),
+// After Discount & Advance
+                                    Row(
+                                      children: [
+                                        UiHelper.CustTextField(
+                                          controller: afterdiscountCtrl,
+                                          label: "Amount After Discount",
+                                          enabled: false,
+                                        ),
+                                        SizedBox(width: 20),
+                                        Expanded(
+                                          child: TextField(
+                                            controller: advanceCtrl,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.digitsOnly,
+                                            ],
+                                            decoration: InputDecoration(
+                                                filled: true,
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.green, width: 2),
+                                                ),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                                ),
+                                                fillColor: Colors.grey.shade100,
+                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                                                prefixIcon: Icon(Icons.money),
+                                                labelText: "Paid Amount"),
+                                            keyboardType: TextInputType.number,
+                                            onChanged: (_) {
+                                              updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
 
-                                // After Discount & Advance
-                                Row(
-                                  children: [
-                                  UiHelper.CustTextField(
-                                  controller: afterdiscountCtrl,
-                                  label: "Amount After Discount",
-                                  enabled: false,
-                                ),
-                                SizedBox(width: 20),
-                                Expanded(
-                                    child: TextField(
-                                      controller: advanceCtrl,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                      ],
-                                      decoration: InputDecoration(
-                                          filled: true,
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color: Colors.green, width: 2),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
-                                            borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                          ),
-                                          fillColor: Colors.grey.shade100,
-                                          labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                                          prefixIcon: Icon(Icons.money),
-                                          labelText: "Paid Amount"),
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (_) {
-                                        updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
-
-                                      },// CONTINUATION OF THE MOBILE LAYOUT AND START OF DESKTOP LAYOUT
+                                            },// CONTINUATION OF THE MOBILE LAYOUT AND START OF DESKTOP LAYOUT
 // This continues from where the first part ended
 
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                ),
-                                  ],
-                                ),
 
-                                      SizedBox(height: 15),
+                                    SizedBox(height: 15),
 
-                                      // Balance & Pay Mode
-                                      Row(
-                                        children: [
-                                          UiHelper.CustTextField(
-                                            controller: balanceCtrl,
-                                            label: "Balance Amount",
-                                            enabled: true,
-                                          ),
-                                          SizedBox(width: 20),
-                                          UiHelper.CustDropDown(
-                                            label: "Pay Mode",
-                                            defaultValue: PayMode,
-                                            list: CaseEnteryData.payList,
-                                            onChanged: (val) {
-                                              PayMode = val!;
-                                            },
-                                          ),
-                                        ],
-                                      ),
+// Balance & Pay Mode
+                                    Row(
+                                      children: [
+                                        UiHelper.CustTextField(
+                                          controller: balanceCtrl,
+                                          label: "Balance Amount",
+                                          enabled: true,
+                                        ),
+                                        SizedBox(width: 20),
+                                        UiHelper.CustDropDown(
+                                          label: "Pay Mode",
+                                          defaultValue: PayMode,
+                                          list: CaseEnteryData.payList,
+                                          onChanged: (val) {
+                                            PayMode = val!;
+                                          },
+                                        ),
+                                      ],
+                                    ),
 
-                                      SizedBox(height: 15),
+                                    SizedBox(height: 15),
 
-                                      // Paid Amount Display
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: TextField(
-                                              controller: discountTypeCtrl,
-                                              style: TextStyle(color: Colors.black),
-                                              decoration: InputDecoration(
-                                                  labelText: "Enter Discount Type",
-                                                  filled: true,
-                                                  focusedBorder: OutlineInputBorder(
-                                                    borderRadius: BorderRadius.circular(10),
-                                                    borderSide: BorderSide(color: Colors.green, width: 2),
-                                                  ),
-                                                  enabledBorder: OutlineInputBorder(
-                                                    borderRadius: BorderRadius.circular(10),
-                                                    borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                  ),
-                                                  fillColor: Colors.grey.shade100,
-                                                  labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                                                  prefixIcon: Icon(Icons.local_hospital),
-                                                  suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>discountTypeCtrl.text=data,CaseEnteryData.discountTypeList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
+// Paid Amount Display
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextField(
+                                            controller: discountTypeCtrl,
+                                            style: TextStyle(color: Colors.black),
+                                            decoration: InputDecoration(
+                                                labelText: "Enter Discount Type",
+                                                filled: true,
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.green, width: 2),
+                                                ),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                                ),
+                                                fillColor: Colors.grey.shade100,
+                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                                                prefixIcon: Icon(Icons.local_hospital),
+                                                suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>discountTypeCtrl.text=data,CaseEnteryData.discountTypeList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
 
-                                              ),
                                             ),
                                           ),
-                                          const SizedBox(width: 15),
-                                          UiHelper.CustTextField(controller: narrationCtrl, label: "Enter Narration")
-
-                                        ],
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-                                          BlocConsumer<UpdateCaseBloc, UpdateCaseState>(
-                                            listener: (context, state) {
-                                              if(state is UpdateCaseLoadedState){
-
-                                                List<String> testNames = AddTestDialogState.selectedTests.map((item) => item["Test Name"].toString()).toList();
-                                                List<String> testRate = AddTestDialogState.selectedTests.map((item) => item["Test Rate"].toString()).toList();
-                                                List<String> testDate = AddTestDialogState.selectedTests.map((item) => item["Test Time"].toString()).toList();
-
-                                                String TotalAmount = AddTestDialogState.totalAmount.toString();
-                                                String Advance = advanceCtrl.text.isEmpty ? "0" : advanceCtrl.text;
-
-                                                String year = yearCtrl.text.isEmpty ? "0" : yearCtrl.text;
-                                                String month = monthCtrl.text.isEmpty ? "0" : monthCtrl.text;
-
-                                                showDialog<bool>(
-                                                  context: context,
-                                                  barrierDismissible: false,
-                                                  builder: (BuildContext context) {
-                                                    return AlertDialog(
-                                                      title: UiHelper.CustText(text: "Success",size: 10.5.sp),
-                                                      content: Text("Case Successfully Updated. Do You Print Receipt?"),
-                                                      actions: <Widget>[
-                                                        TextButton(
-                                                          child: const Text("No"),
-                                                          onPressed: (){
-                                                            setState(() {
-                                                              selectedTests.clear();
-                                                              AddTestDialogState.selectedTests.clear();
-                                                              AddTestDialogState.totalAmount = 0;
-                                                              updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
-                                                            });
-                                                            Navigator.popAndPushNamed(
-                                                                context,
-                                                                '/case_entry_page',arguments: {"code" : "/case_entry_page"});
-                                                          },
-                                                        ),
-                                                        ElevatedButton(
-                                                          child: const Text("Yes"),
-                                                          onPressed: () {
-                                                            GetStorage userBox = GetStorage();
-                                                            String User = userBox.read("newUser") ?? "";
-
-                                                            if(CaseEnteryData.agentZero.contains(agentCtrl.text)){
-                                                              PrintCaseEntry.printBill(
-                                                                  receiptNo: slipNoCtrl.text,
-                                                                  receiptDate: dateCtrl.text,
-                                                                  caseNo: caseNoCtrl.text,
-                                                                  caseDate: dateCtrl.text,
-                                                                  caseTime: timeCtrl.text,
-                                                                  patientName: nameCtrl.text,
-                                                                  mobile: mobileCtrl.text,
-                                                                  sex: SelectedGender,
-                                                                  age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
-                                                                  referredBy: doctorCtrl.text,
-                                                                  testName: testNames,
-                                                                  testRate: testRate,
-                                                                  date: dateCtrl.text,
-                                                                  totalAmount: "0",
-                                                                  discountAmount: "0",
-                                                                  balanceAmount: "0",
-                                                                  advanceAmount: "0",
-                                                                  receivedBy: User,
-                                                                  testDate: testDate
-                                                              );
-                                                            }else{
-                                                              PrintCaseEntry.printBill(
-                                                                  receiptNo: slipNoCtrl.text,
-                                                                  receiptDate: dateCtrl.text,
-                                                                  caseNo: caseNoCtrl.text,
-                                                                  caseDate: dateCtrl.text,
-                                                                  caseTime: timeCtrl.text,
-                                                                  patientName: nameCtrl.text,
-                                                                  mobile: mobileCtrl.text,
-                                                                  sex: SelectedGender,
-                                                                  age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
-                                                                  referredBy: doctorCtrl.text,
-                                                                  testName: testNames,
-                                                                  testRate: testRate,
-                                                                  date: dateCtrl.text,
-                                                                  totalAmount: "${double.parse(TotalAmount)-double.parse(discountCtrl.text)}.00",
-                                                                  discountAmount: "${paidAmount.value.toStringAsFixed(2)}",
-                                                                  balanceAmount: balance.toString(),
-                                                                  advanceAmount: Advance,
-                                                                  receivedBy: User,
-                                                                  testDate: testDate
-                                                              );
-                                                            }
-
-                                                            setState(() {
-                                                              selectedTests.clear();
-                                                              AddTestDialogState.selectedTests.clear();
-                                                              AddTestDialogState.totalAmount = 0;
-                                                              updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
-
-                                                            });
-
-                                                            Navigator.popAndPushNamed(context, '/case_entry_page',arguments: {"code" : "/case_entry_page"});
-                                                          },
-                                                        ),
-                                                      ],
-                                                    );
-                                                  },
-                                                );
-
-
-                                              }
-                                              if(state is UpdateCaseErrorState){
-                                                UiHelper.showErrorToste(message: state.errorMsg);
-                                              }
-                                            },
-                                            builder: (context, state) {
-                                              if(state is UpdateCaseLoadingState){
-                                                return Center(child: CircularProgressIndicator());
-                                              }
-                                              return Obx(() {
-                                                return InkWell(
-                                                  onTap: (){
-
-                                                      String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" || balanceCtrl.text == "0.00" ? "Paid" : "Due";
-                                                      List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
-                                                      List<int> testRates = selectedTests.map((test) => int.tryParse(test["Test Rate"].toString()) ?? 0).toList();
-                                                      List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
-                                                      List<String> testFile = selectedTests.map((test) => test["Test File"] as String).toList();
-
-                                                      UpdateCaseCtrl.UpdateCase(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: receivedByCtrl.text, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: totalCtrl.text, discount: discountCtrl.text, after_discount: afterdiscountCtrl.text, advance: advanceCtrl.text, balance: balanceCtrl.text,paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
-
-                                                  },
-                                                  child: Card(
-                                                    elevation: 5,
-                                                    color: Colors.blue.shade400,
-                                                    borderOnForeground: true,
-                                                    shadowColor: Colors.blue.shade100,
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.all(8.0),
-                                                      child: Text(
-                                                        "Update Case: ₹${paidAmount.value.toStringAsFixed(2)}",
-                                                        style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 12.sp,
-                                                            fontFamily: 'font-bold'),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                );
-                                              });
-                                            },
-                                          ),
-                                        ],)
-                                    ],
-                                  ),
-                                ),
-                            ),
-                              ],
-                            ),
-                                ],
-                            ),
-                        ),
-                    ),
-
-
-                      ],
-                    ),
-                );
-              }
-              return Container();
-            },
-        )
-
-
-
-            :
-
-        // DESKTOP LAYOUT STARTS HERE
-        BlocBuilder<SingleCaseCubit, SingleCaseState>(
-          builder: (context, state) {
-            if(state is SingleCaseLoadingState){
-              return Center(child: CircularProgressIndicator());
-            }
-            if(state is SingleCaseErrorState){
-              return Center(child: UiHelper.CustText(text: state.errorMsg));
-            }
-            if(state is SingleCaseLoadedState){
-              var data = state.caseModel.caseData!;
-
-              // ✅ ONLY initialize once
-              if (!isInitialized) {
-                paidAmount.value = double.parse(data.advance!);
-
-                // Parse existing tests
-                List<String> names = data.testName!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
-                List<String> rate = data.testRate!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
-                List<String> time = data.testDate!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
-                List<String> file = data.testFile!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
-
-                selectedTests.clear();
-                for (int i = 0; i < names.length && i < rate.length; i++) {
-                  selectedTests.add({
-                    'Test Name': names[i],
-                    'Test Rate': int.tryParse(rate[i]) ?? 0,
-                    'Test Time': time[i],
-                    'Test File': file[i],
-                  });
-                }
-
-                AddTestDialogState.selectedTests = List.from(selectedTests);
-                AddTestDialogState.totalAmount = selectedTests.fold(0.0, (sum, test) =>
-                sum + (double.tryParse(test['Test Rate'].toString()) ?? 0)
-                );
-
-                // ✅ Set initial controller values
-                double initialTotal = zero ? 0 : AddTestDialogState.totalAmount;
-                double initialDiscount = double.tryParse(data.discount!) ?? 0;
-                double initialAfterDiscount = initialTotal - initialDiscount;
-                double initialAdvance = double.tryParse(data.advance!) ?? 0;
-                double initialBalance = initialAfterDiscount - initialAdvance;
-
-                totalCtrl.text = initialTotal.toStringAsFixed(2);
-                discountCtrl.text = data.discount!;
-                afterdiscountCtrl.text = initialAfterDiscount.toStringAsFixed(2);
-                advanceCtrl.text = data.advance!;
-                balanceCtrl.text = initialBalance.toStringAsFixed(2);
-
-                isInitialized = true;
-              }
-
-              String SelectedGender = data.gender!;
-              String PayMode = data.payMode!;
-              String DiscountType = data.discountType!;
-
-
-              TextEditingController timeCtrl = TextEditingController(text: data.time);
-              TextEditingController dateCtrl = TextEditingController(text: data.date);
-              TextEditingController caseNoCtrl = TextEditingController(text: data.caseNo);
-              TextEditingController slipNoCtrl = TextEditingController(text: data.slipNo);
-              TextEditingController receivedByCtrl = TextEditingController(text: data.receivedBy);
-              TextEditingController nameCtrl = TextEditingController(text: data.patientName);
-              TextEditingController mobileCtrl = TextEditingController(text: data.mobile);
-              TextEditingController addressCtrl = TextEditingController(text: data.address);
-              TextEditingController agentCtrl = TextEditingController(text: data.agent);
-              TextEditingController doctorCtrl = TextEditingController(text: data.doctor);
-
-              // Billing Controllers
-
-              TextEditingController discountTypeCtrl = TextEditingController(text: data.discountType);
-
-              // Age Controllers
-              TextEditingController yearCtrl = TextEditingController(text: data.year);
-              TextEditingController monthCtrl = TextEditingController(text: data.month);
-              TextEditingController narrationCtrl = TextEditingController(text: data.narration);
-              TextEditingController nametitleCtrl = TextEditingController(text: data.nameTitle);
-
-              return Center(
-                child: Row(
-                  children: [
-                    // Side Bar
-                    Container(
-                      width: 15.w,
-                      child: UiHelper.custsidebar(container: "2", context: context),
-                    ),
-
-                    // Main Content
-                    Container(
-                      width: 85.w,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: ListView(
-                          children: [
-                            UiHelper.CustTopBar(title: "EDIT CASE ENTRY"),
-                            ListView(
-                              shrinkWrap: true,
-                              children: [
-                                // Case Information
-                                Container(
-                                  width: 30.w,
-                                  child: UiHelper.Custcard(
-                                    title: "Case Information",
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            UiHelper.CustTextField(
-                                                controller: timeCtrl,
-                                                enabled: false,
-                                                label: "Time"),
-                                            const SizedBox(width: 5),
-                                            UiHelper.CustTextField(
-                                                controller: dateCtrl,
-                                                enabled: false,
-                                                label: "Date"),
-                                            const SizedBox(width: 5),
-                                            UiHelper.CustTextField(
-                                                controller: caseNoCtrl,
-                                                label: "Case No",
-                                                enabled: false),
-                                            const SizedBox(width: 5),
-                                            UiHelper.CustTextField(
-                                                controller: slipNoCtrl,
-                                                label: "Slip No",
-                                                enabled: false),
-                                            const SizedBox(width: 5),
-                                            UiHelper.CustTextField(
-                                                controller: receivedByCtrl,
-                                                label: "Received By",
-                                                enabled: false),
-                                          ],
                                         ),
+                                        const SizedBox(width: 15),
+                                        UiHelper.CustTextField(controller: narrationCtrl, label: "Enter Narration")
 
                                       ],
                                     ),
-                                  ),
-                                ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        BlocConsumer<UpdateCaseBloc, UpdateCaseState>(
+                                          listener: (context, state) {
+                                            if(state is UpdateCaseLoadedState){
 
-                                // Patient Details
-                                UiHelper.Custcard(
-                                  title: "Patient Details",
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          SizedBox(
-                                            width: 150,
-                                            child: TextField(
-                                              controller: nametitleCtrl,
-                                              style: TextStyle(color: Colors.black),
-                                              decoration: InputDecoration(
-                                                labelText: "Title",
-                                                filled: true,
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.green, width: 2),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                ),
-                                                fillColor: Colors.grey.shade100,
-                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
-                                                prefixIcon: Icon(Icons.person),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(width: 10),
-                                          Expanded(
-                                            child: TextField(
-                                              controller: nameCtrl,
-                                              style: TextStyle(color: Colors.black),
-                                              decoration: InputDecoration(
-                                                labelText: "Patient Name",
-                                                filled: true,
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.green, width: 2),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                ),
-                                                fillColor: Colors.grey.shade100,
-                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
-                                                prefixIcon: Icon(Icons.person),
-                                              ),
-                                            ),
-                                          ),
+                                              List<String> testNames = AddTestDialogState.selectedTests.map((item) => item["Test Name"].toString()).toList();
+                                              List<String> testRate = AddTestDialogState.selectedTests.map((item) => item["Test Rate"].toString()).toList();
+                                              List<String> testDate = AddTestDialogState.selectedTests.map((item) => item["Test Time"].toString()).toList();
 
-                                        ],
-                                      ),
-                                      SizedBox(height: 15),
-                                      Row(children: [
-                                        Expanded(
-                                          child: TextField(
-                                            controller: yearCtrl,
-                                            style: TextStyle(color: Colors.black),
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter.digitsOnly,
-                                              LengthLimitingTextInputFormatter(3),
-                                            ],
-                                            decoration: InputDecoration(
-                                                labelText: "Year",
-                                                filled: true,
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.green, width: 2),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                ),
-                                                fillColor: Colors.grey.shade100,
-                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
-                                                prefixIcon: Icon(Icons.calendar_month),
-                                                suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>yearCtrl.text=data,CaseEnteryData.yearList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
+                                              String TotalAmount = AddTestDialogState.totalAmount.toString();
+                                              String Advance = advanceCtrl.text.isEmpty ? "0" : advanceCtrl.text;
 
-                                            ),
-                                          ),
+                                              String year = yearCtrl.text.isEmpty ? "0" : yearCtrl.text;
+                                              String month = monthCtrl.text.isEmpty ? "0" : monthCtrl.text;
+
+                                              showDialog<bool>(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: UiHelper.CustText(text: "Success",size: 10.5.sp),
+                                                    content: Text("Case Successfully Updated. Do You Print Receipt?"),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        child: const Text("No"),
+                                                        onPressed: (){
+                                                          setState(() {
+                                                            selectedTests.clear();
+                                                            AddTestDialogState.selectedTests.clear();
+                                                            AddTestDialogState.totalAmount = 0;
+                                                            updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
+                                                          });
+                                                          Navigator.popAndPushNamed(
+                                                              context,
+                                                              '/case_entry_page',arguments: {"code" : "/case_entry_page"});
+                                                        },
+                                                      ),
+                                                      ElevatedButton(
+                                                        child: const Text("Yes"),
+                                                        onPressed: () {
+                                                          GetStorage userBox = GetStorage();
+                                                          String User = userBox.read("newUser") ?? "";
+
+                                                          if(CaseEnteryData.agentZero.contains(agentCtrl.text)){
+                                                            PrintCaseEntry.printBill(
+                                                                receiptNo: slipNoCtrl.text,
+                                                                receiptDate: dateCtrl.text,
+                                                                caseNo: caseNoCtrl.text,
+                                                                caseDate: dateCtrl.text,
+                                                                caseTime: timeCtrl.text,
+                                                                patientName: nameCtrl.text,
+                                                                mobile: mobileCtrl.text,
+                                                                sex: SelectedGender,
+                                                                age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
+                                                                referredBy: doctorCtrl.text,
+                                                                testName: testNames,
+                                                                testRate: testRate,
+                                                                date: dateCtrl.text,
+                                                                totalAmount: "0",
+                                                                discountAmount: "0",
+                                                                balanceAmount: "0",
+                                                                advanceAmount: "0",
+                                                                receivedBy: User,
+                                                                testDate: testDate
+                                                            );
+                                                          }else{
+                                                            PrintCaseEntry.printBill(
+                                                                receiptNo: slipNoCtrl.text,
+                                                                receiptDate: dateCtrl.text,
+                                                                caseNo: caseNoCtrl.text,
+                                                                caseDate: dateCtrl.text,
+                                                                caseTime: timeCtrl.text,
+                                                                patientName: nameCtrl.text,
+                                                                mobile: mobileCtrl.text,
+                                                                sex: SelectedGender,
+                                                                age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
+                                                                referredBy: doctorCtrl.text,
+                                                                testName: testNames,
+                                                                testRate: testRate,
+                                                                date: dateCtrl.text,
+                                                                totalAmount: "${double.parse(TotalAmount)-double.parse(discountCtrl.text)}.00",
+                                                                discountAmount: "${paidAmount.value.toStringAsFixed(2)}",
+                                                                balanceAmount: balance.toString(),
+                                                                advanceAmount: Advance,
+                                                                receivedBy: User,
+                                                                testDate: testDate
+                                                            );
+                                                          }
+
+                                                          setState(() {
+                                                            selectedTests.clear();
+                                                            AddTestDialogState.selectedTests.clear();
+                                                            AddTestDialogState.totalAmount = 0;
+                                                            updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
+
+                                                          });
+
+                                                          Navigator.popAndPushNamed(context, '/case_entry_page',arguments: {"code" : "/case_entry_page"});
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+
+
+                                            }
+                                            if(state is UpdateCaseErrorState){
+                                              UiHelper.showErrorToste(message: state.errorMsg);
+                                            }
+                                          },
+                                          builder: (context, state) {
+                                            if(state is UpdateCaseLoadingState){
+                                              return Center(child: CircularProgressIndicator());
+                                            }
+                                            return Obx(() {
+                                              return InkWell(
+                                                onTap: (){
+
+                                                  String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" || balanceCtrl.text == "0.00" ? "Paid" : "Due";
+                                                  List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
+                                                  List<int> testRates = selectedTests.map((test) => int.tryParse(test["Test Rate"].toString()) ?? 0).toList();
+                                                  List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
+                                                  List<String> testFile = selectedTests.map((test) => test["Test File"] as String).toList();
+
+                                                  UpdateCaseCtrl.UpdateCase(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: receivedByCtrl.text, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: totalCtrl.text, discount: discountCtrl.text, after_discount: afterdiscountCtrl.text, advance: advanceCtrl.text, balance: balanceCtrl.text,paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
+
+                                                  print(doctorCtrl.text);
+
+                                                },
+                                                child: Card(
+                                                  elevation: 5,
+                                                  color: Colors.blue.shade400,
+                                                  borderOnForeground: true,
+                                                  shadowColor: Colors.blue.shade100,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Text(
+                                                      "Update Case: ₹${paidAmount.value.toStringAsFixed(2)}",
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 12.sp,
+                                                          fontFamily: 'font-bold'),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            });
+                                          },
                                         ),
-                                        SizedBox(width: 10),
-                                        Expanded(
-                                          child: TextField(
-                                            controller: monthCtrl,
-                                            style: TextStyle(color: Colors.black),
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter.digitsOnly,
-                                              LengthLimitingTextInputFormatter(3),
-                                            ],
-                                            decoration: InputDecoration(
-                                                labelText: "Month",
-                                                filled: true,
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.green, width: 2),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                ),
-                                                fillColor: Colors.grey.shade100,
-                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
-                                                prefixIcon: Icon(Icons.calendar_month),
-                                                suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>monthCtrl.text=data,CaseEnteryData.monthList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
-                                            ),
-                                          ),
-                                        ),
-                                      ],),
-                                      SizedBox(height: 15),
-                                      Row(
-                                        children: [
-                                          UiHelper.CustDropDown(
-                                              label: "Gender",
-                                              defaultValue: SelectedGender,
-                                              list: CaseEnteryData.genderList,
-                                              icon: Icon(Icons.male),
-                                              onChanged: (val) {
-                                                SelectedGender = val!;
-                                              }),
-                                          SizedBox(width: 10),
-                                          Expanded(
-                                            child: TextField(
-                                              controller: mobileCtrl,
-                                              style: TextStyle(color: Colors.black),
-                                              keyboardType: TextInputType.number,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter.digitsOnly,
-                                                LengthLimitingTextInputFormatter(10),
-                                              ],
-                                              decoration: InputDecoration(
-                                                labelText: "Mobile No",
-                                                filled: true,
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.green, width: 2),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                ),
-                                                fillColor: Colors.grey.shade100,
-                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
-                                                prefixIcon: Icon(Icons.phone),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      SizedBox(height: 20),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: TextField(
-                                              controller: addressCtrl,
-                                              style: TextStyle(color: Colors.black),
-                                              decoration: InputDecoration(
-                                                labelText: "Patient Address",
-                                                filled: true,
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.green, width: 2),
-                                                ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderRadius: BorderRadius.circular(10),
-                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                ),
-                                                fillColor: Colors.grey.shade100,
-                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
-                                                prefixIcon: Icon(Icons.location_history),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                                      ],)
+                                  ],
                                 ),
-                              ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+
+              ],
+            ),
+          );
+        }
+        return Container();
+      },
+    );
+  }
+
+  Widget DesktopLayout() {
+    return BlocBuilder<SingleCaseCubit, SingleCaseState>(
+      builder: (context, state) {
+        if(state is SingleCaseLoadingState){
+          return Center(child: CircularProgressIndicator());
+        }
+        if(state is SingleCaseErrorState){
+          return Center(child: UiHelper.CustText(text: state.errorMsg));
+        }
+        if(state is SingleCaseLoadedState){
+          var data = state.caseModel.caseData!;
+
+          // ✅ ONLY initialize once
+          if (!isInitialized) {
+            paidAmount.value = double.parse(data.advance!);
+
+            // Parse existing tests
+            List<String> names = data.testName!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
+            List<String> rate = data.testRate!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
+            List<String> time = data.testDate!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
+            List<String> file = data.testFile!.replaceAll('[', '').replaceAll(']', '').split(',').map((e) => e.trim()).toList();
+
+            selectedTests.clear();
+            for (int i = 0; i < names.length && i < rate.length; i++) {
+              selectedTests.add({
+                'Test Name': names[i],
+                'Test Rate': int.tryParse(rate[i]) ?? 0,
+                'Test Time': time[i],
+                'Test File': file[i],
+              });
+            }
+
+            AddTestDialogState.selectedTests = List.from(selectedTests);
+            AddTestDialogState.totalAmount = selectedTests.fold(0.0, (sum, test) =>
+            sum + (double.tryParse(test['Test Rate'].toString()) ?? 0)
+            );
+
+            // ✅ Initialize all controllers once
+            double initialTotal = zero ? 0 : AddTestDialogState.totalAmount;
+            double initialDiscount = double.tryParse(data.discount!) ?? 0;
+            double initialAfterDiscount = initialTotal - initialDiscount;
+            double initialAdvance = double.tryParse(data.advance!) ?? 0;
+            double initialBalance = initialAfterDiscount - initialAdvance;
+
+            // Billing controllers
+            totalCtrl = TextEditingController(text: initialTotal.toStringAsFixed(2));
+            discountCtrl = TextEditingController(text: data.discount!);
+            afterdiscountCtrl = TextEditingController(text: initialAfterDiscount.toStringAsFixed(2));
+            advanceCtrl = TextEditingController(text: data.advance!);
+            balanceCtrl = TextEditingController(text: initialBalance.toStringAsFixed(2));
+
+            // All other controllers
+            timeCtrl = TextEditingController(text: data.time);
+            dateCtrl = TextEditingController(text: data.date);
+            caseNoCtrl = TextEditingController(text: data.caseNo);
+            slipNoCtrl = TextEditingController(text: data.slipNo);
+            receivedByCtrl = TextEditingController(text: data.receivedBy);
+            nameCtrl = TextEditingController(text: data.patientName);
+            mobileCtrl = TextEditingController(text: data.mobile);
+            addressCtrl = TextEditingController(text: data.address);
+            agentCtrl = TextEditingController(text: data.agent);
+            doctorCtrl = TextEditingController(text: data.doctor ?? "Self");  // ← Initialize once
+            discountTypeCtrl = TextEditingController(text: data.discountType);
+            yearCtrl = TextEditingController(text: data.year);
+            monthCtrl = TextEditingController(text: data.month);
+            narrationCtrl = TextEditingController(text: data.narration);
+            nametitleCtrl = TextEditingController(text: data.nameTitle);
+
+            // Initialize dropdown values
+            SelectedGender = data.gender!;
+            PayMode = data.payMode!;
+            DiscountType = data.discountType!;
+
+            isInitialized = true;
+          }
+
+          // ✅ Remove ALL controller declarations from here
+          // Delete these lines:
+          // TextEditingController timeCtrl = TextEditingController(text: data.time);
+          // TextEditingController dateCtrl = TextEditingController(text: data.date);
+          // ... etc
+
+          return Center(
+            child: Row(
+              children: [
+                // Side Bar
+                Container(
+                  width: 15.w,
+                  child: UiHelper.custsidebar(container: "2", context: context),
+                ),
+
+                // Main Content
+                Container(
+                  width: 85.w,
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ListView(
+                      children: [
+                        UiHelper.CustTopBar(title: "EDIT CASE ENTRY"),
+                        ListView(
+                          shrinkWrap: true,
+                          children: [
+                            // Case Information
+                            Container(
+                              width: 30.w,
+                              child: UiHelper.Custcard(
+                                title: "Case Information",
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        UiHelper.CustTextField(
+                                            controller: timeCtrl,
+                                            enabled: false,
+                                            label: "Time"),
+                                        const SizedBox(width: 5),
+                                        UiHelper.CustTextField(
+                                            controller: dateCtrl,
+                                            enabled: false,
+                                            label: "Date"),
+                                        const SizedBox(width: 5),
+                                        UiHelper.CustTextField(
+                                            controller: caseNoCtrl,
+                                            label: "Case No",
+                                            enabled: false),
+                                        const SizedBox(width: 5),
+                                        UiHelper.CustTextField(
+                                            controller: slipNoCtrl,
+                                            label: "Slip No",
+                                            enabled: false),
+                                        const SizedBox(width: 5),
+                                        UiHelper.CustTextField(
+                                            controller: receivedByCtrl,
+                                            label: "Received By",
+                                            enabled: false),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
 
-                            // Doctors & Agents
-                            Container(
-                              width: Adaptive.w(85),
-                              child: UiHelper.Custcard(
-                                title: "Doctors & Agents",
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextField(
-                                        controller: agentCtrl,
-                                        style: TextStyle(color: Colors.black),
-                                        decoration: InputDecoration(
-                                            labelText: "Enter Agent Name",
+                            // Patient Details
+                            UiHelper.Custcard(
+                              title: "Patient Details",
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 150,
+                                        child: TextField(
+                                          controller: nametitleCtrl,
+                                          style: TextStyle(color: Colors.black),
+                                          decoration: InputDecoration(
+                                            labelText: "Title",
                                             filled: true,
                                             focusedBorder: OutlineInputBorder(
                                               borderRadius: BorderRadius.circular(10),
@@ -1306,500 +1157,688 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                               borderSide: BorderSide(color: Colors.black45, width: 1.5),
                                             ),
                                             fillColor: Colors.grey.shade100,
-                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
                                             prefixIcon: Icon(Icons.person),
-                                            suffixIcon: IconButton(onPressed: ()=>
-                                                UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList),
-                                                icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: TextField(
+                                          controller: nameCtrl,
+                                          style: TextStyle(color: Colors.black),
+                                          decoration: InputDecoration(
+                                            labelText: "Patient Name",
+                                            filled: true,
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                            ),
+                                            fillColor: Colors.grey.shade100,
+                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
+                                            prefixIcon: Icon(Icons.person),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 15),
+                                  Row(children: [
+                                    Expanded(
+                                      child: TextField(
+                                        controller: yearCtrl,
+                                        style: TextStyle(color: Colors.black),
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                          LengthLimitingTextInputFormatter(3),
+                                        ],
+                                        decoration: InputDecoration(
+                                            labelText: "Year",
+                                            filled: true,
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                            ),
+                                            fillColor: Colors.grey.shade100,
+                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
+                                            prefixIcon: Icon(Icons.calendar_month),
+                                            suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>yearCtrl.text=data,CaseEnteryData.yearList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(width: 20),
+                                    SizedBox(width: 10),
                                     Expanded(
-                                      child: DoctorInputField(
-                                        controller: doctorCtrl,
-                                        initialValue: data.doctor ?? "Self",
-                                        onDoctorSelected: (doctor) {
-                                          setState(() {
-                                            doctorCtrl.text = doctor;
-                                          });
-                                        },
+                                      child: TextField(
+                                        controller: monthCtrl,
+                                        style: TextStyle(color: Colors.black),
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                          LengthLimitingTextInputFormatter(3),
+                                        ],
+                                        decoration: InputDecoration(
+                                            labelText: "Month",
+                                            filled: true,
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                            ),
+                                            fillColor: Colors.grey.shade100,
+                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
+                                            prefixIcon: Icon(Icons.calendar_month),
+                                            suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>monthCtrl.text=data,CaseEnteryData.monthList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
+                                        ),
                                       ),
                                     ),
+                                  ],),
+                                  SizedBox(height: 15),
+                                  Row(
+                                    children: [
+                                      UiHelper.CustDropDown(
+                                          label: "Gender",
+                                          defaultValue: SelectedGender,
+                                          list: CaseEnteryData.genderList,
+                                          icon: Icon(Icons.male),
+                                          onChanged: (val) {
+                                            setState(() {
+                                              SelectedGender = val!;
+                                            });
+                                          }),
+                                      SizedBox(width: 10),
+                                      Expanded(
+                                        child: TextField(
+                                          controller: mobileCtrl,
+                                          style: TextStyle(color: Colors.black),
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter.digitsOnly,
+                                            LengthLimitingTextInputFormatter(10),
+                                          ],
+                                          decoration: InputDecoration(
+                                            labelText: "Mobile No",
+                                            filled: true,
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                            ),
+                                            fillColor: Colors.grey.shade100,
+                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
+                                            prefixIcon: Icon(Icons.phone),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 20),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: addressCtrl,
+                                          style: TextStyle(color: Colors.black),
+                                          decoration: InputDecoration(
+                                            labelText: "Patient Address",
+                                            filled: true,
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.green, width: 2),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.circular(10),
+                                              borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                            ),
+                                            fillColor: Colors.grey.shade100,
+                                            labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
+                                            prefixIcon: Icon(Icons.location_history),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Doctors & Agents
+                        Container(
+                          width: Adaptive.w(85),
+                          child: UiHelper.Custcard(
+                            title: "Doctors & Agents",
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: agentCtrl,
+                                    style: TextStyle(color: Colors.black),
+                                    decoration: InputDecoration(
+                                        labelText: "Enter Agent Name",
+                                        filled: true,
+                                        focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.green, width: 2),
+                                        ),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                        ),
+                                        fillColor: Colors.grey.shade100,
+                                        labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                                        prefixIcon: Icon(Icons.person),
+                                        suffixIcon: IconButton(onPressed: ()=>
+                                            UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList),
+                                            icon: Icon(Icons.arrow_drop_down_circle_outlined))
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                Expanded(
+                                  child: DoctorInputField(
+                                    controller: doctorCtrl,  // ✅ Now uses persistent controller
+                                    // ✅ Removed initialValue - let controller handle it
+                                    onDoctorSelected: (doctor) {
+                                      setState(() {
+                                        print("Doctor Change : $doctor");
+                                        doctorCtrl.text = doctor;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // Tests & Billing (rest of your code continues...)
+                        ListView(
+                          shrinkWrap: true,
+                          children: [
+// Tests List
+                            Container(
+                              width: 42.5.w,
+                              child: UiHelper.Custcard(
+                                title: "Tests List",
+                                trailing: TextButton(
+                                  onPressed: () async {
+
+                                    if(CaseEnteryData.agentZero.contains(agentCtrl.text)){
+                                      setState(() {
+                                        zero = true;
+                                      });
+                                    }
+
+// ✅ Initialize AddTestDialogState with current tests before opening dialog
+                                    AddTestDialogState.selectedTests = List.from(selectedTests);
+                                    AddTestDialogState.totalAmount = selectedTests.fold(0.0, (sum, test) =>
+                                    sum + (double.tryParse(test['Test Rate'].toString()) ?? 0)
+                                    );
+
+                                    var result = await showDialog(
+                                      context: context,
+                                      builder: (_) => AddTestDialog(),
+                                    );
+
+                                    if (result != null) {
+                                      setState(() {
+                                        selectedTests = result;
+// Recalculate total from the returned tests
+                                        AddTestDialogState.totalAmount = result.fold(0.0, (sum, test) =>
+                                        sum + (double.tryParse(test['Test Rate'].toString()) ?? 0)
+                                        );
+                                        updateBilling(
+                                            discountCtrl: discountCtrl,
+                                            advanceCtrl: advanceCtrl,
+                                            totalCtrl: totalCtrl,
+                                            afterdiscountCtrl: afterdiscountCtrl,
+                                            balanceCtrl: balanceCtrl
+                                        );
+                                      });
+                                    }
+                                  },
+                                  child: Text("Add Test"),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Divider(),
+
+                                    ...selectedTests.asMap().entries.map((entry) {
+                                      int index = entry.key;
+                                      var item = entry.value;
+
+                                      return Card(
+                                        color: Colors.grey.shade100,
+                                        margin: EdgeInsets.symmetric(vertical: 4),
+                                        child: ListTile(
+                                          leading: UiHelper.CustText(text: "${index + 1} : "),
+                                          title: UiHelper.CustText(text: item['Test Name']),
+
+                                          /// ✅ Editable Test Rate Field
+                                          trailing: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              SizedBox(
+                                                width: 100,
+                                                child: TextField(
+                                                  controller: TextEditingController(text: zero ? "0" :"${item['Test Rate']}"),
+                                                  keyboardType: TextInputType.number,
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(color: Colors.black, fontSize: 14),
+                                                  inputFormatters: [
+                                                    FilteringTextInputFormatter.digitsOnly,
+                                                  ],
+                                                  decoration: InputDecoration(
+                                                    contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                                                    border: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.circular(5),
+                                                      borderSide: BorderSide(color: Colors.black45, width: 1),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.circular(5),
+                                                      borderSide: BorderSide(color: Colors.blue, width: 2),
+                                                    ),
+                                                  ),
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+// Get old rate
+                                                      double oldRate = double.tryParse(item['Test Rate'].toString()) ?? 0;
+
+// Get new rate
+                                                      double newRate = double.tryParse(newValue) ?? 0;
+
+// Update the item
+                                                      item['Test Rate'] = newRate.toInt();
+
+// Update total amount
+                                                      AddTestDialogState.totalAmount = AddTestDialogState.totalAmount - oldRate + newRate;
+
+// Update billing
+                                                      updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                              SizedBox(width: 8),
+                                              IconButton(
+                                                icon: Icon(Icons.close, color: Colors.red),
+                                                onPressed: () {
+                                                  setState(() {
+// Get the rate before removing
+                                                    double rateToRemove = double.tryParse(item['Test Rate'].toString()) ?? 0;
+
+// Remove from both lists
+                                                    selectedTests.removeAt(index);
+
+// Also remove from AddTestDialogState if it exists there
+                                                    AddTestDialogState.selectedTests.removeWhere((test) =>
+                                                    test['Test Name'] == item['Test Name']
+                                                    );
+
+// Update total
+                                                    AddTestDialogState.totalAmount -= rateToRemove;
+
+// Ensure total doesn't go negative
+                                                    if (AddTestDialogState.totalAmount < 0) {
+                                                      AddTestDialogState.totalAmount = 0;
+                                                    }
+
+                                                    updateBilling(
+                                                        discountCtrl: discountCtrl,
+                                                        advanceCtrl: advanceCtrl,
+                                                        totalCtrl: totalCtrl,
+                                                        afterdiscountCtrl: afterdiscountCtrl,
+                                                        balanceCtrl: balanceCtrl
+                                                    );
+                                                  });
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+
                                   ],
                                 ),
                               ),
                             ),
 
-                            // Tests & Billing
-                            ListView(
-                              shrinkWrap: true,
-                              children: [
-                                // Tests List
-                                Container(
-                                  width: 42.5.w,
-                                  child: UiHelper.Custcard(
-                                    title: "Tests List",
-                                    trailing: TextButton(
-                                      onPressed: () async {
 
-                                        if(CaseEnteryData.agentZero.contains(agentCtrl.text)){
-                                          setState(() {
-                                            zero = true;
-                                          });
-                                        }
-
-                                        // ✅ Initialize AddTestDialogState with current tests before opening dialog
-                                        AddTestDialogState.selectedTests = List.from(selectedTests);
-                                        AddTestDialogState.totalAmount = selectedTests.fold(0.0, (sum, test) =>
-                                        sum + (double.tryParse(test['Test Rate'].toString()) ?? 0)
-                                        );
-
-                                        var result = await showDialog(
-                                          context: context,
-                                          builder: (_) => AddTestDialog(),
-                                        );
-
-                                        if (result != null) {
-                                          setState(() {
-                                            selectedTests = result;
-                                            // Recalculate total from the returned tests
-                                            AddTestDialogState.totalAmount = result.fold(0.0, (sum, test) =>
-                                            sum + (double.tryParse(test['Test Rate'].toString()) ?? 0)
-                                            );
-                                            updateBilling(
-                                                discountCtrl: discountCtrl,
-                                                advanceCtrl: advanceCtrl,
-                                                totalCtrl: totalCtrl,
-                                                afterdiscountCtrl: afterdiscountCtrl,
-                                                balanceCtrl: balanceCtrl
-                                            );
-                                          });
-                                        }
-                                      },
-                                      child: Text("Add Test"),
-                                    ),
-                                    child: Column(
+// Billing Summary
+                            Container(
+                              width: 42.5.w,
+                              child: UiHelper.Custcard(
+                                title: "Billing Summary",
+                                child: Column(
+                                  children: [
+// Total & Discount
+                                    Row(
                                       children: [
-                                        Divider(),
+                                        UiHelper.CustTextField(
+                                          controller: totalCtrl,
+                                          label: "Total Amount",
+                                          enabled: false,
+                                        ),
+                                        SizedBox(width: 20),
+                                        Expanded(
+                                          child: TextField(
+                                            controller: discountCtrl,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.digitsOnly,
+                                            ],
+                                            decoration: InputDecoration(
+                                                filled: true,
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.green, width: 2),
+                                                ),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                                ),
+                                                fillColor: Colors.grey.shade100,
+                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                                                prefixIcon: Icon(Icons.discount),
+                                                labelText: "Discount (₹)"),
+                                            keyboardType: TextInputType.number,
+                                            onChanged: (_) {
+                                              updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
 
-                                        ...selectedTests.asMap().entries.map((entry) {
-                                          int index = entry.key;
-                                          var item = entry.value;
-
-                                          return Card(
-                                            color: Colors.grey.shade100,
-                                            margin: EdgeInsets.symmetric(vertical: 4),
-                                            child: ListTile(
-                                              leading: UiHelper.CustText(text: "${index + 1} : "),
-                                              title: UiHelper.CustText(text: item['Test Name']),
-
-                                              /// ✅ Editable Test Rate Field
-                                              trailing: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  SizedBox(
-                                                    width: 100,
-                                                    child: TextField(
-                                                      controller: TextEditingController(text: zero ? "0" :"${item['Test Rate']}"),
-                                                      keyboardType: TextInputType.number,
-                                                      textAlign: TextAlign.center,
-                                                      style: TextStyle(color: Colors.black, fontSize: 14),
-                                                      inputFormatters: [
-                                                        FilteringTextInputFormatter.digitsOnly,
-                                                      ],
-                                                      decoration: InputDecoration(
-                                                        contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                                                        border: OutlineInputBorder(
-                                                          borderRadius: BorderRadius.circular(5),
-                                                          borderSide: BorderSide(color: Colors.black45, width: 1),
-                                                        ),
-                                                        focusedBorder: OutlineInputBorder(
-                                                          borderRadius: BorderRadius.circular(5),
-                                                          borderSide: BorderSide(color: Colors.blue, width: 2),
-                                                        ),
-                                                      ),
-                                                      onChanged: (newValue) {
-                                                        setState(() {
-                                                          // Get old rate
-                                                          double oldRate = double.tryParse(item['Test Rate'].toString()) ?? 0;
-
-                                                          // Get new rate
-                                                          double newRate = double.tryParse(newValue) ?? 0;
-
-                                                          // Update the item
-                                                          item['Test Rate'] = newRate.toInt();
-
-                                                          // Update total amount
-                                                          AddTestDialogState.totalAmount = AddTestDialogState.totalAmount - oldRate + newRate;
-
-                                                          // Update billing
-                                                          updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
-                                                        });
-                                                      },
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 8),
-                                                  IconButton(
-                                                    icon: Icon(Icons.close, color: Colors.red),
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        // Get the rate before removing
-                                                        double rateToRemove = double.tryParse(item['Test Rate'].toString()) ?? 0;
-
-                                                        // Remove from both lists
-                                                        selectedTests.removeAt(index);
-
-                                                        // Also remove from AddTestDialogState if it exists there
-                                                        AddTestDialogState.selectedTests.removeWhere((test) =>
-                                                        test['Test Name'] == item['Test Name']
-                                                        );
-
-                                                        // Update total
-                                                        AddTestDialogState.totalAmount -= rateToRemove;
-
-                                                        // Ensure total doesn't go negative
-                                                        if (AddTestDialogState.totalAmount < 0) {
-                                                          AddTestDialogState.totalAmount = 0;
-                                                        }
-
-                                                        updateBilling(
-                                                            discountCtrl: discountCtrl,
-                                                            advanceCtrl: advanceCtrl,
-                                                            totalCtrl: totalCtrl,
-                                                            afterdiscountCtrl: afterdiscountCtrl,
-                                                            balanceCtrl: balanceCtrl
-                                                        );
-                                                      });
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
+                                            },
+                                          ),
+                                        ),
 
                                       ],
                                     ),
-                                  ),
-                                ),
 
+                                    SizedBox(height: 15),
 
-                                // Billing Summary
-                                Container(
-                                  width: 42.5.w,
-                                  child: UiHelper.Custcard(
-                                    title: "Billing Summary",
-                                    child: Column(
+// After Discount & Advance
+                                    Row(
                                       children: [
-                                        // Total & Discount
-                                        Row(
-                                          children: [
-                                            UiHelper.CustTextField(
-                                              controller: totalCtrl,
-                                              label: "Total Amount",
-                                              enabled: false,
-                                            ),
-                                            SizedBox(width: 20),
-                                            Expanded(
-                                              child: TextField(
-                                                controller: discountCtrl,
-                                                inputFormatters: [
-                                                  FilteringTextInputFormatter.digitsOnly,
-                                                ],
-                                                decoration: InputDecoration(
-                                                    filled: true,
-                                                    focusedBorder: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      borderSide: BorderSide(color: Colors.green, width: 2),
-                                                    ),
-                                                    enabledBorder: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                    ),
-                                                    fillColor: Colors.grey.shade100,
-                                                    labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                                                    prefixIcon: Icon(Icons.discount),
-                                                    labelText: "Discount (₹)"),
-                                                keyboardType: TextInputType.number,
-                                                onChanged: (_) {
-                                                  updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
-
-                                                },
-                                              ),
-                                            ),
-
-                                          ],
+                                        UiHelper.CustTextField(
+                                          controller: afterdiscountCtrl,
+                                          label: "Amount After Discount",
+                                          enabled: false,
                                         ),
+                                        SizedBox(width: 20),
+                                        Expanded(
+                                          child: TextField(
+                                            controller: advanceCtrl,
+                                            inputFormatters: [
+                                              FilteringTextInputFormatter.digitsOnly,
+                                            ],
+                                            decoration: InputDecoration(
+                                                filled: true,
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.green, width: 2),
+                                                ),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                                ),
+                                                fillColor: Colors.grey.shade100,
+                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                                                prefixIcon: Icon(Icons.money),
+                                                labelText: "Paid Amount"),
+                                            keyboardType: TextInputType.number,
+                                            onChanged: (_) {
+                                              updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
 
-                                        SizedBox(height: 15),
-
-                                        // After Discount & Advance
-                                        Row(
-                                          children: [
-                                            UiHelper.CustTextField(
-                                              controller: afterdiscountCtrl,
-                                              label: "Amount After Discount",
-                                              enabled: false,
-                                            ),
-                                            SizedBox(width: 20),
-                                            Expanded(
-                                              child: TextField(
-                                                controller: advanceCtrl,
-                                                inputFormatters: [
-                                                  FilteringTextInputFormatter.digitsOnly,
-                                                ],
-                                                decoration: InputDecoration(
-                                                    filled: true,
-                                                    focusedBorder: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      borderSide: BorderSide(color: Colors.green, width: 2),
-                                                    ),
-                                                    enabledBorder: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                    ),
-                                                    fillColor: Colors.grey.shade100,
-                                                    labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                                                    prefixIcon: Icon(Icons.money),
-                                                    labelText: "Paid Amount"),
-                                                keyboardType: TextInputType.number,
-                                                onChanged: (_) {
-                                                  updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
-
-                                                },// CONTINUATION OF THE MOBILE LAYOUT AND START OF DESKTOP LAYOUT
+                                            },// CONTINUATION OF THE MOBILE LAYOUT AND START OF DESKTOP LAYOUT
 // This continues from where the first part ended
 
-                                              ),
-                                            ),
-                                          ],
+                                          ),
                                         ),
-
-                                        SizedBox(height: 15),
-
-                                        // Balance & Pay Mode
-                                        Row(
-                                          children: [
-                                            UiHelper.CustTextField(
-                                              controller: balanceCtrl,
-                                              label: "Balance Amount",
-                                              enabled: true,
-                                            ),
-                                            SizedBox(width: 20),
-                                            UiHelper.CustDropDown(
-                                              label: "Pay Mode",
-                                              defaultValue: PayMode,
-                                              list: CaseEnteryData.payList,
-                                              onChanged: (val) {
-                                                PayMode = val!;
-                                              },
-                                            ),
-                                          ],
-                                        ),
-
-                                        SizedBox(height: 15),
-
-                                        // Paid Amount Display
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: TextField(
-                                                controller: discountTypeCtrl,
-                                                style: TextStyle(color: Colors.black),
-                                                decoration: InputDecoration(
-                                                    labelText: "Enter Discount Type",
-                                                    filled: true,
-                                                    focusedBorder: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      borderSide: BorderSide(color: Colors.green, width: 2),
-                                                    ),
-                                                    enabledBorder: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(10),
-                                                      borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                                    ),
-                                                    fillColor: Colors.grey.shade100,
-                                                    labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                                                    prefixIcon: Icon(Icons.local_hospital),
-                                                    suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>discountTypeCtrl.text=data,CaseEnteryData.discountTypeList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 15),
-                                            UiHelper.CustTextField(controller: narrationCtrl, label: "Enter Narration")
-
-                                          ],
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.end,
-                                          children: [
-                                            BlocConsumer<UpdateCaseBloc, UpdateCaseState>(
-                                              listener: (context, state) {
-                                                if(state is UpdateCaseLoadedState){
-
-                                                  List<String> testNames = AddTestDialogState.selectedTests.map((item) => item["Test Name"].toString()).toList();
-                                                  List<String> testRate = AddTestDialogState.selectedTests.map((item) => item["Test Rate"].toString()).toList();
-                                                  List<String> testDate = AddTestDialogState.selectedTests.map((item) => item["Test Time"].toString()).toList();
-
-                                                  String TotalAmount = AddTestDialogState.totalAmount.toString();
-                                                  String Advance = advanceCtrl.text.isEmpty ? "0" : advanceCtrl.text;
-
-                                                  String year = yearCtrl.text.isEmpty ? "0" : yearCtrl.text;
-                                                  String month = monthCtrl.text.isEmpty ? "0" : monthCtrl.text;
-
-                                                  showDialog<bool>(
-                                                    context: context,
-                                                    barrierDismissible: false,
-                                                    builder: (BuildContext context) {
-                                                      return AlertDialog(
-                                                        title: UiHelper.CustText(text: "Success",size: 10.5.sp),
-                                                        content: Text("Case Successfully Updated. Do You Print Receipt?"),
-                                                        actions: <Widget>[
-                                                          TextButton(
-                                                            child: const Text("No"),
-                                                            onPressed: (){
-                                                              setState(() {
-                                                                selectedTests.clear();
-                                                                AddTestDialogState.selectedTests.clear();
-                                                                AddTestDialogState.totalAmount = 0;
-                                                                updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
-                                                              });
-                                                              Navigator.popAndPushNamed(
-                                                                  context,
-                                                                  '/case_entry_page',arguments: {"code" : "/case_entry_page"});
-                                                            },
-                                                          ),
-                                                          ElevatedButton(
-                                                            child: const Text("Yes"),
-                                                            onPressed: () {
-                                                              GetStorage userBox = GetStorage();
-                                                              String User = userBox.read("newUser") ?? "";
-
-                                                              if(CaseEnteryData.agentZero.contains(agentCtrl.text)){
-                                                                PrintCaseEntry.printBill(
-                                                                    receiptNo: slipNoCtrl.text,
-                                                                    receiptDate: dateCtrl.text,
-                                                                    caseNo: caseNoCtrl.text,
-                                                                    caseDate: dateCtrl.text,
-                                                                    caseTime: timeCtrl.text,
-                                                                    patientName: nameCtrl.text,
-                                                                    mobile: mobileCtrl.text,
-                                                                    sex: SelectedGender,
-                                                                    age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
-                                                                    referredBy: doctorCtrl.text,
-                                                                    testName: testNames,
-                                                                    testRate: testRate,
-                                                                    date: dateCtrl.text,
-                                                                    totalAmount: "0",
-                                                                    discountAmount: "0",
-                                                                    balanceAmount: "0",
-                                                                    advanceAmount: "0",
-                                                                    receivedBy: User,
-                                                                    testDate: testDate
-                                                                );
-                                                              }else{
-                                                                PrintCaseEntry.printBill(
-                                                                    receiptNo: slipNoCtrl.text,
-                                                                    receiptDate: dateCtrl.text,
-                                                                    caseNo: caseNoCtrl.text,
-                                                                    caseDate: dateCtrl.text,
-                                                                    caseTime: timeCtrl.text,
-                                                                    patientName: nameCtrl.text,
-                                                                    mobile: mobileCtrl.text,
-                                                                    sex: SelectedGender,
-                                                                    age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
-                                                                    referredBy: doctorCtrl.text,
-                                                                    testName: testNames,
-                                                                    testRate: testRate,
-                                                                    date: dateCtrl.text,
-                                                                    totalAmount: "${double.parse(TotalAmount)-double.parse(discountCtrl.text)}.00",
-                                                                    discountAmount: "${paidAmount.value.toStringAsFixed(2)}",
-                                                                    balanceAmount: balance.toString(),
-                                                                    advanceAmount: Advance,
-                                                                    receivedBy: User,
-                                                                    testDate: testDate
-                                                                );
-                                                              }
-
-                                                              setState(() {
-                                                                selectedTests.clear();
-                                                                AddTestDialogState.selectedTests.clear();
-                                                                AddTestDialogState.totalAmount = 0;
-                                                                updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
-
-                                                              });
-
-                                                              Navigator.popAndPushNamed(context, '/case_entry_page',arguments: {"code" : "/case_entry_page"});
-                                                            },
-                                                          ),
-                                                        ],
-                                                      );
-                                                    },
-                                                  );
-
-
-                                                }
-                                                if(state is UpdateCaseErrorState){
-                                                  UiHelper.showErrorToste(message: state.errorMsg);
-                                                }
-                                              },
-                                              builder: (context, state) {
-                                                if(state is UpdateCaseLoadingState){
-                                                  return Center(child: CircularProgressIndicator());
-                                                }
-                                                return Obx(() {
-                                                  return InkWell(
-                                                    onTap: (){
-
-                                                        String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" || balanceCtrl.text == "0.00" ? "Paid" : "Due";
-                                                        List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
-                                                        List<int> testRates = selectedTests.map((test) => int.tryParse(test["Test Rate"].toString()) ?? 0).toList();
-                                                        List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
-                                                        List<String> testFile = selectedTests.map((test) => test["Test File"] as String).toList();
-
-                                                        UpdateCaseCtrl.UpdateCase(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: receivedByCtrl.text, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: totalCtrl.text, discount: discountCtrl.text, after_discount: afterdiscountCtrl.text, advance: advanceCtrl.text, balance: balanceCtrl.text,paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
-
-                                                    },
-                                                    child: Card(
-                                                      elevation: 5,
-                                                      color: Colors.blue.shade400,
-                                                      borderOnForeground: true,
-                                                      shadowColor: Colors.blue.shade100,
-                                                      child: Padding(
-                                                        padding: const EdgeInsets.all(8.0),
-                                                        child: Text(
-                                                          "Update Case: ₹${paidAmount.value.toStringAsFixed(2)}",
-                                                          style: TextStyle(
-                                                              color: Colors.white,
-                                                              fontSize: 12.sp,
-                                                              fontFamily: 'font-bold'),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                });
-                                              },
-                                            ),
-                                          ],)
                                       ],
                                     ),
-                                  ),
+
+                                    SizedBox(height: 15),
+
+// Balance & Pay Mode
+                                    Row(
+                                      children: [
+                                        UiHelper.CustTextField(
+                                          controller: balanceCtrl,
+                                          label: "Balance Amount",
+                                          enabled: true,
+                                        ),
+                                        SizedBox(width: 20),
+                                        UiHelper.CustDropDown(
+                                          label: "Pay Mode",
+                                          defaultValue: PayMode,
+                                          list: CaseEnteryData.payList,
+                                          onChanged: (val) {
+                                            PayMode = val!;
+                                          },
+                                        ),
+                                      ],
+                                    ),
+
+                                    SizedBox(height: 15),
+
+// Paid Amount Display
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextField(
+                                            controller: discountTypeCtrl,
+                                            style: TextStyle(color: Colors.black),
+                                            decoration: InputDecoration(
+                                                labelText: "Enter Discount Type",
+                                                filled: true,
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.green, width: 2),
+                                                ),
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                                                ),
+                                                fillColor: Colors.grey.shade100,
+                                                labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                                                prefixIcon: Icon(Icons.local_hospital),
+                                                suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>discountTypeCtrl.text=data,CaseEnteryData.discountTypeList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
+
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 15),
+                                        UiHelper.CustTextField(controller: narrationCtrl, label: "Enter Narration")
+
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        BlocConsumer<UpdateCaseBloc, UpdateCaseState>(
+                                          listener: (context, state) {
+                                            if(state is UpdateCaseLoadedState){
+
+                                              List<String> testNames = AddTestDialogState.selectedTests.map((item) => item["Test Name"].toString()).toList();
+                                              List<String> testRate = AddTestDialogState.selectedTests.map((item) => item["Test Rate"].toString()).toList();
+                                              List<String> testDate = AddTestDialogState.selectedTests.map((item) => item["Test Time"].toString()).toList();
+
+                                              String TotalAmount = AddTestDialogState.totalAmount.toString();
+                                              String Advance = advanceCtrl.text.isEmpty ? "0" : advanceCtrl.text;
+
+                                              String year = yearCtrl.text.isEmpty ? "0" : yearCtrl.text;
+                                              String month = monthCtrl.text.isEmpty ? "0" : monthCtrl.text;
+
+                                              showDialog<bool>(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: UiHelper.CustText(text: "Success",size: 10.5.sp),
+                                                    content: Text("Case Successfully Updated. Do You Print Receipt?"),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        child: const Text("No"),
+                                                        onPressed: (){
+                                                          setState(() {
+                                                            selectedTests.clear();
+                                                            AddTestDialogState.selectedTests.clear();
+                                                            AddTestDialogState.totalAmount = 0;
+                                                            updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
+                                                          });
+                                                          Navigator.popAndPushNamed(
+                                                              context,
+                                                              '/case_entry_page',arguments: {"code" : "/case_entry_page"});
+                                                        },
+                                                      ),
+                                                      ElevatedButton(
+                                                        child: const Text("Yes"),
+                                                        onPressed: () {
+                                                          GetStorage userBox = GetStorage();
+                                                          String User = userBox.read("newUser") ?? "";
+
+                                                          if(CaseEnteryData.agentZero.contains(agentCtrl.text)){
+                                                            PrintCaseEntry.printBill(
+                                                                receiptNo: slipNoCtrl.text,
+                                                                receiptDate: dateCtrl.text,
+                                                                caseNo: caseNoCtrl.text,
+                                                                caseDate: dateCtrl.text,
+                                                                caseTime: timeCtrl.text,
+                                                                patientName: nameCtrl.text,
+                                                                mobile: mobileCtrl.text,
+                                                                sex: SelectedGender,
+                                                                age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
+                                                                referredBy: doctorCtrl.text,
+                                                                testName: testNames,
+                                                                testRate: testRate,
+                                                                date: dateCtrl.text,
+                                                                totalAmount: "0",
+                                                                discountAmount: "0",
+                                                                balanceAmount: "0",
+                                                                advanceAmount: "0",
+                                                                receivedBy: User,
+                                                                testDate: testDate
+                                                            );
+                                                          }else{
+                                                            PrintCaseEntry.printBill(
+                                                                receiptNo: slipNoCtrl.text,
+                                                                receiptDate: dateCtrl.text,
+                                                                caseNo: caseNoCtrl.text,
+                                                                caseDate: dateCtrl.text,
+                                                                caseTime: timeCtrl.text,
+                                                                patientName: nameCtrl.text,
+                                                                mobile: mobileCtrl.text,
+                                                                sex: SelectedGender,
+                                                                age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
+                                                                referredBy: doctorCtrl.text,
+                                                                testName: testNames,
+                                                                testRate: testRate,
+                                                                date: dateCtrl.text,
+                                                                totalAmount: "${double.parse(TotalAmount)-double.parse(discountCtrl.text)}.00",
+                                                                discountAmount: "${paidAmount.value.toStringAsFixed(2)}",
+                                                                balanceAmount: balance.toString(),
+                                                                advanceAmount: Advance,
+                                                                receivedBy: User,
+                                                                testDate: testDate
+                                                            );
+                                                          }
+
+                                                          setState(() {
+                                                            selectedTests.clear();
+                                                            AddTestDialogState.selectedTests.clear();
+                                                            AddTestDialogState.totalAmount = 0;
+                                                            updateBilling(discountCtrl: discountCtrl, advanceCtrl: advanceCtrl, totalCtrl: totalCtrl, afterdiscountCtrl: afterdiscountCtrl, balanceCtrl: balanceCtrl);
+
+                                                          });
+
+                                                          Navigator.popAndPushNamed(context, '/case_entry_page',arguments: {"code" : "/case_entry_page"});
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+
+
+                                            }
+                                            if(state is UpdateCaseErrorState){
+                                              UiHelper.showErrorToste(message: state.errorMsg);
+                                            }
+                                          },
+                                          builder: (context, state) {
+                                            if(state is UpdateCaseLoadingState){
+                                              return Center(child: CircularProgressIndicator());
+                                            }
+                                            return Obx(() {
+                                              return InkWell(
+                                                onTap: (){
+
+                                                  String pay_status = balanceCtrl.text == ".00" || balanceCtrl.text == "0" || balanceCtrl.text == "" || balanceCtrl.text == "0.00" ? "Paid" : "Due";
+                                                  List<String> testNames = selectedTests.map((test) => test["Test Name"] as String).toList();
+                                                  List<int> testRates = selectedTests.map((test) => int.tryParse(test["Test Rate"].toString()) ?? 0).toList();
+                                                  List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
+                                                  List<String> testFile = selectedTests.map((test) => test["Test File"] as String).toList();
+
+                                                  UpdateCaseCtrl.UpdateCase(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: receivedByCtrl.text, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: totalCtrl.text, discount: discountCtrl.text, after_discount: afterdiscountCtrl.text, advance: advanceCtrl.text, balance: balanceCtrl.text,paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
+
+                                                  print(doctorCtrl.text);
+
+                                                },
+                                                child: Card(
+                                                  elevation: 5,
+                                                  color: Colors.blue.shade400,
+                                                  borderOnForeground: true,
+                                                  shadowColor: Colors.blue.shade100,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(8.0),
+                                                    child: Text(
+                                                      "Update Case: ₹${paidAmount.value.toStringAsFixed(2)}",
+                                                      style: TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 12.sp,
+                                                          fontFamily: 'font-bold'),
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            });
+                                          },
+                                        ),
+                                      ],)
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              );
-            }
-            return Container();
-          },
-        )
+              ],
+            ),
+          );
+        }
+        return Container();
+      },
     );
   }
+
 }
+
+

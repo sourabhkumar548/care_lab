@@ -444,9 +444,21 @@ class _RateListManagementState extends State<RateListManagement> {
                                         Center(child: UiHelper.CustText(text: data.testFile!, size: 11.sp)),
                                         Column(
                                           children: [
-                                            IconButton(
-                                              onPressed: () => pickAndUploadWebFile(context: context, id: data.id.toString()),
-                                              icon: Icon(Icons.edit, color: Colors.green),
+                                            Tooltip(
+                                                message: "Edit Data",
+                                                child: IconButton(onPressed: (){
+                                                  UiHelper.showSuccessToste(message: state.rateListModel.rateList![index].id.toString());
+                                                  UiHelper.showSuccessToste(message: state.rateListModel.rateList![index].testName.toString());
+                                                  UiHelper.showSuccessToste(message: state.rateListModel.rateList![index].rate.toString());
+                                                  UiHelper.showSuccessToste(message: state.rateListModel.rateList![index].department.toString());
+                                                  UiHelper.showSuccessToste(message: state.rateListModel.rateList![index].deliveryAfter.toString());
+                                                }, icon: Icon(Icons.edit,color: Colors.orange,))),
+                                            Tooltip(
+                                              message: "Edit File",
+                                              child: IconButton(
+                                                onPressed: () => pickAndUploadWebFile(context: context, id: data.id.toString()),
+                                                icon: Icon(Icons.file_present_sharp, color: Colors.green),
+                                              ),
                                             ),
                                             BlocConsumer<DeleteRateListCubit, DeleteRateListState>(
                                               listener: (context, state) {
@@ -462,11 +474,34 @@ class _RateListManagementState extends State<RateListManagement> {
                                                 if(state is DeleteRateListLoadingState){
                                                   return Center(child: CircularProgressIndicator(),);
                                                 }
-                                                return IconButton(
-                                                  onPressed: () {
-                                                    context.read<DeleteRateListCubit>().DeleteRateList(id: data.id.toString());
-                                                  },
-                                                  icon: Icon(Icons.delete, color: Colors.red),
+                                                return Tooltip(
+                                                  message: "Delete Test",
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      showDialog<bool>(
+                                                        context: context,
+                                                        barrierDismissible: false, // user must tap a button
+                                                        builder: (BuildContext context) {
+                                                          return AlertDialog(
+                                                            title: UiHelper.CustText(text: "Confirmation",size: 10.5.sp),
+                                                            content: Text("Are you sure to delete this test?"),
+                                                            actions: <Widget>[
+                                                              TextButton(
+                                                                child: const Text("No"),
+                                                                onPressed: () => Navigator.of(context).pop(false),
+                                                              ),
+                                                              ElevatedButton(
+                                                                child: const Text("Yes"),
+                                                                onPressed: () => context.read<DeleteRateListCubit>().DeleteRateList(id: data.id.toString()),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+
+                                                    },
+                                                    icon: Icon(Icons.delete, color: Colors.red),
+                                                  ),
                                                 );
                                               },
                                             ),
