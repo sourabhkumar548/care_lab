@@ -19,7 +19,7 @@ class UpdateTestCubit extends Cubit<UpdateTestState> {
 
     try{
 
-      var uri = Uri.parse("https://dzda.in/upload.php");
+      var uri = Uri.parse("https://dzda.in/DocApi/upload.php");
       var request = http.MultipartRequest("POST", uri);
       request.files.add(http.MultipartFile.fromBytes('file', file.bytes!,filename: file.name,));
       var response = await request.send();

@@ -83,6 +83,19 @@ class UiHelper{
                 ),
               ),
 
+              InkWell(
+                onTap: ()=>Get.toNamed('/upload_report',arguments: {"code" : "/upload_report"}),
+                child: Container(
+                  padding: EdgeInsets.only(top: 5),
+                  color: container == "20" ? Colors.green.shade300 : Colors.transparent,
+                  child: Column(children: [
+                    Icon(Icons.search,color: Colors.white,size: 25,),
+                    const SizedBox(height: 5,),
+                    UiHelper.CustText(text: "Upload Report",size: 12.sp,color: Colors.white)
+                  ],),
+                ),
+              ),
+
               //MANAGEMENT
               InkWell(
                 onTap: () {
@@ -287,8 +300,9 @@ class UiHelper{
 
           // Reporting
           Container(
-            color: container == '4' ? Colors.green.shade300 : Colors.transparent,
-            child: sidebarItem(Icons.search, "Reporting", "/reporting_page"),
+            color: container == '20' ? Colors.green.shade300 : Colors.transparent,
+            child: sidebarItem(Icons.upload, "Upload Report", "/upload_report"),
+
           ),
 
           const Divider(color: Colors.white24),

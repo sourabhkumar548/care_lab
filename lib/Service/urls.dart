@@ -102,6 +102,9 @@ class Urls {
 
   static const UpdateCase = "${BaseUrl}update-case/";
 
+  //documents[]
+  static const UploadReport = "https://dzda.in/DocApi/public/api/documents/upload";
+
 
 
 }

@@ -112,7 +112,6 @@ class _ReportingState extends State<Reporting> {
                 children: [
                   _buildTopBar(),
                   SizedBox(height: 5),
-                  SizedBox(height: 8),
 
                   TextField(
                     controller: searchCtrl,

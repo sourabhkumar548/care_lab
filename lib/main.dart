@@ -17,6 +17,7 @@ import 'package:care_lab_software/Views/doctor_management.dart';
 import 'package:care_lab_software/Views/edit_case_entry.dart';
 import 'package:care_lab_software/Views/expanses.dart';
 import 'package:care_lab_software/Views/rate_list_management.dart';
+import 'package:care_lab_software/Views/report_upload_screen.dart';
 import 'package:care_lab_software/Views/staff_management.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -110,6 +111,7 @@ class MyApp extends StatelessWidget {
                   "/agent_collection": (context) => AgentCollection(),
                   "/collection_between_date": (context) => CollectionBetweenDate(),
                   "/expanses": (context) => Expanses(),
+                  "/upload_report": (context) => ReportUploadScreen(),
                 },
               ),
             ),
