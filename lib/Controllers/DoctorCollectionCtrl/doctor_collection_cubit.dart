@@ -17,7 +17,6 @@ class DoctorCollectionCubit extends Cubit<DoctorCollectionState> {
     emit(DoctorCollectionLoadingState());
     
     try{
-      print("${Urls.DoctorCollection}doctor=$doctor&from_date=$fromdate&to_date=$todate&per_page=1000");
       final uri = Uri.parse("${Urls.DoctorCollection}doctor=$doctor&from_date=$fromdate&to_date=$todate&per_page=1000");
       final response = await http.get(uri);
 

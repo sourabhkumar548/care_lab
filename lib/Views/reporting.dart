@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'package:care_lab_software/Controllers/CheckReportCtrl/check_report_cubit.dart';
+import 'package:care_lab_software/Service/urls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
@@ -510,7 +510,7 @@ class _ReportingState extends State<Reporting> {
                                 message: "Download Report",
                                 child: IconButton(
                                     onPressed: () async {
-                                      String reportUrl = "https://dzda.in/DocApi/public/wordfiles/${filename}.docx";
+                                      String reportUrl = "${Urls.CopyWordFileUrl}${filename}.docx";
                                       // openInOfficeOnline(reportUrl);
                                       openInMSWord(reportUrl);
                                     },

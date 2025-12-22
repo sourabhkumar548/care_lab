@@ -108,5 +108,13 @@ class Urls {
   static const UploadReport = "https://dzda.in/DocApi/public/api/documents/upload";
 
 
+  static const OrignalWordFileUrl = "https://dzda.in/DocApi/public/orignal_files/";
+  static const CopyWordFileUrl = "https://dzda.in/DocApi/public/wordfiles/";
+
+
+  static const BackupDb = "${BaseUrl}dbbackup";
+  static const GetAllReport = "${BaseUrl}getreport";
+
+
 
 }

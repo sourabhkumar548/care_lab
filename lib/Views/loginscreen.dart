@@ -45,16 +45,11 @@ class _LabLoginScreenState extends State<LabLoginScreen> {
                   Expanded(child: _buildLoginForm(context)),
                 ],
               );
-            } else {
+            }
+            else {
               // --- Mobile Layout: One Column (Stacked) ---
               return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _buildMachinesSection(),
-                    const Divider(thickness: 1),
-                    _buildLoginForm(context),
-                  ],
-                ),
+                child: _buildLoginForm(context),
               );
             }
           },
@@ -80,15 +75,7 @@ class _LabLoginScreenState extends State<LabLoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 48,
-              backgroundColor: Colors.blue.shade100,
-              child: Icon(
-                Icons.local_hospital,
-                size: 50,
-                color: Colors.blue.shade700,
-              ),
-            ),
+            Image.asset("assets/images/logo.png",height: 150,width: 150,),
             const SizedBox(height: 10),
             Text(
               "Care Diagnostic Centre",
@@ -123,20 +110,12 @@ class _LabLoginScreenState extends State<LabLoginScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // App Logo
-            CircleAvatar(
-              radius: 48,
-              backgroundColor: Colors.blue.shade100,
-              child: Icon(
-                Icons.local_hospital,
-                size: 50,
-                color: Colors.blue.shade700,
-              ),
-            ),
+            Image.asset("assets/images/logo.png",height: 150,width: 150,),
             const SizedBox(height: 20),
 
             // Title
             Text(
-              "Care Diagnostic Center",
+              "Care Diagnostic Centre",
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,

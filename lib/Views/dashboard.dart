@@ -357,7 +357,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           )
         ],
       )
-          :Row(
+          :
+      Row(
         children: [
           // Sidebar
           UiHelper.custsidebar(container: "1",context: context),

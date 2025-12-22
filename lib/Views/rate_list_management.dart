@@ -2,10 +2,13 @@ import 'package:care_lab_software/Controllers/RateListCtrl/Cubit/rate_list_cubit
 import 'package:care_lab_software/Controllers/RateListCtrl/DeleteRateListCubit/delete_rate_list_cubit.dart';
 import 'package:care_lab_software/Controllers/UpdateTestCtrl/Cubit/update_test_cubit.dart';
 import 'package:care_lab_software/Controllers/UpdateTestCtrl/UpdateDataCubit/test_data_cubit.dart';
+import 'package:care_lab_software/Service/urls.dart';
+import 'package:care_lab_software/Views/reporting.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
+import 'package:web/helpers.dart' as html;
 import '../Helpers/uiHelper.dart';
 import 'loginscreen.dart';
 
@@ -207,7 +210,13 @@ class _RateListManagementState extends State<RateListManagement> {
                                         Center(child: UiHelper.CustText(text: data.department!, size: 11.sp)),
                                         Center(child: UiHelper.CustText(text: data.rate!, size: 11.sp)),
                                         Center(child: UiHelper.CustText(text: data.deliveryAfter!, size: 11.sp)),
-                                        Center(child: UiHelper.CustText(text: data.testFile!, size: 11.sp)),
+                                        InkWell(
+                                            onTap : (){
+                                              String reportUrl = "${Urls.OrignalWordFileUrl}${data.testFile!}";
+                                              final wordUrl = "ms-word:ofe|u|$reportUrl";
+                                              html.window.open(wordUrl, "_self");
+                                            },
+                                            child: Center(child: UiHelper.CustText(text: data.testFile!, size: 11.sp))),
                                         Column(
                                           children: [
                                             Tooltip(
@@ -485,7 +494,15 @@ class _RateListManagementState extends State<RateListManagement> {
                                         Center(child: UiHelper.CustText(text: data.department!, size: 11.sp)),
                                         Center(child: UiHelper.CustText(text: data.rate!, size: 11.sp)),
                                         Center(child: UiHelper.CustText(text: data.deliveryAfter!, size: 11.sp)),
-                                        Center(child: UiHelper.CustText(text: data.testFile!, size: 11.sp)),
+                                        InkWell(
+                                            onTap : (){
+                                              String reportUrl = "${Urls.OrignalWordFileUrl}${data.testFile!}";
+
+                                                final wordUrl = "ms-word:ofe|u|$reportUrl";
+                                                html.window.open(wordUrl, "_self");
+
+                                            },
+                                            child: Center(child: UiHelper.CustText(text: data.testFile!, size: 11.sp,color: Colors.blue.shade900))),
                                         Column(
                                           children: [
                                             Tooltip(
@@ -775,3 +792,4 @@ Future<void> pickAndUploadWebFile({required BuildContext context, required Strin
 
   context.read<UpdateTestCubit>().getUpdateTest(id: id, fileName: file.name, file: file);
 }
+

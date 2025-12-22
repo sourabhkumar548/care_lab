@@ -1,3 +1,4 @@
+import 'package:care_lab_software/Service/urls.dart';
 import 'package:drop_down_list/drop_down_list.dart';
 import 'package:drop_down_list/model/selected_list_item.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,6 +9,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:sizer/sizer.dart';
 import 'package:toastification/toastification.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:http/http.dart' as http;
 
 class UiHelper{
 
@@ -20,7 +22,6 @@ class UiHelper{
     GlobalKey managementKey = GlobalKey();
     GlobalKey accountKey = GlobalKey();
 
-
     return Container(
 
       color: Colors.blue.shade500,
@@ -32,7 +33,7 @@ class UiHelper{
           Divider(color: Colors.blue.shade900,),
           GridView(
             shrinkWrap: true,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 8,),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 10,),
             children: [
               InkWell(
                 onTap: ()=>Get.toNamed('/dashboard',arguments: {"code" : "/dashboard"}),
@@ -66,7 +67,7 @@ class UiHelper{
                   child: Column(children: [
                     Icon(Icons.list_alt,color: Colors.white,size: 25,),
                     const SizedBox(height: 5,),
-                    UiHelper.CustText(text: "Case Entry List",size: 12.sp,color: Colors.white)
+                    UiHelper.CustText(text: "Case List",size: 12.sp,color: Colors.white)
                   ],),
                 ),
               ),
@@ -89,9 +90,21 @@ class UiHelper{
                   padding: EdgeInsets.only(top: 5),
                   color: container == "20" ? Colors.green.shade300 : Colors.transparent,
                   child: Column(children: [
-                    Icon(Icons.search,color: Colors.white,size: 25,),
+                    Icon(Icons.upload,color: Colors.white,size: 25,),
                     const SizedBox(height: 5,),
                     UiHelper.CustText(text: "Upload Report",size: 12.sp,color: Colors.white)
+                  ],),
+                ),
+              ),
+              InkWell(
+                onTap: ()=>Get.toNamed('/search_report',arguments: {"code" : "/search_report"}),
+                child: Container(
+                  padding: EdgeInsets.only(top: 5),
+                  color: container == "22" ? Colors.green.shade300 : Colors.transparent,
+                  child: Column(children: [
+                    Icon(Icons.search,color: Colors.white,size: 25,),
+                    const SizedBox(height: 5,),
+                    UiHelper.CustText(text: "Search Report",size: 12.sp,color: Colors.white)
                   ],),
                 ),
               ),
@@ -225,6 +238,27 @@ class UiHelper{
                 ),
               ),
 
+              InkWell(
+                onTap: ()async{
+                  final response = await http.get(Uri.parse("${Urls.BackupDb}"));
+                  if(response.statusCode == 200) {
+                    UiHelper.showSuccessToste(message: "DB Backup Successfully");
+                  }
+                  else{
+                    UiHelper.showErrorToste(message: "DB Backup Failed");
+                  }
+                },
+                child: Container(
+                  padding: EdgeInsets.only(top: 5),
+                  color: container == "21" ? Colors.green.shade300 : Colors.transparent,
+                  child: Column(children: [
+                    Icon(Icons.backup,color: Colors.white,size: 25,),
+                    const SizedBox(height: 5,),
+                    UiHelper.CustText(text: "Backup",size: 12.sp,color: Colors.white)
+                  ],),
+                ),
+              ),
+
               //LOGOUT
               InkWell(
                 onTap: ()async{
@@ -300,7 +334,7 @@ class UiHelper{
 
           Container(
             color: container == '4' ? Colors.green.shade300 : Colors.transparent,
-            child: sidebarItem(Icons.upload, "Reporting", "/reporting_page"),
+            child: sidebarItem(Icons.event_repeat_outlined, "Reporting", "/reporting_page"),
 
           ),
 
@@ -310,6 +344,13 @@ class UiHelper{
             child: sidebarItem(Icons.upload, "Upload Report", "/upload_report"),
 
           ),
+
+          Container(
+            color: container == '22' ? Colors.green.shade300 : Colors.transparent,
+            child: sidebarItem(Icons.search, "Search Report", "/search_report"),
+
+          ),
+
 
           const Divider(color: Colors.white24),
 
@@ -429,6 +470,26 @@ class UiHelper{
             child: sidebarItem(Icons.money, "Daily Expenses", "/expanses"),
           ),
 
+          Container(
+            color: container == '21' ? Colors.green.shade300 : Colors.transparent,
+            child: ListTile(
+              leading: Icon(Icons.backup, color: Colors.white),
+              title: Text("DB Backup", style: const TextStyle(color: Colors.white)),
+              onTap: ()async{
+                final response = await http.get(Uri.parse("${Urls.BackupDb}"));
+                if(response.statusCode == 200) {
+                  UiHelper.showSuccessToste(message: "DB Backup Successfully");
+                }
+                else{
+                  UiHelper.showErrorToste(message: "DB Backup Failed");
+                }
+              },
+            ),
+          ),
+
+          const Divider(color: Colors.white24),
+
+
           // Logout
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.white),
@@ -442,9 +503,6 @@ class UiHelper{
                 userBox.remove('newUser');
                 Navigator.pushNamedAndRemoveUntil(context, '/login_page',(route) => false );
               }
-
-
-
             },
           ),
         ],
@@ -584,11 +642,7 @@ class UiHelper{
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: Colors.blue.shade100,
-                child: const Icon(Icons.local_hospital, size: 32, color: Colors.blue),
-              ),
+              Image.asset("assets/images/logo.png",height: 80,width: 80,),
               const SizedBox(width: 16),
               Text(title,
                   style: TextStyle(fontSize: 20,fontFamily: 'font-bold')),
