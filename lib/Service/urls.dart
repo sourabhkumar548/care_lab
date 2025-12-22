@@ -1,6 +1,6 @@
 class Urls {
-  // static const BaseUrl = "https://dzda.in/CareLab/public/api/";
-  static const BaseUrl = "https://dzda.in/CareTest/public/api/";
+  static const BaseUrl = "https://dzda.in/CareLab/public/api/";
+  // static const BaseUrl = "https://dzda.in/CareTest/public/api/";
 
   // This is a post api and the parameters are 'username' & 'password'
   static const LoginUrl = "${BaseUrl}login";
@@ -101,6 +101,8 @@ class Urls {
 
 
   static const UpdateCase = "${BaseUrl}update-case/";
+
+  static const updateTestData = "${BaseUrl}update-rate-list/";
 
   //documents[]
   static const UploadReport = "https://dzda.in/DocApi/public/api/documents/upload";

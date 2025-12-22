@@ -1,6 +1,7 @@
 import 'package:care_lab_software/Controllers/RateListCtrl/Cubit/rate_list_cubit.dart';
 import 'package:care_lab_software/Controllers/RateListCtrl/DeleteRateListCubit/delete_rate_list_cubit.dart';
 import 'package:care_lab_software/Controllers/UpdateTestCtrl/Cubit/update_test_cubit.dart';
+import 'package:care_lab_software/Controllers/UpdateTestCtrl/UpdateDataCubit/test_data_cubit.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,6 +29,7 @@ class _RateListManagementState extends State<RateListManagement> {
     setState(() {
       searchText = "";
       searchCtrl.clear();
+      currentPage = 0; // Reset to first page on refresh
     });
   }
 
@@ -38,9 +40,7 @@ class _RateListManagementState extends State<RateListManagement> {
     String accessCode = args["code"];
 
     if(accessCode != "/rate_list_management"){
-
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>LabLoginScreen()), (val)=>true);
-
     }
 
     return Scaffold(
@@ -182,6 +182,9 @@ class _RateListManagementState extends State<RateListManagement> {
                                 itemCount: paginatedList.length,
                                 itemBuilder: (_, index) {
                                   var data = paginatedList[index];
+                                  // 🔧 CALCULATE ORIGINAL INDEX IN FULL LIST
+                                  int originalIndex = start + index;
+
                                   return Table(
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     border: TableBorder.all(width: 0.5, color: Colors.grey),
@@ -196,7 +199,7 @@ class _RateListManagementState extends State<RateListManagement> {
                                     },
                                     children: [
                                       TableRow(children: [
-                                        Center(child: UiHelper.CustText(text: "${start + index + 1}", size: 12.sp)),
+                                        Center(child: UiHelper.CustText(text: "${originalIndex + 1}", size: 12.sp)),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 10),
                                           child: UiHelper.CustText(text: data.testName!, size: 11.sp),
@@ -207,9 +210,26 @@ class _RateListManagementState extends State<RateListManagement> {
                                         Center(child: UiHelper.CustText(text: data.testFile!, size: 11.sp)),
                                         Column(
                                           children: [
-                                            IconButton(
-                                              onPressed: () => pickAndUploadWebFile(context: context, id: data.id.toString()),
-                                              icon: Icon(Icons.edit, color: Colors.green),
+                                            Tooltip(
+                                              message:"Edit Data",
+                                              child: IconButton(onPressed: (){
+                                                // ✅ USE data VARIABLE DIRECTLY FROM itemBuilder
+                                                editLayout(
+                                                    context: context,
+                                                    id: data.id.toString(),
+                                                    name: data.testName!,
+                                                    rate: data.rate!,
+                                                    department: data.department!,
+                                                    time: data.deliveryAfter!
+                                                );
+                                              }, icon: Icon(Icons.edit,color: Colors.orange,)),
+                                            ),
+                                            Tooltip(
+                                              message:"Edit File",
+                                              child: IconButton(
+                                                onPressed: () => pickAndUploadWebFile(context: context, id: data.id.toString()),
+                                                icon: Icon(Icons.file_present_sharp, color: Colors.green),
+                                              ),
                                             ),
                                             BlocConsumer<DeleteRateListCubit, DeleteRateListState>(
                                               listener: (context, state) {
@@ -225,11 +245,36 @@ class _RateListManagementState extends State<RateListManagement> {
                                                 if(state is DeleteRateListLoadingState){
                                                   return Center(child: CircularProgressIndicator(),);
                                                 }
-                                                return IconButton(
-                                                  onPressed: () {
-                                                    context.read<DeleteRateListCubit>().DeleteRateList(id: data.id.toString());
-                                                  },
-                                                  icon: Icon(Icons.delete, color: Colors.red),
+                                                return Tooltip(
+                                                  message: "Delete Test",
+                                                  child: IconButton(
+                                                    onPressed: () {
+                                                      showDialog<bool>(
+                                                        context: context,
+                                                        barrierDismissible: false,
+                                                        builder: (BuildContext context) {
+                                                          return AlertDialog(
+                                                            title: UiHelper.CustText(text: "Confirmation",size: 10.5.sp),
+                                                            content: Text("Are you sure to delete this test?"),
+                                                            actions: <Widget>[
+                                                              TextButton(
+                                                                child: const Text("No"),
+                                                                onPressed: () => Navigator.of(context).pop(false),
+                                                              ),
+                                                              ElevatedButton(
+                                                                child: const Text("Yes"),
+                                                                onPressed: () {
+                                                                  Navigator.of(context).pop();
+                                                                  context.read<DeleteRateListCubit>().DeleteRateList(id: data.id.toString());
+                                                                },
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },
+                                                      );
+                                                    },
+                                                    icon: Icon(Icons.delete, color: Colors.red),
+                                                  ),
                                                 );
                                               },
                                             ),
@@ -254,7 +299,7 @@ class _RateListManagementState extends State<RateListManagement> {
                                     child: Text("Previous"),
                                   ),
                                   SizedBox(width: 20),
-                                  Text("Page ${currentPage + 1} / ${((total - 1) / rowsPerPage).floor() + 1}"),
+                                  Text("Page ${currentPage + 1} / ${total == 0 ? 1 : ((total - 1) / rowsPerPage).floor() + 1}"),
                                   SizedBox(width: 20),
                                   ElevatedButton(
                                     onPressed: end < total
@@ -272,9 +317,6 @@ class _RateListManagementState extends State<RateListManagement> {
                         return Container();
                       },
                     )
-
-
-
                   ],
                 ),
               ),
@@ -393,7 +435,6 @@ class _RateListManagementState extends State<RateListManagement> {
                         }
                         if (state is RateListLoadedState) {
 
-
                           List list = state.rateListModel.rateList!;
 
                           // 🔍 SEARCH FILTER
@@ -419,6 +460,9 @@ class _RateListManagementState extends State<RateListManagement> {
                                 itemCount: paginatedList.length,
                                 itemBuilder: (_, index) {
                                   var data = paginatedList[index];
+                                  // 🔧 CALCULATE ORIGINAL INDEX IN FULL LIST
+                                  int originalIndex = start + index;
+
                                   return Table(
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     border: TableBorder.all(width: 0.5, color: Colors.grey),
@@ -433,7 +477,7 @@ class _RateListManagementState extends State<RateListManagement> {
                                     },
                                     children: [
                                       TableRow(children: [
-                                        Center(child: UiHelper.CustText(text: "${start + index + 1}", size: 12.sp)),
+                                        Center(child: UiHelper.CustText(text: "${originalIndex + 1}", size: 12.sp)),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 10),
                                           child: UiHelper.CustText(text: data.testName!, size: 11.sp),
@@ -447,11 +491,15 @@ class _RateListManagementState extends State<RateListManagement> {
                                             Tooltip(
                                                 message: "Edit Data",
                                                 child: IconButton(onPressed: (){
-                                                  UiHelper.showSuccessToste(message: state.rateListModel.rateList![index].id.toString());
-                                                  UiHelper.showSuccessToste(message: state.rateListModel.rateList![index].testName.toString());
-                                                  UiHelper.showSuccessToste(message: state.rateListModel.rateList![index].rate.toString());
-                                                  UiHelper.showSuccessToste(message: state.rateListModel.rateList![index].department.toString());
-                                                  UiHelper.showSuccessToste(message: state.rateListModel.rateList![index].deliveryAfter.toString());
+                                                  // ✅ USE data VARIABLE DIRECTLY FROM itemBuilder
+                                                  editLayout(
+                                                      context: context,
+                                                      id: data.id.toString(),
+                                                      name: data.testName!,
+                                                      rate: data.rate!,
+                                                      department: data.department!,
+                                                      time: data.deliveryAfter!
+                                                  );
                                                 }, icon: Icon(Icons.edit,color: Colors.orange,))),
                                             Tooltip(
                                               message: "Edit File",
@@ -480,7 +528,7 @@ class _RateListManagementState extends State<RateListManagement> {
                                                     onPressed: () {
                                                       showDialog<bool>(
                                                         context: context,
-                                                        barrierDismissible: false, // user must tap a button
+                                                        barrierDismissible: false,
                                                         builder: (BuildContext context) {
                                                           return AlertDialog(
                                                             title: UiHelper.CustText(text: "Confirmation",size: 10.5.sp),
@@ -492,13 +540,15 @@ class _RateListManagementState extends State<RateListManagement> {
                                                               ),
                                                               ElevatedButton(
                                                                 child: const Text("Yes"),
-                                                                onPressed: () => context.read<DeleteRateListCubit>().DeleteRateList(id: data.id.toString()),
+                                                                onPressed: () {
+                                                                  Navigator.of(context).pop();
+                                                                  context.read<DeleteRateListCubit>().DeleteRateList(id: data.id.toString());
+                                                                },
                                                               ),
                                                             ],
                                                           );
                                                         },
                                                       );
-
                                                     },
                                                     icon: Icon(Icons.delete, color: Colors.red),
                                                   ),
@@ -526,7 +576,7 @@ class _RateListManagementState extends State<RateListManagement> {
                                     child: Text("Previous"),
                                   ),
                                   SizedBox(width: 20),
-                                  Text("Page ${currentPage + 1} / ${((total - 1) / rowsPerPage).floor() + 1}"),
+                                  Text("Page ${currentPage + 1} / ${total == 0 ? 1 : ((total - 1) / rowsPerPage).floor() + 1}"),
                                   SizedBox(width: 20),
                                   ElevatedButton(
                                     onPressed: end < total
@@ -544,7 +594,6 @@ class _RateListManagementState extends State<RateListManagement> {
                         return Container();
                       },
                     )
-
                   ],
                 ),
               ),
@@ -556,15 +605,165 @@ class _RateListManagementState extends State<RateListManagement> {
   }
 }
 
-DeleteRateList({required BuildContext context, required String id}) async {
+void editLayout({
+  required BuildContext context,
+  required String id,
+  required String name,
+  required String rate,
+  required String department,
+  required String time
+}) {
+  showModalBottomSheet(
+    context: context,
+    isDismissible: false,
+    isScrollControlled: true,
+    builder: (modalContext) {
+      TextEditingController nameCtrl = TextEditingController(text: name);
+      TextEditingController rateCtrl = TextEditingController(text: rate);
+      TextEditingController timeCtrl = TextEditingController(text: time);
+      TextEditingController departmentCtrl = TextEditingController(text: department);
 
+      return Padding(
+        padding: EdgeInsets.only(
+          left: 12,
+          right: 12,
+          top: 12,
+          bottom: MediaQuery.of(modalContext).viewInsets.bottom + 12,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  UiHelper.CustText(text: "Edit Test Data", size: 14.sp),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.pop(modalContext);
+                    },
+                    icon: Icon(Icons.close, color: Colors.red),
+                  )
+                ],
+              ),
+              const Divider(),
+              const SizedBox(height: 10),
+              TextField(
+                controller: nameCtrl,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Test Name",
+                ),
+              ),
+              const SizedBox(height: 15),
+              TextField(
+                controller: rateCtrl,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Test Rate",
+                ),
+              ),
+              const SizedBox(height: 15),
+              TextField(
+                controller: timeCtrl,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Test Report Time",
+                ),
+              ),
+              const SizedBox(height: 15),
+              TextField(
+                controller: departmentCtrl,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: "Test Department",
+                ),
+              ),
+              const SizedBox(height: 20),
+              BlocConsumer<TestDataCubit, TestDataState>(
+                listener: (listenerContext, state) {
+                  if (state is TestDataErrorState) {
+                    UiHelper.showErrorToste(message: state.errorMsg);
+                  }
+                  if (state is TestDataLoadedState) {
+                    UiHelper.showSuccessToste(message: state.successMsg);
+                    // Refresh the rate list and close modal
+                    Future.delayed(Duration(milliseconds: 1000), () {
+                      if (modalContext.mounted) {
+                        context.read<RateListCubit>().GetRateList();
+                        Navigator.pop(modalContext);
+                      }
+                    });
+                  }
+                },
+                builder: (builderContext, state) {
+                  if (state is TestDataLoadingState) {
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  }
+                  return InkWell(
+                    onTap: () {
+                      // Validate fields
+                      if (nameCtrl.text.trim().isEmpty) {
+                        UiHelper.showErrorToste(message: "Test name is required");
+                        return;
+                      }
+                      if (rateCtrl.text.trim().isEmpty) {
+                        UiHelper.showErrorToste(message: "Test rate is required");
+                        return;
+                      }
+                      if (timeCtrl.text.trim().isEmpty) {
+                        UiHelper.showErrorToste(message: "Report time is required");
+                        return;
+                      }
+                      if (departmentCtrl.text.trim().isEmpty) {
+                        UiHelper.showErrorToste(message: "Department is required");
+                        return;
+                      }
 
-
+                      // Use the original context passed to editLayout
+                      context.read<TestDataCubit>().updateTestData(
+                        id: id,
+                        name: nameCtrl.text.trim(),
+                        rate: rateCtrl.text.trim(),
+                        time: timeCtrl.text.trim(),
+                        department: departmentCtrl.text.trim(),
+                      );
+                    },
+                    child: Card(
+                      child: Container(
+                        height: 50,
+                        width: double.infinity,
+                        color: Colors.green,
+                        child: Center(
+                          child: UiHelper.CustText(
+                            text: "Update Test",
+                            color: Colors.white,
+                            size: 11.sp,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }
 
 Future<void> pickAndUploadWebFile({required BuildContext context, required String id}) async {
   FilePickerResult? result = await FilePicker.platform.pickFiles(
-    withData: true,      // IMPORTANT for web
+    withData: true,
   );
 
   if (result == null) {
@@ -575,5 +774,4 @@ Future<void> pickAndUploadWebFile({required BuildContext context, required Strin
   PlatformFile file = result.files.single;
 
   context.read<UpdateTestCubit>().getUpdateTest(id: id, fileName: file.name, file: file);
-
 }
