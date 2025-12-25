@@ -16,7 +16,10 @@ class CaseEntryBloc extends Bloc<CaseEntryEvent, CaseEntryState> {
       emit(CaseEntryLoadingState());
       try{
 
-        final response = await http.post(Uri.parse(Urls.CaseEntryUrl),body: jsonEncode({
+        String type = event.type ?? "None";
+
+
+        final response = await http.post(Uri.parse("${Urls.CaseEntryUrl}/$type"),body: jsonEncode({
           "case_date":event.case_date,
           "time":event.time,
           "date":event.date,

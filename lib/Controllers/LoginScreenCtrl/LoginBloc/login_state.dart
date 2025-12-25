@@ -6,10 +6,10 @@ sealed class LoginState {}
 final class LoginInitialState extends LoginState {}
 final class LoginLoadingState extends LoginState {}
 final class LoginLoadedState extends LoginState {
-  String Successmsg;
-  LoginLoadedState({required this.Successmsg});
+  final LoginModel loginModel;
+  LoginLoadedState({required this.loginModel});
 }
 final class LoginErrorState extends LoginState {
-  String error;
+  final String error;
   LoginErrorState({required this.error});
 }

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:care_lab_software/Helpers/get_agent_data.dart';
 import 'package:care_lab_software/Helpers/get_doctor_data.dart';
 import 'package:care_lab_software/Views/loginscreen.dart';
 import 'package:flutter/material.dart';
@@ -283,7 +284,6 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         fillColor: Colors.grey.shade100,
                                         labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
                                         prefixIcon: Icon(Icons.calendar_month),
-                                        suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>yearCtrl.text=data,CaseEnteryData.yearList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
 
                                     ),
                                   ),
@@ -312,7 +312,6 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         fillColor: Colors.grey.shade100,
                                         labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
                                         prefixIcon: Icon(Icons.calendar_month),
-                                        suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>monthCtrl.text=data,CaseEnteryData.monthList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
 
                                     ),
                                   ),
@@ -398,28 +397,14 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                         child: Row(
                           children: [
                             Expanded(
-                              child: TextField(
+                              child: AgentInputField(
                                 controller: agentCtrl,
-                                style: TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                    labelText: "Enter Agent Name",
-                                    filled: true,
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(color: Colors.red, width: 2),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                    ),
-                                    fillColor: Colors.grey.shade100,
-                                    labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                                    prefixIcon: Icon(Icons.person),
-                                    suffixIcon: IconButton(onPressed: ()=>
-                                        UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList),
-                                        icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
-                                ),
+                                initialValue: "Self",
+                                onDoctorSelected: (agent) {
+                                  setState(() {
+                                    agentCtrl.text = agent;
+                                  });
+                                },
                               ),
                             ),
                             const SizedBox(width: 20),
@@ -759,7 +744,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                     caseNo: caseNoCtrl.text,
                                                     caseDate: dateCtrl.text,
                                                     caseTime: timeCtrl.text,
-                                                    patientName: nameCtrl.text,
+                                                    patientName: "${nameCtrl.text}",
                                                     mobile: mobileCtrl.text,
                                                     sex: SelectedGender,
                                                     age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
@@ -781,7 +766,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                     caseNo: caseNoCtrl.text,
                                                     caseDate: dateCtrl.text,
                                                     caseTime: timeCtrl.text,
-                                                    patientName: nameCtrl.text,
+                                                    patientName: "${nameCtrl.text}",
                                                     mobile: mobileCtrl.text,
                                                     sex: SelectedGender,
                                                     age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
@@ -838,7 +823,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                 List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
                                                 List<String> testFile = selectedTests.map((test) => test["Test File"] as String).toList();
 
-                                                CaseEntryCtrl.CaseEntry(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: User, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: total.toString(), discount: discountAmount.toString(), after_discount: afterDiscount.toString(), advance: advance.toString(), balance: balance.toString(),paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
+                                                CaseEntryCtrl.CaseEntry(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: User, patient_name: "${nametitleCtrl.text} ${nameCtrl.text}", year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: total.toString(), discount: discountAmount.toString(), after_discount: afterDiscount.toString(), advance: advance.toString(), balance: balance.toString(),paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
 
                                               }
                                               else{
@@ -848,7 +833,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                 List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
                                                 List<String> testFile = selectedTests.map((test) => test["Test File"] as String).toList();
 
-                                                CaseEntryCtrl.CaseEntry(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: receivedByCtrl.text, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: total.toString(), discount: discountAmount.toString(), after_discount: afterDiscount.toString(), advance: advance.toString(), balance: balance.toString(),paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
+                                                CaseEntryCtrl.CaseEntry(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: receivedByCtrl.text, patient_name: "${nametitleCtrl.text} ${nameCtrl.text}", year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: total.toString(), discount: discountAmount.toString(), after_discount: afterDiscount.toString(), advance: advance.toString(), balance: balance.toString(),paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
 
                                               }
                                             },
@@ -1041,7 +1026,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         fillColor: Colors.grey.shade100,
                                         labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
                                         prefixIcon: Icon(Icons.calendar_month),
-                                        suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>yearCtrl.text=data,CaseEnteryData.yearList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
+
 
                                     ),
                                   ),
@@ -1070,7 +1055,6 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                         fillColor: Colors.grey.shade100,
                                         labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 12.sp),
                                         prefixIcon: Icon(Icons.calendar_month),
-                                        suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>monthCtrl.text=data,CaseEnteryData.monthList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
 
                                     ),
                                   ),
@@ -1155,32 +1139,43 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                         title: "Doctors & Agents",
                         child: Row(
                           children: [
+                            // Expanded(
+                            //   child: TextField(
+                            //     controller: agentCtrl,
+                            //     style: TextStyle(color: Colors.black),
+                            //     decoration: InputDecoration(
+                            //         labelText: "Enter Agent Name",
+                            //         filled: true,
+                            //         focusedBorder: OutlineInputBorder(
+                            //           borderRadius: BorderRadius.circular(10),
+                            //           borderSide: BorderSide(color: Colors.red, width: 2),
+                            //         ),
+                            //         enabledBorder: OutlineInputBorder(
+                            //           borderRadius: BorderRadius.circular(10),
+                            //           borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                            //         ),
+                            //         fillColor: Colors.grey.shade100,
+                            //         labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+                            //         prefixIcon: Icon(Icons.person),
+                            //         suffixIcon: IconButton(onPressed: ()=>
+                            //             UiHelper.CustEditableDropDown(context, (data)
+                            //             {
+                            //               agentCtrl.text = data;
+                            //             },CaseEnteryData.agentList),
+                            //             icon: Icon(Icons.arrow_drop_down_circle_outlined))
+                            //
+                            //     ),
+                            //   ),
+                            // ),
                             Expanded(
-                              child: TextField(
+                              child: AgentInputField(
                                 controller: agentCtrl,
-                                style: TextStyle(color: Colors.black),
-                                decoration: InputDecoration(
-                                    labelText: "Enter Agent Name",
-                                    filled: true,
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(color: Colors.red, width: 2),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                    ),
-                                    fillColor: Colors.grey.shade100,
-                                    labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                                    prefixIcon: Icon(Icons.person),
-                                    suffixIcon: IconButton(onPressed: ()=>
-                                        UiHelper.CustEditableDropDown(context, (data)
-                                        {
-                                          agentCtrl.text = data;
-                                        },CaseEnteryData.agentList),
-                                        icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
-                                ),
+                                initialValue: "Self",
+                                onDoctorSelected: (agent) {
+                                  setState(() {
+                                    agentCtrl.text = agent;
+                                  });
+                                },
                               ),
                             ),
                             const SizedBox(width: 20),
@@ -1518,7 +1513,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                             caseNo: state.CaseNo,
                                                             caseDate: dateCtrl.text,
                                                             caseTime: timeCtrl.text,
-                                                            patientName: nameCtrl.text,
+                                                            patientName: "${nameCtrl.text}",
                                                             mobile: mobileCtrl.text,
                                                             sex: SelectedGender,
                                                             age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
@@ -1540,7 +1535,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                             caseNo: state.CaseNo,
                                                             caseDate: dateCtrl.text,
                                                             caseTime: timeCtrl.text,
-                                                            patientName: nameCtrl.text,
+                                                            patientName: "${nameCtrl.text}",
                                                             mobile: mobileCtrl.text,
                                                             sex: SelectedGender,
                                                             age: "${year} Y ${month != "0" ? month :""}${month != "0" ? "M" :""} ",
@@ -1599,7 +1594,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                 List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
                                                 List<String> testFile = selectedTests.map((test) => test["Test File"] as String).toList();
 
-                                                CaseEntryCtrl.CaseEntry(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: User, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: total.toString(), discount: discountAmount.toString(), after_discount: afterDiscount.toString(), advance: advance.toString(), balance: balance.toString(),paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
+                                                CaseEntryCtrl.CaseEntry(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: User, patient_name: "${nametitleCtrl.text} ${nameCtrl.text}", year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: total.toString(), discount: discountAmount.toString(), after_discount: afterDiscount.toString(), advance: advance.toString(), balance: balance.toString(),paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
 
                                               }
                                               else{
@@ -1609,7 +1604,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                                                 List<String> testDate = selectedTests.map((test) => test["Test Time"] as String).toList();
                                                 List<String> testFile = selectedTests.map((test) => test["Test File"] as String).toList();
 
-                                                CaseEntryCtrl.CaseEntry(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: receivedByCtrl.text, patient_name: nameCtrl.text, year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: total.toString(), discount: discountAmount.toString(), after_discount: afterDiscount.toString(), advance: advance.toString(), balance: balance.toString(),paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
+                                                CaseEntryCtrl.CaseEntry(context : context, case_date : dateCtrl.text,time: timeCtrl.text, date: dateCtrl.text, case_no: caseNoCtrl.text, slip_no: slipNoCtrl.text, received_by: receivedByCtrl.text, patient_name: "${nametitleCtrl.text} ${nameCtrl.text}", year: yearCtrl.text, month: monthCtrl.text, gender: SelectedGender, mobile: mobileCtrl.text, child_male: "0", child_female: "0", address: addressCtrl.text, agent: agentCtrl.text, doctor: doctorCtrl.text, test_name: testNames.toString(), test_rate: testRates.toString(), total_amount: total.toString(), discount: discountAmount.toString(), after_discount: afterDiscount.toString(), advance: advance.toString(), balance: balance.toString(),paid_amount: "${paidAmount.value.toStringAsFixed(2)}",pay_status: pay_status, pay_mode: PayMode, discount_type: DiscountType,test_date: testDate.toString(),test_file: testFile.toString(),narration: narrationCtrl.text,name_title: nametitleCtrl.text);
 
                                               }
                                               },

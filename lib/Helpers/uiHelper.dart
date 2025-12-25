@@ -22,6 +22,9 @@ class UiHelper{
     GlobalKey managementKey = GlobalKey();
     GlobalKey accountKey = GlobalKey();
 
+    GetStorage userBox = GetStorage();
+    String? userType = userBox.read("userType");
+
     return Container(
 
       color: Colors.blue.shade500,
@@ -169,7 +172,7 @@ class UiHelper{
               ),
 
               //ACCOUNT
-              InkWell(
+              userType == "Admin" ? InkWell(
                 onTap: () {
                   final RenderBox renderBox =
                   accountKey.currentContext!.findRenderObject() as RenderBox;
@@ -222,7 +225,7 @@ class UiHelper{
                     ],
                   ),
                 ),
-              ),
+              ) : Container(),
 
               //DAILY EXPENSE
               InkWell(
@@ -293,6 +296,10 @@ class UiHelper{
     required String container,
     required BuildContext context,
   }) {
+
+    GetStorage userBox = GetStorage();
+    String? userType = userBox.read("userType");
+
     return Container(
       width: Adaptive.w(15),
       height: Adaptive.h(100),
@@ -416,7 +423,7 @@ class UiHelper{
           ),
 
           // Accounts
-          Theme(
+          userType == "Admin" ? Theme(
             data: Theme.of(context).copyWith(
               dividerColor: Colors.transparent,
               iconTheme: const IconThemeData(color: Colors.white),
@@ -464,7 +471,8 @@ class UiHelper{
                 ),
               ],
             ),
-          ),
+          ) : Container(),
+
           Container(
             color: container == '15' ? Colors.green.shade300 : Colors.transparent,
             child: sidebarItem(Icons.money, "Daily Expenses", "/expanses"),

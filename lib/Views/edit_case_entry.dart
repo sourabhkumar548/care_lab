@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:care_lab_software/Controllers/GetSingleCase/single_case_cubit.dart';
 import 'package:care_lab_software/Controllers/UpdateCaseCtrl/update_case_bloc.dart';
 import 'package:care_lab_software/Controllers/UpdateCaseCtrl/update_case_ctrl.dart';
+import 'package:care_lab_software/Helpers/get_agent_data.dart';
 import 'package:care_lab_software/Helpers/get_doctor_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,9 +10,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:sizer/sizer.dart';
-import '../Controllers/CaseEntryCtrl/Bloc/case_entry_bloc.dart';
-import '../Controllers/CaseEntryCtrl/Controller/caseentryctrl.dart';
-import '../Controllers/CaseNumberCtrl/Cubit/case_number_cubit.dart';
 import '../Helpers/case_entry_data.dart';
 import '../Helpers/print_case_entry.dart';
 import '../Helpers/ratedialog.dart';
@@ -476,27 +474,13 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                             child: Row(
                               children: [
                                 Expanded(
-                                  child: TextField(
+                                  child: AgentInputField(
                                     controller: agentCtrl,
-                                    style: TextStyle(color: Colors.black),
-                                    decoration: InputDecoration(
-                                        labelText: "Enter Agent Name",
-                                        filled: true,
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                        ),
-                                        fillColor: Colors.grey.shade100,
-                                        labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                                        prefixIcon: Icon(Icons.person),
-                                        suffixIcon: IconButton(onPressed: ()=>
-                                            UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList),
-                                            icon: Icon(Icons.arrow_drop_down_circle_outlined))
-                                    ),
+                                    onDoctorSelected: (agent) {
+                                      setState(() {
+                                        agentCtrl.text = agent;
+                                      });
+                                    },
                                   ),
                                 ),
                                 const SizedBox(width: 20),
@@ -506,7 +490,6 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                                     // ✅ Removed initialValue - let controller handle it
                                     onDoctorSelected: (doctor) {
                                       setState(() {
-                                        print("Doctor Change : $doctor");
                                         doctorCtrl.text = doctor;
                                       });
                                     },
@@ -1067,12 +1050,6 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
             isInitialized = true;
           }
 
-          // ✅ Remove ALL controller declarations from here
-          // Delete these lines:
-          // TextEditingController timeCtrl = TextEditingController(text: data.time);
-          // TextEditingController dateCtrl = TextEditingController(text: data.date);
-          // ... etc
-
           return Center(
             child: Row(
               children: [
@@ -1326,27 +1303,13 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                             child: Row(
                               children: [
                                 Expanded(
-                                  child: TextField(
+                                  child: AgentInputField(
                                     controller: agentCtrl,
-                                    style: TextStyle(color: Colors.black),
-                                    decoration: InputDecoration(
-                                        labelText: "Enter Agent Name",
-                                        filled: true,
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.green, width: 2),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(10),
-                                          borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                                        ),
-                                        fillColor: Colors.grey.shade100,
-                                        labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                                        prefixIcon: Icon(Icons.person),
-                                        suffixIcon: IconButton(onPressed: ()=>
-                                            UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList),
-                                            icon: Icon(Icons.arrow_drop_down_circle_outlined))
-                                    ),
+                                    onDoctorSelected: (agent) {
+                                      setState(() {
+                                        agentCtrl.text = agent;
+                                      });
+                                    },
                                   ),
                                 ),
                                 const SizedBox(width: 20),

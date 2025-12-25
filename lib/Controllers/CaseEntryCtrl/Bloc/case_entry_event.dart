@@ -5,6 +5,7 @@ sealed class CaseEntryEvent {}
 
 class AddCaseEntryEvent extends CaseEntryEvent{
 
+  String? type;
   String case_date;
   String time;
   String date;
@@ -38,6 +39,7 @@ class AddCaseEntryEvent extends CaseEntryEvent{
   String name_title;
 
   AddCaseEntryEvent({
+    this.type,
     required this.case_date,
     required this.time,
     required this.date,

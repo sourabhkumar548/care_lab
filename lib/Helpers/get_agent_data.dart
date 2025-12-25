@@ -5,10 +5,10 @@ import 'package:sizer/sizer.dart';
 // ============================================
 // DOCTOR DATA LOADER
 // ============================================
-class DoctorData {
+class AgentData {
   static Future<List<String>> loadDoctorsFromAssets() async {
     try {
-      final String response = await rootBundle.loadString('assets/doctors.txt');
+      final String response = await rootBundle.loadString('assets/agent.txt');
 
       final List<String> doctors = response
           .split('\n')
@@ -27,12 +27,12 @@ class DoctorData {
 // ============================================
 // DOCTOR INPUT FIELD WIDGET
 // ============================================
-class DoctorInputField extends StatefulWidget {
+class AgentInputField extends StatefulWidget {
   final Function(String)? onDoctorSelected;
   final String? initialValue;
   final TextEditingController? controller;
 
-  const DoctorInputField({
+  const AgentInputField({
     Key? key,
     this.onDoctorSelected,
     this.initialValue,
@@ -40,10 +40,10 @@ class DoctorInputField extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _DoctorInputFieldState createState() => _DoctorInputFieldState();
+  _AgentInputFieldState createState() => _AgentInputFieldState();
 }
 
-class _DoctorInputFieldState extends State<DoctorInputField> {
+class _AgentInputFieldState extends State<AgentInputField> {
   late TextEditingController _controller;
   final FocusNode _focusNode = FocusNode();
   List<String> allDoctors = [];
@@ -71,7 +71,7 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
   }
 
   Future<void> loadDoctors() async {
-    allDoctors = await DoctorData.loadDoctorsFromAssets();
+    allDoctors = await AgentData.loadDoctorsFromAssets();
     if (mounted) setState(() {});
   }
 
@@ -178,7 +178,7 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
             focusNode: _focusNode,
             style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
-              labelText: "Enter Doctor Name",
+              labelText: "Enter Agent Name",
               filled: true,
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),

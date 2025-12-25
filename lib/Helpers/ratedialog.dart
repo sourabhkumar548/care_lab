@@ -18,7 +18,7 @@ class AddTestDialogState extends State<AddTestDialog> {
   static double totalAmount = 0;
 
   final ScrollController _scrollController = ScrollController();
-
+  final FocusNode _focusNode = FocusNode();
   @override
   void initState() {
     super.initState();
@@ -26,6 +26,9 @@ class AddTestDialogState extends State<AddTestDialog> {
     // Update list whenever search text changes
     searchCtrl.addListener(() {
       setState(() {});
+    });
+    Future.delayed(Duration.zero, () {
+      _focusNode.requestFocus();
     });
   }
   @override
@@ -96,6 +99,7 @@ class AddTestDialogState extends State<AddTestDialog> {
             // ---------- SEARCH BOX ----------
             TextField(
               controller: searchCtrl,
+              focusNode: _focusNode,
               decoration: InputDecoration(
                 labelText: "Enter Test Name",
                 prefixIcon: Icon(Icons.search),
@@ -143,7 +147,6 @@ class AddTestDialogState extends State<AddTestDialog> {
                         return Card(
                           child: ListTile(
                             title: Text(item.testName!),
-                            subtitle: Text(item.department!),
                             trailing: alreadySelected
                                 ? Icon(Icons.check, color: Colors.green)
                                 : Text("₹${item.rate!}"),
@@ -158,6 +161,10 @@ class AddTestDialogState extends State<AddTestDialog> {
                                     "Test File": item.testFile,
                                   });
                                   totalAmount += double.parse(item.rate!);
+                                  searchCtrl.clear();
+                                  Future.delayed(Duration.zero, () {
+                                    _focusNode.requestFocus();
+                                  });
                                 });
 
                                 Future.delayed(Duration(milliseconds: 200), () {

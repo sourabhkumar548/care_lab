@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
+import 'package:care_lab_software/Model/login_model.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 
@@ -24,7 +25,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           "Content-Type":"application/json"
         });
         if(response.statusCode == 200){
-          emit(LoginLoadedState(Successmsg: "Successfully Login"));
+          Map<String,dynamic> mapData = jsonDecode(response.body);
+          LoginModel loginModel = LoginModel.fromJson(mapData);
+          emit(LoginLoadedState(loginModel: loginModel));
         }
         else{
           emit(LoginErrorState(error: "Wrong password...!"));

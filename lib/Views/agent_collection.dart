@@ -1,11 +1,10 @@
-import 'package:care_lab_software/Controllers/AgentCollectionCtrl/agent_collection_cubit.dart';
+
+import 'package:care_lab_software/Helpers/get_agent_data.dart';
 import 'package:care_lab_software/Views/monthly_list.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:sizer/sizer.dart';
 
-import '../Helpers/case_entry_data.dart';
 import '../Helpers/uiHelper.dart';
 import 'loginscreen.dart';
 
@@ -129,26 +128,14 @@ class _AgentCollectionState extends State<AgentCollection> {
                       ),
                       const SizedBox(width: 10,),
                       Expanded(
-                        child: TextField(
+                        child: AgentInputField(
                           controller: agentCtrl,
-                          style: TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                              labelText: "Enter Agent Name",
-                              filled: true,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.green, width: 2),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                              ),
-                              fillColor: Colors.grey.shade100,
-                              labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                              prefixIcon: Icon(Icons.person),
-                              suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
-                          ),
+                          initialValue: "Self",
+                          onDoctorSelected: (agent) {
+                            setState(() {
+                              agentCtrl.text = agent;
+                            });
+                          },
                         ),
                       ),
                       const SizedBox(width: 10,),
@@ -261,26 +248,14 @@ class _AgentCollectionState extends State<AgentCollection> {
                       ),
                       const SizedBox(width: 10,),
                       Expanded(
-                        child: TextField(
+                        child: AgentInputField(
                           controller: agentCtrl,
-                          style: TextStyle(color: Colors.black),
-                          decoration: InputDecoration(
-                              labelText: "Enter Agent Name",
-                              filled: true,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.green, width: 2),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                              ),
-                              fillColor: Colors.grey.shade100,
-                              labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
-                              prefixIcon: Icon(Icons.person),
-                              suffixIcon: IconButton(onPressed: ()=>UiHelper.CustEditableDropDown(context, (data)=>agentCtrl.text=data,CaseEnteryData.agentList), icon: Icon(Icons.arrow_drop_down_circle_outlined))
-
-                          ),
+                          initialValue: "Self",
+                          onDoctorSelected: (agent) {
+                            setState(() {
+                              agentCtrl.text = agent;
+                            });
+                          },
                         ),
                       ),
                       const SizedBox(width: 10,),

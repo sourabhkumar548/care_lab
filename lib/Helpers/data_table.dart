@@ -26,9 +26,9 @@ class _ScrollableTableState extends State<ScrollableTable> {
             controller: _scrollController,
             child: DataTable(
               columns: const [
-                DataColumn(label: Text("Sl.No", style: TextStyle(fontWeight: FontWeight.bold))),
+                DataColumn(label: Text("Case No", style: TextStyle(fontWeight: FontWeight.bold))),
                 DataColumn(label: Text("Name", style: TextStyle(fontWeight: FontWeight.bold))),
-                DataColumn(label: Text("Mobile", style: TextStyle(fontWeight: FontWeight.bold))),
+                // DataColumn(label: Text("Mobile", style: TextStyle(fontWeight: FontWeight.bold))),
                 DataColumn(label: Text("Total Amount", style: TextStyle(fontWeight: FontWeight.bold))),
                 DataColumn(label: Text("Discount", style: TextStyle(fontWeight: FontWeight.bold))),
                 DataColumn(label: Text("After Amount", style: TextStyle(fontWeight: FontWeight.bold))),
@@ -39,14 +39,14 @@ class _ScrollableTableState extends State<ScrollableTable> {
                 var data = widget.list[index];
 
                 return DataRow(cells: [
-                  DataCell(Text("${index + 1}",style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataCell(Text("${data.caseNo}",style: TextStyle(fontWeight: FontWeight.bold))),
                   DataCell(Text(data.patientName ?? "",style: TextStyle(fontWeight: FontWeight.bold))),
-                  DataCell(Text(data.mobile ?? "",style: TextStyle(fontWeight: FontWeight.bold))),
-                  DataCell(Text("₹${data.totalAmount}.00",style: TextStyle(fontWeight: FontWeight.bold))),
-                  DataCell(Text("₹${data.discount}.00",style: TextStyle(fontWeight: FontWeight.bold),)),
-                  DataCell(Text("₹${data.afterDiscount}.00",style: TextStyle(fontWeight: FontWeight.bold),)),
+                  // DataCell(Text(data.mobile ?? "",style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataCell(Text("₹${data.totalAmount}",style: TextStyle(fontWeight: FontWeight.bold))),
+                  DataCell(Text("₹${data.discount}",style: TextStyle(fontWeight: FontWeight.bold),)),
+                  DataCell(Text("₹${data.afterDiscount}",style: TextStyle(fontWeight: FontWeight.bold),)),
                   DataCell(Text("₹${data.paidAmount}",style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold),)),
-                  DataCell(Text("₹${data.balance}.00",style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold),)),
+                  DataCell(Text("₹${data.balance}",style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold),)),
                 ]);
               }),
             ),

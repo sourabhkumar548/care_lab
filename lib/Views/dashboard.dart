@@ -2,6 +2,7 @@ import 'package:care_lab_software/Controllers/RevenueCtrl/revenue_cubit.dart';
 import 'package:care_lab_software/Helpers/data_table.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:sizer/sizer.dart';
@@ -43,15 +44,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     String month = DateFormat('MMMM').format(now);
     int year = now.year;
 
-    List<DropdownMenuItem<String>> yearList = [
-      DropdownMenuItem(value: "2020", child: Text("2020")),
-      DropdownMenuItem(value: "2021", child: Text("2021")),
-      DropdownMenuItem(value: "2022", child: Text("2022")),
-      DropdownMenuItem(value: "2023", child: Text("2023")),
-      DropdownMenuItem(value: "2024", child: Text("2024")),
-      DropdownMenuItem(value: "2025", child: Text("2025")),
-      DropdownMenuItem(value: "2026", child: Text("2026")),
-    ];
+    GetStorage userBox = GetStorage();
+    String? userType = userBox.read("userType");
+    String? userName = userBox.read("userName");
+
 
     return Scaffold(
       backgroundColor: Colors.blue.shade100,
@@ -76,7 +72,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Lab Info
-                        UiHelper.CustTopBar(title: "Care Diagnostics Centre"),
+                        UiHelper.CustTopBar(title: "Care Diagnostics Centre",widget: Padding(
+                          padding: const EdgeInsets.only(right: 20),
+                          child: UiHelper.CustText(text: "Welcome $userName",size: 12.sp,color: Colors.blue.shade900),
+                        )),
                         const SizedBox(height: 20),
 
                         // Account Information Cards
@@ -95,12 +94,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 children: [
                                   UiHelper.infoCard("Today’s Patient", "${state.revenueModel.today!.patients}", Colors.blue, Icons.people),
                                   UiHelper.infoCard("Today’s Revenue", "₹${state.revenueModel.today!.totalCollection!.toString()}", Colors.red, Icons.wallet),
-                                  UiHelper.infoCard("Patient in ${month}", "${state.revenueModel.selectedMonth!.patients}", Colors.green, Icons.event),
-                                  UiHelper.infoCard("Revenue in ${month}", "₹${state.revenueModel.selectedMonth!.revenue}", Colors.orange, Icons.currency_rupee),
-                                  UiHelper.infoCard("Patient in ${year}", "${state.revenueModel.selectedYear!.patients}", Colors.blue, Icons.people_alt),
-                                  UiHelper.infoCard("Revenue in ${year}", "₹${state.revenueModel.selectedYear!.revenue}",Colors.red, Icons.wallet),
-                                  UiHelper.infoCard("Due Amt in ${month}", "₹${state.revenueModel.pendingTotalThisMonth!}",Colors.red, Icons.currency_rupee),
-                                  UiHelper.infoCard("Due Amt in ${year}", "₹${state.revenueModel.pendingTotalThisYear!}",Colors.red, Icons.currency_rupee),
+                                  UiHelper.infoCard("Patient in ${month}", "${userType == "Admin" ? state.revenueModel.selectedMonth!.patients : ""}", Colors.green, Icons.event),
+                                  UiHelper.infoCard("Revenue in ${month}", "${userType == "Admin" ? "₹${state.revenueModel.selectedMonth!.revenue}" : ""}", Colors.orange, Icons.currency_rupee),
+                                  UiHelper.infoCard("Patient in ${year}", "${userType == "Admin" ? state.revenueModel.selectedYear!.patients : ""}", Colors.blue, Icons.people_alt),
+                                  UiHelper.infoCard("Revenue in ${year}", "${userType == "Admin" ? "₹${state.revenueModel.selectedYear!.revenue}" : ""}",Colors.red, Icons.wallet),
+                                  UiHelper.infoCard("Due Amt in ${month}", "${userType == "Admin" ? "₹${state.revenueModel.pendingTotalThisMonth!}" : ""}",Colors.red, Icons.currency_rupee),
+                                  UiHelper.infoCard("Due Amt in ${year}", "${userType == "Admin" ? "₹${state.revenueModel.pendingTotalThisYear!}" : ""}",Colors.red, Icons.currency_rupee),
                                 ],
                               );
                             }
@@ -374,7 +373,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Lab Info
-                        UiHelper.CustTopBar(title: "Care Diagnostics Centre"),
+                        UiHelper.CustTopBar(title: "Care Diagnostics Centre",widget: Padding(
+                          padding: const EdgeInsets.only(right: 20),
+                          child: UiHelper.CustText(text: "Welcome $userName",size: 12.sp,color: Colors.blue.shade900),
+                        )),
                         const SizedBox(height: 20),
 
                         // Account Information Cards
@@ -393,12 +395,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 children: [
                                   UiHelper.infoCard("Today’s Patient", "${state.revenueModel.today!.patients}", Colors.blue, Icons.people),
                                   UiHelper.infoCard("Today’s Revenue", "₹${state.revenueModel.today!.totalCollection!.toString()}", Colors.red, Icons.wallet),
-                                  UiHelper.infoCard("Patient in ${month}", "${state.revenueModel.selectedMonth!.patients}", Colors.green, Icons.event),
-                                  UiHelper.infoCard("Revenue in ${month}", "₹${state.revenueModel.selectedMonth!.revenue}", Colors.orange, Icons.currency_rupee),
-                                  UiHelper.infoCard("Patient in ${year}", "${state.revenueModel.selectedYear!.patients}", Colors.blue, Icons.people_alt),
-                                  UiHelper.infoCard("Revenue in ${year}", "₹${state.revenueModel.selectedYear!.revenue}",Colors.red, Icons.wallet),
-                                  UiHelper.infoCard("Due Amt in ${month}", "₹${state.revenueModel.pendingTotalThisMonth!}",Colors.red, Icons.currency_rupee),
-                                  UiHelper.infoCard("Due Amt in ${year}", "₹${state.revenueModel.pendingTotalThisYear!}",Colors.red, Icons.currency_rupee),
+                                  UiHelper.infoCard("Patient in ${month}", "${userType == "Admin" ? state.revenueModel.selectedMonth!.patients : ""}", Colors.green, Icons.event),
+                                  UiHelper.infoCard("Revenue in ${month}", "${userType == "Admin" ? "₹${state.revenueModel.selectedMonth!.revenue}" : ""}", Colors.orange, Icons.currency_rupee),
+                                  UiHelper.infoCard("Patient in ${year}", "${userType == "Admin" ? state.revenueModel.selectedYear!.patients : ""}", Colors.blue, Icons.people_alt),
+                                  UiHelper.infoCard("Revenue in ${year}", "${userType == "Admin" ? "₹${state.revenueModel.selectedYear!.revenue}" : ""}",Colors.red, Icons.wallet),
+                                  UiHelper.infoCard("Due Amt in ${month}", "${userType == "Admin" ? "₹${state.revenueModel.pendingTotalThisMonth!}" : ""}",Colors.red, Icons.currency_rupee),
+                                  UiHelper.infoCard("Due Amt in ${year}", "${userType == "Admin" ? "₹${state.revenueModel.pendingTotalThisYear!}" : ""}",Colors.red, Icons.currency_rupee),
                                 ],
                               );
                             }

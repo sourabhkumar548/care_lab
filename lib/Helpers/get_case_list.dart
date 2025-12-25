@@ -119,10 +119,10 @@ class GetCaseList{
                         child: ExpansionTile(title: Table(
                           columnWidths: {
                             0: FlexColumnWidth(1),
-                            1: FlexColumnWidth(6),
-                            2: FlexColumnWidth(3),
+                            1: FlexColumnWidth(5),
+                            2: FlexColumnWidth(4.5),
                             3: FlexColumnWidth(3),
-                            4: FlexColumnWidth(3),
+                            4: FlexColumnWidth(2.5),
                             5: FlexColumnWidth(3),
                             6: FlexColumnWidth(1.5),
                           },
@@ -144,16 +144,46 @@ class GetCaseList{
 
                                   Tooltip(
                                       message: "Payment History",
-                                      child: IconButton(onPressed: ()=>GetPaymentHistory.GetHistory(
-                                          context: context,
-                                          Case_no: caseData.caseNo!,
-                                          case_date: caseData.date!,
-                                          name: caseData.patientName!,
-                                          total: caseData.afterDiscount!,
-                                          balance: caseData.balance!,
-                                          status: "${caseData.balance! == "0" || caseData.balance! == ".00" || caseData.balance! == "0.00" ? "Paid" : "Due"}"
+                                      child: IconButton(onPressed: (){
 
-                                      ), icon  : Icon(Icons.list,color: Colors.blue.shade600,))),
+
+                                        List<String> nameList = caseData.items![0].testName!
+                                            .replaceAll('[', '')
+                                            .replaceAll(']', '')
+                                            .split(',')
+                                            .map((e) => e.trim())
+                                            .toList();
+
+                                        List<String> rateList = caseData.items![0].testRate!
+                                            .replaceAll('[', '')
+                                            .replaceAll(']', '')
+                                            .split(',')
+                                            .map((e) => e.trim())
+                                            .toList();
+
+                                        GetPaymentHistory.GetHistory(
+                                            receiptNo : caseData.slipNo!,
+                                            receiptDate : caseData.date!,
+                                            caseNo : caseData.caseNo!,
+                                            caseDate : caseData.date!,
+                                            patientName : caseData.patientName!,
+                                            mobile : caseData.mobile!,
+                                            sex: caseData.items![0].gender!,
+                                            age : caseData.items![0].year!,
+                                            referredBy : caseData.items![0].doctor!,
+                                            testName : nameList,
+                                            testRate : rateList,
+                                            date :caseData.items![0].date!,
+                                            totalAmount : caseData.items![0].totalAmount!,
+                                            discountAmount : caseData.items![0].discount!,
+                                            balanceAmount: caseData.items![0].balance!,
+                                            advanceAmount : caseData.items![0].advance!,
+                                            receivedBy : caseData.items![0].receivedBy!,
+                                            context: context,
+                                            status: "${caseData.balance! == "0" || caseData.balance! == ".00" || caseData.balance! == "0.00" ? "Paid" : "Due"}"
+
+                                        );
+                                      }, icon  : Icon(Icons.list,color: Colors.blue.shade600,))),
                                 ],
                               ),)
                             ])
@@ -253,10 +283,7 @@ class GetCaseList{
                                               PrintCaseEntry.printBill(receiptNo: data.slipNo!, receiptDate: data.date!, caseNo: data.caseNo!, caseDate: data.caseDate!, caseTime: data.time!, patientName: data.patientName!, mobile: data.mobile!, sex: data.gender!, age: "${data.year} Y ${data.month != "0" ? data.month :""}${data.month != "0" ? "M" :""} ", referredBy: data.doctor!, testName: testName, testRate: testRate, date: data.date!, totalAmount: total, discountAmount: paid, balanceAmount: data.balance!, advanceAmount: data.advance!, receivedBy: data.receivedBy!,testDate: testDate);
                                             }, icon: Icon(Icons.print,color: Colors.green.shade700,),),
                                           ),
-                                          const SizedBox(width: 10,),
-                                          Tooltip(
-                                              message: "View Details",
-                                              child: IconButton(onPressed: (){}, icon: Icon(Icons.list_alt,color: Colors.red.shade700,),))
+
                                         ],),
                                       ]
                                       )
@@ -472,7 +499,7 @@ class GetCaseList{
 
 
 
-                  CaseEntryCtrl.CaseEntry(context : context,case_date: case_date, time: newTime, date: newDate, case_no: case_no, slip_no: receiptNo, received_by: receivedBy, patient_name: patient_name, year: year, month: month, gender: gender, mobile: mobile, child_male: child_male, child_female: child_female, address: address, agent: agent, doctor: doctor, test_name: test_name, test_rate: test_rate, total_amount: total_amount, discount: discount, after_discount: after_discount, advance: adv, balance: "${double.parse(balance) - double.parse(paidCtrl.text)}",paid_amount: paidCtrl.text,pay_status: pay_status, pay_mode: PayMode, discount_type: discount_type,test_date: test_date,test_file: test_file,narration: narration,name_title: name_title);
+                  CaseEntryCtrl.CaseEntry(type : "Repayment",context : context,case_date: case_date, time: newTime, date: newDate, case_no: case_no, slip_no: receiptNo, received_by: receivedBy, patient_name: patient_name, year: year, month: month, gender: gender, mobile: mobile, child_male: child_male, child_female: child_female, address: address, agent: agent, doctor: doctor, test_name: test_name, test_rate: test_rate, total_amount: total_amount, discount: discount, after_discount: after_discount, advance: adv, balance: "${double.parse(balance) - double.parse(paidCtrl.text)}",paid_amount: paidCtrl.text,pay_status: pay_status, pay_mode: PayMode, discount_type: discount_type,test_date: test_date,test_file: test_file,narration: narration,name_title: name_title);
 
 
                 }, child: UiHelper.CustText(text: "Pay Now",fontfamily: 'font-bold',size: 12.sp,color: Colors.green),);

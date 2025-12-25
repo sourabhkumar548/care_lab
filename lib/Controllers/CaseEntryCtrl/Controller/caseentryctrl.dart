@@ -9,6 +9,7 @@ class CaseEntryCtrl{
 
   static CaseEntry(
     {
+      String? type,
       required BuildContext context,
       required String case_date,
       required String time,
@@ -85,6 +86,7 @@ class CaseEntryCtrl{
           UiHelper.showErrorToste(message: "Total Amount not Show",heading: "Required Field");
       } else {
           BlocProvider.of<CaseEntryBloc>(context).add(AddCaseEntryEvent(
+              type: type,
               case_date: case_date,
               time: time,
               date: date,

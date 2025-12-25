@@ -145,7 +145,8 @@ class _LabLoginScreenState extends State<LabLoginScreen> {
                 if(state is UsernameLoadedState){
                   List<DropdownMenuItem<String>> staffList = [
                     const DropdownMenuItem(value: "None", child: Text("None")),
-                    ...state.usernameModel.username!.map((val)=>DropdownMenuItem(value: val, child: Text(val))).toList()
+                    ...state.usernameModel.username!.map((val)=>DropdownMenuItem(value: val, child: Text(val),onTap: (){
+                    },)).toList()
                   ];
                   return Row(children: [
                     UiHelper.CustDropDown(label: "Select User", defaultValue: "None", list: staffList,icon: Icon(Icons.person),
@@ -180,9 +181,23 @@ class _LabLoginScreenState extends State<LabLoginScreen> {
                     UiHelper.showErrorToste(message: state.error, heading: "Error");
                   }
                   if(state is LoginLoadedState){
-                    GetStorage userBox = GetStorage();
-                    userBox.write("newUser", username.value);
-                    Get.toNamed('/dashboard',arguments: {"code" : "/dashboard"});
+                    try{
+                      GetStorage userBox = GetStorage();
+
+                      // Check if staff data exists
+                      if (state.loginModel.staff != null && state.loginModel.staff!.isNotEmpty){
+                        userBox.write("newUser", username.value);
+                        userBox.write("userType", state.loginModel.staff![0].staffType ?? '');
+                        userBox.write("userName", state.loginModel.staff![0].staffName ?? '');
+
+                        Get.toNamed('/dashboard', arguments: {"code": "/dashboard"});
+                      } else {
+                        // Handle case where staff data is missing
+                        Get.snackbar('Error', 'Staff data not found');
+                      }
+                    } catch (e) {
+                      print('Error saving user data: $e');
+                    }
                   }
                 },
                 builder: (context, state) {
