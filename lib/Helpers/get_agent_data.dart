@@ -25,7 +25,7 @@ class AgentData {
 }
 
 // ============================================
-// DOCTOR INPUT FIELD WIDGET
+// DOCTOR INPUT FIELD WIDGET (SELECTION ONLY)
 // ============================================
 class AgentInputField extends StatefulWidget {
   final Function(String)? onDoctorSelected;
@@ -49,6 +49,7 @@ class _AgentInputFieldState extends State<AgentInputField> {
   List<String> allDoctors = [];
   List<String> filteredDoctors = [];
   OverlayEntry? _overlayEntry;
+  String _lastValidSelection = '';
 
   @override
   void initState() {
@@ -56,6 +57,7 @@ class _AgentInputFieldState extends State<AgentInputField> {
     _controller = widget.controller ?? TextEditingController();
     if (widget.initialValue != null && _controller.text.isEmpty) {
       _controller.text = widget.initialValue!;
+      _lastValidSelection = widget.initialValue!;
     }
     loadDoctors();
 
@@ -65,6 +67,7 @@ class _AgentInputFieldState extends State<AgentInputField> {
       } else {
         Future.delayed(Duration(milliseconds: 200), () {
           _hideDropdown();
+          _validateSelection();
         });
       }
     });
@@ -73,6 +76,28 @@ class _AgentInputFieldState extends State<AgentInputField> {
   Future<void> loadDoctors() async {
     allDoctors = await AgentData.loadDoctorsFromAssets();
     if (mounted) setState(() {});
+  }
+
+  void _validateSelection() {
+    // Check if current text matches any doctor in the list
+    final currentText = _controller.text.trim();
+    final isValid = allDoctors.any((doctor) =>
+    doctor.toLowerCase() == currentText.toLowerCase()
+    );
+
+    if (!isValid) {
+      // Revert to last valid selection
+      _controller.text = _lastValidSelection;
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please select an agent from the list'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _filterDoctors(String query) {
@@ -135,7 +160,16 @@ class _AgentInputFieldState extends State<AgentInputField> {
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: Colors.grey.shade300),
             ),
-            child: ListView.separated(
+            child: filteredDoctors.isEmpty
+                ? Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                'No matching agents found',
+                style: TextStyle(color: Colors.grey),
+                textAlign: TextAlign.center,
+              ),
+            )
+                : ListView.separated(
               padding: EdgeInsets.zero,
               shrinkWrap: true,
               itemCount: filteredDoctors.length,
@@ -149,6 +183,7 @@ class _AgentInputFieldState extends State<AgentInputField> {
                   ),
                   onTap: () {
                     _controller.text = filteredDoctors[index];
+                    _lastValidSelection = filteredDoctors[index];
                     widget.onDoctorSelected?.call(filteredDoctors[index]);
                     _hideDropdown();
                     _focusNode.unfocus();
@@ -164,6 +199,7 @@ class _AgentInputFieldState extends State<AgentInputField> {
 
   void _clearText() {
     _controller.clear();
+    _lastValidSelection = '';
     _filterDoctors('');
     widget.onDoctorSelected?.call('');
   }
@@ -178,7 +214,7 @@ class _AgentInputFieldState extends State<AgentInputField> {
             focusNode: _focusNode,
             style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
-              labelText: "Enter Agent Name",
+              labelText: "Select Agent Name",
               filled: true,
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -189,34 +225,23 @@ class _AgentInputFieldState extends State<AgentInputField> {
                 borderSide: BorderSide(color: Colors.black45, width: 1.5),
               ),
               fillColor: Colors.grey.shade100,
-              labelStyle: TextStyle(color: Colors.black,fontFamily: 'font-bold',fontSize: 11.sp),
+              labelStyle: TextStyle(
+                color: Colors.black,
+                fontFamily: 'font-bold',
+                fontSize: 11.sp,
+              ),
               prefixIcon: Icon(Icons.person),
+              suffixIcon: _controller.text.isNotEmpty
+                  ? IconButton(
+                icon: Icon(Icons.close, size: 20),
+                onPressed: _clearText,
+              )
+                  : null,
               border: OutlineInputBorder(),
             ),
             onChanged: _filterDoctors,
           ),
         ),
-
-        if (_controller.text.isNotEmpty)
-          Padding(
-            padding: EdgeInsets.only(right: 12),
-            child: GestureDetector(
-              onTap: _clearText,
-              child: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.close,
-                  color: Colors.grey.shade600,
-                  size: 16,
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }

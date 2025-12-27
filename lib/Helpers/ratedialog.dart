@@ -103,13 +103,6 @@ class AddTestDialogState extends State<AddTestDialog> {
               decoration: InputDecoration(
                 labelText: "Enter Test Name",
                 prefixIcon: Icon(Icons.search),
-                suffixIcon: InkWell(
-                  onTap: () {
-                    searchCtrl.clear();
-                    setState(() {});
-                  },
-                  child: Icon(Icons.close),
-                ),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10)),
               ),
