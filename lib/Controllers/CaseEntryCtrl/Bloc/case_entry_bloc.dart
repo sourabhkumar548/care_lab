@@ -58,7 +58,7 @@ class CaseEntryBloc extends Bloc<CaseEntryEvent, CaseEntryState> {
         if(response.statusCode == 200){
           final Map<String, dynamic> data = jsonDecode(response.body);
           final String caseNo = data['caseNo'];
-          emit(CaseEntryLoadedState(successMessage: response.body,CaseNo: caseNo));
+          emit(CaseEntryLoadedState(successMessage: response.body,CaseNo: caseNo,testFile: event.test_file));
         }else if(response.statusCode == 500){
           emit(CaseEntryErrorState(errorMessage: response.body));
         }else{

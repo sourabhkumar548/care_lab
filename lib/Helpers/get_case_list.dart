@@ -16,6 +16,7 @@ import '../Controllers/CaseEntryCtrl/Bloc/case_entry_bloc.dart';
 import '../Controllers/CaseEntryCtrl/Controller/caseentryctrl.dart';
 import '../Controllers/CaseList/Cubit/case_list_cubit.dart';
 import 'case_entry_data.dart';
+import 'constants.dart';
 
 class GetCaseList{
 
@@ -310,6 +311,7 @@ class GetCaseList{
 
 
   static void showCaseDialog({required BuildContext context,
+    String? page,
     required String case_date,
     required String case_no,
     required String case_time,
@@ -345,7 +347,7 @@ class GetCaseList{
 
     final twoDigitYear = (DateTime.now().year % 100).toString().padLeft(2, '0');
     Random data = Random();
-    String receiptNo = "${data.nextInt(99999)}/${twoDigitYear}-${int.parse(twoDigitYear.toString())+1}";
+    String receiptNo = "${data.nextInt(99999)}/${Constants.year}";
 
     GetStorage box = GetStorage();
     String receivedBy = box.read("newUser");
@@ -456,29 +458,58 @@ class GetCaseList{
               listener: (context, state) {
                 if(state is CaseEntryLoadedState){
 
-
-
                   UiHelper.showSuccessToste(message: "Bill Paid Successfully");
-                  // PrintCaseEntry.printBill(receiptNo: receiptNo,
-                  //     receiptDate: "${DateTime.now().day.toString()}-${DateTime.now().month.toString()}-${DateTime.now().year.toString()}",
-                  //     caseNo: case_no,
-                  //     caseDate: newDate,
-                  //     caseTime: newTime,
-                  //     patientName: patient_name,
-                  //     mobile: mobile,
-                  //     sex: gender,
-                  //     age: "${year} Y ${month} M",
-                  //     referredBy: doctor,
-                  //     testName: testName,
-                  //     testRate: testRate,
-                  //     date: case_date,
-                  //     totalAmount: after_discount,
-                  //     discountAmount: after_discount,
-                  //     balanceAmount: "${int.parse(paidCtrl.text) - int.parse(balance)}",
-                  //     advanceAmount: advance,
-                  //     receivedBy: receivedBy,
-                  //     testDate: testDate
-                  // );
+
+                  if(page == "case_entry"){
+                    showDialog<bool>(
+                      context: context,
+                      barrierDismissible: false, // user must tap a button
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: UiHelper.CustText(text: "Success",size: 10.5.sp),
+                          content: Text("Case Entry Successfully Done. Do You Print Receipt or Paid More Amount?"),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text("clear",style: TextStyle(color: Colors.red,fontWeight: FontWeight.bold),),
+                              onPressed: (){
+                                Navigator.popAndPushNamed(
+                                    context,
+                                    '/case_entry_page',arguments: {"code" : "/case_entry_page"});
+                              },
+                            ),
+                            ElevatedButton(
+                              child: const Text("Print"),
+                              onPressed: () {
+                                PrintCaseEntry.printBill(receiptNo: receiptNo,
+                                    receiptDate: "${DateTime.now().day.toString()}-${DateTime.now().month.toString()}-${DateTime.now().year.toString()}",
+                                    caseNo: case_no,
+                                    caseDate: newDate,
+                                    caseTime: newTime,
+                                    patientName: patient_name,
+                                    mobile: mobile,
+                                    sex: gender,
+                                    age: "${year} Y ${month} M",
+                                    referredBy: doctor,
+                                    testName: testName,
+                                    testRate: testRate,
+                                    date: case_date,
+                                    totalAmount: after_discount,
+                                    discountAmount: "${int.parse(advance) + int.parse(paidCtrl.text)}",
+                                    balanceAmount: " ${int.parse(balance) - int.parse(paidCtrl.text)}",
+                                    advanceAmount: "0",
+                                    receivedBy: receivedBy,
+                                    testDate: testDate
+                                );
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+
+
+
                 }
                 if(state is CaseEntryErrorState){
                   UiHelper.showErrorToste(message: state.errorMessage);

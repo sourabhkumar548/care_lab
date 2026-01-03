@@ -8,7 +8,8 @@ final class CaseEntryLoadingState extends CaseEntryState {}
 final class CaseEntryLoadedState extends CaseEntryState {
   final String successMessage;
   final String CaseNo;
-  CaseEntryLoadedState({required this.successMessage,required this.CaseNo});
+  final String testFile;
+  CaseEntryLoadedState({required this.successMessage,required this.CaseNo,required this.testFile});
 }
 final class CaseEntryErrorState extends CaseEntryState {
   final String errorMessage;
