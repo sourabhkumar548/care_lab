@@ -47,7 +47,7 @@ class _DocumentUploadViewState extends State<DocumentUploadView> {
           children: [
             //SIDE BAR
             Container(
-              height: 120,
+              height: 180,
               child: UiHelper.custHorixontalTab(container: "20",context: context),
             ),
             //MAIN CONTENT

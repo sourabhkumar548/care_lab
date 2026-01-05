@@ -72,7 +72,7 @@ class _SearchReportScreenState extends State<SearchReportScreen> {
           children: [
             //SIDE BAR
             Container(
-              height: 120,
+              height: 180,
               child: UiHelper.custHorixontalTab(container: "22",context: context,),
             ),
             //MAIN CONTENT
@@ -82,9 +82,11 @@ class _SearchReportScreenState extends State<SearchReportScreen> {
                 padding: const EdgeInsets.all(10.0),
                 child: ListView(
                   children: [
-                    UiHelper.CustTopBar(title: "Search Patient Report",widget: _buildSearchBar(),),
+                    UiHelper.CustTopBar(title: "Search Patient Report"),
+                    const SizedBox(height: 10,),
+                    _buildSearchBar(),
                     const SizedBox(height: 20,),
-                    _reportData()
+                    _reportDataMobile()
                   ],
                 ),
               ),
@@ -457,6 +459,162 @@ class _SearchReportScreenState extends State<SearchReportScreen> {
                           ],
                         ),
                       ],);
+                    },
+                    itemCount: paginatedReports.length,
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Pagination controls
+                  _buildPaginationControls(totalItems),
+                ],
+              );
+            }
+            return Container();
+          },
+        ),
+      ],
+    );
+
+  }
+
+  Widget _reportDataMobile(){
+
+    return Column(
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            headingRowColor: MaterialStateProperty.all(Colors.blueAccent),
+            border: TableBorder.all(color: Colors.grey.shade400, width: 1),
+            columns: [
+              DataColumn(label: SizedBox(width: 80, child: Text("Case No",style: TextStyle(color: Colors.white,fontSize: 11.sp,fontWeight: FontWeight.bold),textAlign: TextAlign.center,))),
+              DataColumn(label: SizedBox(width: 100, child: Text("Case Date",style: TextStyle(color: Colors.white,fontSize: 11.sp,fontWeight: FontWeight.bold),textAlign: TextAlign.center,))),
+              DataColumn(label: SizedBox(width: 120, child: Text("Patient Name",style: TextStyle(color: Colors.white,fontSize: 11.sp,fontWeight: FontWeight.bold),textAlign: TextAlign.center,))),
+              DataColumn(label: SizedBox(width: 200, child: Text("Test Name",style: TextStyle(color: Colors.white,fontSize: 11.sp,fontWeight: FontWeight.bold),textAlign: TextAlign.center,))),
+              DataColumn(label: SizedBox(width: 150, child: Text("Action",style: TextStyle(color: Colors.white,fontSize: 11.sp,fontWeight: FontWeight.bold),textAlign: TextAlign.center,))),
+            ],
+            rows: [],
+          ),
+        ),
+        BlocBuilder<ReportCubit, ReportState>(
+          builder: (context, state) {
+            if(state is ReportLoadingState){
+              return Center(child: CircularProgressIndicator());
+            }
+            if(state is ReportErrorState){
+              return Center(child: UiHelper.CustText(text: state.errorMsg,color: Colors.red,size: 12.sp),);
+            }
+            if(state is ReportLoadedState){
+              // Filter the reports based on search query
+              var filteredReports = state.reportModel.report!.where((report) {
+                if (_searchQuery.isEmpty) return true;
+
+                final patientName = report.patientName?.toLowerCase() ?? "";
+                final caseNo = report.caseNo?.toString().toLowerCase() ?? "";
+
+                return patientName.contains(_searchQuery) || caseNo.contains(_searchQuery);
+              }).toList();
+
+              if (filteredReports.isEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Center(
+                    child: UiHelper.CustText(
+                        text: "No reports found matching your search",
+                        color: Colors.grey.shade700,
+                        size: 12.sp
+                    ),
+                  ),
+                );
+              }
+
+              // Calculate pagination
+              int totalItems = filteredReports.length;
+              int startIndex = (_currentPage - 1) * _itemsPerPage;
+              int endIndex = min(startIndex + _itemsPerPage, totalItems);
+              var paginatedReports = filteredReports.sublist(startIndex, endIndex);
+
+              return Column(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemBuilder: (_,index){
+                      var data = paginatedReports[index];
+                      int actualIndex = startIndex + index;
+
+                      pay_status.add({
+                        "case_no": data.caseNo,
+                        "status": data.balance == "0" || data.balance == ".00" || data.balance == "0.00"  ? "Paid" : "Due"
+                      });
+
+                      String balance = data.balance!.replaceFirst(RegExp(r"^0"), "");
+                      String advance = data.advance!.replaceFirst(RegExp(r"^0"), "");
+
+                      String? status = pay_status
+                          .firstWhere((element) => element["case_no"] == data.caseNo,
+                        orElse: () => {},
+                      )["status"];
+
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: index % 2 == 0 ? Colors.green.shade100 : Colors.grey.shade100,
+                            border: Border.all(color: Colors.grey.shade400, width: 1),
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 80,
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.grey.shade400, width: 1))),
+                                child: Text("${data.caseNo}",style: TextStyle(color: Colors.black,fontSize: 11.sp,),textAlign: TextAlign.center,),
+                              ),
+                              Container(
+                                width: 100,
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.grey.shade400, width: 1))),
+                                child: Text("${data.caseDate}",style: TextStyle(color: Colors.black,fontSize: 11.sp,),textAlign: TextAlign.center,),
+                              ),
+                              Container(
+                                width: 120,
+                                padding: const EdgeInsets.only(left: 8,top: 8, bottom: 8),
+                                decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.grey.shade400, width: 1))),
+                                child: Text("${data.patientName}",style: TextStyle(color: Colors.black,fontSize: 11.sp,)),
+                              ),
+                              Container(
+                                width: 200,
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.grey.shade400, width: 1))),
+                                child: Text("* ${data.testName!.replaceAll("[", "").replaceAll("]", "").replaceAll(",", "\n*")}",style: TextStyle(color: Colors.black,fontSize: 11.sp,)),
+                              ),
+                              Container(
+                                width: 150,
+                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                                child: status == "Due"
+                                    ? InkWell(
+                                  onTap: (){
+                                    status == "Due" ? showCaseDialog(context: context, case_no: data.caseNo!,case_date: data.caseDate!,case_time: data.time!, patient_name: data.patientName!, year: data.year!, month: data.month!, gender: data.gender!, mobile: data.mobile!, child_male: "0", child_female: "0", address: data.address!, agent: data.agent!, doctor: data.doctor!, test_name: data.testName!, test_rate: data.testRate!, total_amount: data.totalAmount!, discount: data.discount!, after_discount: data.afterDiscount!, advance: advance, balance: balance!, discount_type: data.discountType!,test_date: data.testDate!, test_file: data.testFile!, narration: data.narration!, name_title: data.nameTitle!)
+                                        : UiHelper.showSuccessToste(message: "Full Payment Already Paid",heading: "Payment Already Paid");
+                                  },
+                                  child: Card(
+                                    color: Colors.green.shade300,
+                                    child: Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 10),
+                                          child: UiHelper.CustText(text: "Due Paid",color: Colors.black,fontweight: FontWeight.bold),
+                                        )
+                                    ),
+                                  ),
+                                )
+                                    : Center(child: UiHelper.CustText(text: "Payment Already Paid",color: Colors.red.shade900,fontweight: FontWeight.bold)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
                     },
                     itemCount: paginatedReports.length,
                   ),

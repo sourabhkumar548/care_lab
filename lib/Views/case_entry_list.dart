@@ -39,7 +39,7 @@ class _CaseEntryListState extends State<CaseEntryList> {
       ListView(
         children: [
           Container(
-            height: 180,
+            height: 200,
             child: UiHelper.custHorixontalTab(container: "3",context: context),
           ),
           ListView(

@@ -118,7 +118,7 @@ class _DoctorManagementState extends State<DoctorManagement> {
           children: [
             //SIDE BAR
             Container(
-              height: 120,
+              height: 180,
               child: UiHelper.custHorixontalTab(container: "5",context: context),
             ),
             //MAIN CONTENT
@@ -128,9 +128,7 @@ class _DoctorManagementState extends State<DoctorManagement> {
                 padding: const EdgeInsets.all(10.0),
                 child: ListView(
                   children: [
-                    UiHelper.CustTopBar(title: "Doctor List Management",widget: ElevatedButton(onPressed: (){
-
-                    }, child: UiHelper.CustText(text: "Add New Doctor",size: 12.sp))),
+                    UiHelper.CustTopBar(title: "Doctor List Management"),
 
                     const SizedBox(height: 20,),
 

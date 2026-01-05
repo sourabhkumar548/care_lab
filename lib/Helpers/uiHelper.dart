@@ -18,7 +18,7 @@ class UiHelper{
   static Widget custHorixontalTab({
     required String container,
     required BuildContext context,
-}){
+  }) {
     GlobalKey managementKey = GlobalKey();
     GlobalKey accountKey = GlobalKey();
 
@@ -31,265 +31,348 @@ class UiHelper{
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         children: [
-          Center(child: UiHelper.CustText(text: "Care Diagnostics Centre",size: 18.sp,color: Colors.white)),
-          Divider(color: Colors.blue.shade900,),
-          GridView(
-            shrinkWrap: true,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5,),
-            children: [
-              InkWell(
-                onTap: ()=>Get.toNamed('/dashboard',arguments: {"code" : "/dashboard"}),
-                child: Container(
-                  padding: EdgeInsets.only(top: 5),
-                  color: container == "1" ? Colors.green.shade300 : Colors.transparent,
-                  child: Column(children: [
-                    Icon(Icons.dashboard,color: Colors.white,size: 25,),
-                    const SizedBox(height: 5,),
-                    UiHelper.CustText(text: "Dashboard",size: 12.sp,color: Colors.white)
-                  ],),
-                ),
+          const SizedBox(height: 6),
+          // 🔹 HORIZONTAL SCROLL GRID
+          SizedBox(
+            height: 180, // 👈 REQUIRED HEIGHT
+            child: GridView(
+              scrollDirection: Axis.horizontal,
+              physics: BouncingScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // 👈 ROWS
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                childAspectRatio: 1,
               ),
-              InkWell(
-                onTap: ()=>Get.toNamed('/case_entry_page',arguments: {"code" : "/case_entry_page"}),
-                child: Container(
-                  padding: EdgeInsets.only(top: 5),
-                  color: container == "2" ? Colors.green.shade300 : Colors.transparent,
-                  child: Column(children: [
-                    Icon(Icons.person_add,color: Colors.white,size: 25,),
-                    const SizedBox(height: 5,),
-                    UiHelper.CustText(text: "Case Entry",size: 12.sp,color: Colors.white)
-                  ],),
-                ),
-              ),
-              InkWell(
-                onTap: ()=>Get.toNamed('/case_entry_list',arguments: {"code" : "/case_entry_list"}),
-                child: Container(
-                  padding: EdgeInsets.only(top: 5),
-                  color: container == "3" ? Colors.green.shade300 : Colors.transparent,
-                  child: Column(children: [
-                    Icon(Icons.list_alt,color: Colors.white,size: 25,),
-                    const SizedBox(height: 5,),
-                    UiHelper.CustText(text: "Case List",size: 12.sp,color: Colors.white)
-                  ],),
-                ),
-              ),
-              InkWell(
-                onTap: ()=>Get.toNamed('/reporting_page',arguments: {"code" : "/reporting_page"}),
-                child: Container(
-                  padding: EdgeInsets.only(top: 5),
-                  color: container == "4" ? Colors.green.shade300 : Colors.transparent,
-                  child: Column(children: [
-                    Icon(Icons.search,color: Colors.white,size: 25,),
-                    const SizedBox(height: 5,),
-                    UiHelper.CustText(text: "Reporting",size: 12.sp,color: Colors.white)
-                  ],),
-                ),
-              ),
+              children: [
 
-              InkWell(
-                onTap: ()=>Get.toNamed('/upload_report',arguments: {"code" : "/upload_report"}),
-                child: Container(
-                  padding: EdgeInsets.only(top: 5),
-                  color: container == "20" ? Colors.green.shade300 : Colors.transparent,
-                  child: Column(children: [
-                    Icon(Icons.upload,color: Colors.white,size: 25,),
-                    const SizedBox(height: 5,),
-                    UiHelper.CustText(text: "Upload Report",size: 12.sp,color: Colors.white)
-                  ],),
-                ),
-              ),
-              InkWell(
-                onTap: ()=>Get.toNamed('/search_report',arguments: {"code" : "/search_report"}),
-                child: Container(
-                  padding: EdgeInsets.only(top: 5),
-                  color: container == "22" ? Colors.green.shade300 : Colors.transparent,
-                  child: Column(children: [
-                    Icon(Icons.search,color: Colors.white,size: 25,),
-                    const SizedBox(height: 5,),
-                    UiHelper.CustText(text: "Search Report",size: 12.sp,color: Colors.white)
-                  ],),
-                ),
-              ),
-
-              //MANAGEMENT
-              InkWell(
-                onTap: () {
-                  final RenderBox renderBox =
-                  managementKey.currentContext!.findRenderObject() as RenderBox;
-
-                  final position = renderBox.localToGlobal(Offset.zero);
-                  final size = renderBox.size;
-
-                  showMenu(
-                    context: context,
-                    position: RelativeRect.fromLTRB(
-                      position.dx,
-                      60, // 👉 bottom of widget
-                      position.dx + size.width,
-                      0,
+                InkWell(
+                  onTap: () =>
+                      Get.toNamed('/dashboard', arguments: {"code": "/dashboard"}),
+                  child: Container(
+                    padding: EdgeInsets.only(top: 5),
+                    color: container == "1"
+                        ? Colors.green.shade300
+                        : Colors.transparent,
+                    child: Column(
+                      children: [
+                        Icon(Icons.dashboard, color: Colors.white, size: 25),
+                        const SizedBox(height: 5),
+                        UiHelper.CustText(
+                            text: "Dashboard", size: 12.sp, color: Colors.white),
+                      ],
                     ),
-                    items: [
-                      PopupMenuItem(value: "doctor", child: Text("Doctor Management")),
-                      PopupMenuItem(value: "agent", child: Text("Agent Management")),
-                      PopupMenuItem(value: "staff", child: Text("Staff Management")),
-                      PopupMenuItem(value: "rate", child: Text("Rate List Management")),
-                    ],
-                  ).then((value) {
-                    if (value != null){
-                      if(value == "doctor"){
-                        Get.toNamed('/doctor_list_management',arguments: {"code" : "/doctor_list_management"});
-                      }
-                      if(value == "agent"){
-                        Get.toNamed('/agent_list_management',arguments: {"code" : "/agent_list_management"});
-                      }
-                      if(value == "staff"){
-                        Get.toNamed('/staff_list_management',arguments: {"code" : "/staff_list_management"});
-                      }
-                      if(value == "rate"){
-                        Get.toNamed('/rate_list_management',arguments: {"code" : "/rate_list_management"});
-                      }
-                    }
-                  });
-                },
-
-                child: Container(
-                  key: managementKey,
-                  padding: EdgeInsets.only(top: 5),
-                  color: container == "5" ? Colors.green.shade300 : Colors.transparent,
-                  child: Column(
-                    children: [
-                      Icon(Icons.settings, color: Colors.white, size: 25),
-                      const SizedBox(height: 5),
-                      UiHelper.CustText(
-                        text: "Management",
-                        size: 12.sp,
-                        color: Colors.white,
-                      ),
-                    ],
                   ),
                 ),
-              ),
 
-              //ACCOUNT
-              userType == "Admin" ? InkWell(
-                onTap: () {
-                  final RenderBox renderBox =
-                  accountKey.currentContext!.findRenderObject() as RenderBox;
-
-                  final position = renderBox.localToGlobal(Offset.zero);
-                  final size = renderBox.size;
-
-                  showMenu(
-                    context: context,
-                    position: RelativeRect.fromLTRB(
-                      position.dx,
-                      60, // 👉 bottom of widget
-                      position.dx + size.width,
-                      0,
+                InkWell(
+                  onTap: () => Get.toNamed('/case_entry_page',
+                      arguments: {"code": "/case_entry_page"}),
+                  child: Container(
+                    padding: EdgeInsets.only(top: 5),
+                    color: container == "2"
+                        ? Colors.green.shade300
+                        : Colors.transparent,
+                    child: Column(
+                      children: [
+                        Icon(Icons.person_add, color: Colors.white, size: 25),
+                        const SizedBox(height: 5),
+                        UiHelper.CustText(
+                            text: "Case Entry", size: 12.sp, color: Colors.white),
+                      ],
                     ),
-                    items: [
-                      PopupMenuItem(value: "doctor", child: Text("Doctor Collection")),
-                      PopupMenuItem(value: "agent", child: Text("Agent Collection")),
-                      PopupMenuItem(value: "date", child: Text("Collection By Date")),
-                    ],
-                  ).then((value) {
-                    if (value != null){
-                      if(value == "doctor"){
-                        Get.toNamed('/doctor_collection',arguments: {"code" : "/doctor_collection"});
-                      }
-                      if(value == "agent"){
-                        Get.toNamed('/agent_collection',arguments: {"code" : "/agent_collection"});
-                      }
-                      if(value == "date"){
-                        Get.toNamed('/collection_between_date',arguments: {"code" : "/collection_between_date"});
-                      }
-
-                    }
-                  });
-                },
-
-                child: Container(
-                  key: accountKey,
-                  padding: EdgeInsets.only(top: 5),
-                  color: container == "6" ? Colors.green.shade300 : Colors.transparent,
-                  child: Column(
-                    children: [
-                      Icon(Icons.account_balance_wallet, color: Colors.white, size: 25),
-                      const SizedBox(height: 5),
-                      UiHelper.CustText(
-                        text: "Accounts",
-                        size: 12.sp,
-                        color: Colors.white,
-                      ),
-                    ],
                   ),
                 ),
-              ) : Container(),
 
-              //DAILY EXPENSE
-              InkWell(
-                onTap: ()=>Get.toNamed('/expanses',arguments: {"code" :"/expanses"}),
-                child: Container(
-                  padding: EdgeInsets.only(top: 5),
-                  color: container == "7" ? Colors.green.shade300 : Colors.transparent,
-                  child: Column(children: [
-                    Icon(Icons.money,color: Colors.white,size: 25,),
-                    const SizedBox(height: 5,),
-                    UiHelper.CustText(text: "Daily Expense",size: 12.sp,color: Colors.white)
-                  ],),
+                InkWell(
+                  onTap: () => Get.toNamed('/case_entry_list',
+                      arguments: {"code": "/case_entry_list"}),
+                  child: Container(
+                    padding: EdgeInsets.only(top: 5),
+                    color: container == "3"
+                        ? Colors.green.shade300
+                        : Colors.transparent,
+                    child: Column(
+                      children: [
+                        Icon(Icons.list_alt, color: Colors.white, size: 25),
+                        const SizedBox(height: 5),
+                        UiHelper.CustText(
+                            text: "Case List", size: 12.sp, color: Colors.white),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
 
-              InkWell(
-                onTap: ()async{
-                  final response = await http.get(Uri.parse("${Urls.BackupDb}"));
-                  if(response.statusCode == 200) {
-                    UiHelper.showSuccessToste(message: "DB Backup Successfully");
-                  }
-                  else{
-                    UiHelper.showErrorToste(message: "DB Backup Failed");
-                  }
-                },
-                child: Container(
-                  padding: EdgeInsets.only(top: 5),
-                  color: container == "21" ? Colors.green.shade300 : Colors.transparent,
-                  child: Column(children: [
-                    Icon(Icons.backup,color: Colors.white,size: 25,),
-                    const SizedBox(height: 5,),
-                    UiHelper.CustText(text: "Backup",size: 12.sp,color: Colors.white)
-                  ],),
+                InkWell(
+                  onTap: () => Get.toNamed('/reporting_page',
+                      arguments: {"code": "/reporting_page"}),
+                  child: Container(
+                    padding: EdgeInsets.only(top: 5),
+                    color: container == "4"
+                        ? Colors.green.shade300
+                        : Colors.transparent,
+                    child: Column(
+                      children: [
+                        Icon(Icons.search, color: Colors.white, size: 25),
+                        const SizedBox(height: 5),
+                        UiHelper.CustText(
+                            text: "Reporting", size: 12.sp, color: Colors.white),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
 
-              //LOGOUT
-              InkWell(
-                onTap: ()async{
-                  bool? status = await UiHelper.showYesNoDialog(context, "Confirm", "are you confirm to logout ? ");
-
-                  if(status == true){
-                    GetStorage userBox = GetStorage();
-                    userBox.remove('newUser');
-                    Navigator.pushNamedAndRemoveUntil(context, '/login_page',(route) => false );
-                  }
-                },
-                child: Container(
-                  padding: EdgeInsets.only(top: 5),
-                  color: container == "8" ? Colors.green.shade300 : Colors.transparent,
-                  child: Column(children: [
-                    Icon(Icons.logout,color: Colors.white,size: 25,),
-                    const SizedBox(height: 5,),
-                    UiHelper.CustText(text: "Logout",size: 12.sp,color: Colors.white)
-                  ],),
+                InkWell(
+                  onTap: () => Get.toNamed('/upload_report',
+                      arguments: {"code": "/upload_report"}),
+                  child: Container(
+                    padding: EdgeInsets.only(top: 5),
+                    color: container == "20"
+                        ? Colors.green.shade300
+                        : Colors.transparent,
+                    child: Column(
+                      children: [
+                        Icon(Icons.upload, color: Colors.white, size: 25),
+                        const SizedBox(height: 5),
+                        UiHelper.CustText(
+                            text: "Upload Report",
+                            size: 12.sp,
+                            color: Colors.white),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
 
+                InkWell(
+                  onTap: () => Get.toNamed('/search_report',
+                      arguments: {"code": "/search_report"}),
+                  child: Container(
+                    padding: EdgeInsets.only(top: 5),
+                    color: container == "22"
+                        ? Colors.green.shade300
+                        : Colors.transparent,
+                    child: Column(
+                      children: [
+                        Icon(Icons.search, color: Colors.white, size: 25),
+                        const SizedBox(height: 5),
+                        UiHelper.CustText(
+                            text: "Search Report",
+                            size: 12.sp,
+                            color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ),
 
+                // MANAGEMENT
+                InkWell(
+                  onTap: () {
+                    final RenderBox renderBox =
+                    managementKey.currentContext!.findRenderObject()
+                    as RenderBox;
 
-            ],),
+                    final position = renderBox.localToGlobal(Offset.zero);
+                    final size = renderBox.size;
+
+                    showMenu(
+                      context: context,
+                      position: RelativeRect.fromLTRB(
+                        position.dx,
+                        60,
+                        position.dx + size.width,
+                        0,
+                      ),
+                      items: const [
+                        PopupMenuItem(
+                            value: "doctor", child: Text("Doctor Management")),
+                        PopupMenuItem(
+                            value: "agent", child: Text("Agent Management")),
+                        PopupMenuItem(
+                            value: "staff", child: Text("Staff Management")),
+                        PopupMenuItem(
+                            value: "rate", child: Text("Rate List Management")),
+                      ],
+                    ).then((value) {
+                      if (value == "doctor") {
+                        Get.toNamed('/doctor_list_management',
+                            arguments: {"code": "/doctor_list_management"});
+                      }
+                      if (value == "agent") {
+                        Get.toNamed('/agent_list_management',
+                            arguments: {"code": "/agent_list_management"});
+                      }
+                      if (value == "staff") {
+                        Get.toNamed('/staff_list_management',
+                            arguments: {"code": "/staff_list_management"});
+                      }
+                      if (value == "rate") {
+                        Get.toNamed('/rate_list_management',
+                            arguments: {"code": "/rate_list_management"});
+                      }
+                    });
+                  },
+                  child: Container(
+                    key: managementKey,
+                    padding: EdgeInsets.only(top: 5),
+                    color: container == "5"
+                        ? Colors.green.shade300
+                        : Colors.transparent,
+                    child: Column(
+                      children: [
+                        Icon(Icons.settings, color: Colors.white, size: 25),
+                        const SizedBox(height: 5),
+                        UiHelper.CustText(
+                            text: "Management",
+                            size: 12.sp,
+                            color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ),
+
+                // ACCOUNT (ADMIN ONLY)
+                if (userType == "Admin")
+                  InkWell(
+                    onTap: () {
+                      final RenderBox renderBox =
+                      accountKey.currentContext!.findRenderObject()
+                      as RenderBox;
+
+                      final position = renderBox.localToGlobal(Offset.zero);
+                      final size = renderBox.size;
+
+                      showMenu(
+                        context: context,
+                        position: RelativeRect.fromLTRB(
+                          position.dx,
+                          60,
+                          position.dx + size.width,
+                          0,
+                        ),
+                        items: const [
+                          PopupMenuItem(
+                              value: "doctor", child: Text("Doctor Collection")),
+                          PopupMenuItem(
+                              value: "agent", child: Text("Agent Collection")),
+                          PopupMenuItem(
+                              value: "date", child: Text("Collection By Date")),
+                        ],
+                      ).then((value) {
+                        if (value == "doctor") {
+                          Get.toNamed('/doctor_collection',
+                              arguments: {"code": "/doctor_collection"});
+                        }
+                        if (value == "agent") {
+                          Get.toNamed('/agent_collection',
+                              arguments: {"code": "/agent_collection"});
+                        }
+                        if (value == "date") {
+                          Get.toNamed('/collection_between_date',
+                              arguments: {"code": "/collection_between_date"});
+                        }
+                      });
+                    },
+                    child: Container(
+                      key: accountKey,
+                      padding: EdgeInsets.only(top: 5),
+                      color: container == "6"
+                          ? Colors.green.shade300
+                          : Colors.transparent,
+                      child: Column(
+                        children: [
+                          Icon(Icons.account_balance_wallet,
+                              color: Colors.white, size: 25),
+                          const SizedBox(height: 5),
+                          UiHelper.CustText(
+                              text: "Accounts",
+                              size: 12.sp,
+                              color: Colors.white),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                InkWell(
+                  onTap: () =>
+                      Get.toNamed('/expanses', arguments: {"code": "/expanses"}),
+                  child: Container(
+                    padding: EdgeInsets.only(top: 5),
+                    color: container == "7"
+                        ? Colors.green.shade300
+                        : Colors.transparent,
+                    child: Column(
+                      children: [
+                        Icon(Icons.money, color: Colors.white, size: 25),
+                        const SizedBox(height: 5),
+                        UiHelper.CustText(
+                            text: "Daily Expense",
+                            size: 12.sp,
+                            color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ),
+
+                InkWell(
+                  onTap: () async {
+                    final response =
+                    await http.get(Uri.parse("${Urls.BackupDb}"));
+                    if (response.statusCode == 200) {
+                      UiHelper.showSuccessToste(
+                          message: "DB Backup Successfully");
+                    } else {
+                      UiHelper.showErrorToste(message: "DB Backup Failed");
+                    }
+                  },
+                  child: Container(
+                    padding: EdgeInsets.only(top: 5),
+                    color: container == "21"
+                        ? Colors.green.shade300
+                        : Colors.transparent,
+                    child: Column(
+                      children: [
+                        Icon(Icons.backup, color: Colors.white, size: 25),
+                        const SizedBox(height: 5),
+                        UiHelper.CustText(
+                            text: "Backup", size: 12.sp, color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ),
+
+                InkWell(
+                  onTap: () async {
+                    bool? status = await UiHelper.showYesNoDialog(
+                        context, "Confirm", "are you confirm to logout ?");
+                    if (status == true) {
+                      GetStorage().remove('newUser');
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, '/login_page', (route) => false);
+                    }
+                  },
+                  child: Container(
+                    padding: EdgeInsets.only(top: 5),
+                    color: container == "8"
+                        ? Colors.green.shade300
+                        : Colors.transparent,
+                    child: Column(
+                      children: [
+                        Icon(Icons.logout, color: Colors.white, size: 25),
+                        const SizedBox(height: 5),
+                        UiHelper.CustText(
+                            text: "Logout", size: 12.sp, color: Colors.white),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
+
 
   static Widget custsidebar({
     required String container,

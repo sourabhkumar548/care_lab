@@ -1,13 +1,88 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sizer/sizer.dart';
 
-import '../Controllers/AgentCtrl/cubit/agent_cubit.dart';
+import 'dart:io';
+
+import 'package:care_lab_software/Views/doctor_manager.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:sizer/sizer.dart';
+import 'package:path_provider/path_provider.dart';
+
 import '../Helpers/uiHelper.dart';
 import 'loginscreen.dart';
 
-class AgentManagement extends StatelessWidget {
+
+class AgentData {
+  // Load doctors from assets file
+  static Future<List<String>> loadDoctorsFromAssets() async {
+    try {
+      // Load the file from assets
+      final String response = await rootBundle.loadString('assets/agent.txt');
+
+      // Split by lines and filter empty lines
+      final List<String> doctors = response
+          .split('\n')
+          .where((line) => line.trim().isNotEmpty)
+          .map((line) => line.trim())
+          .toList();
+
+      return doctors;
+    } catch (e) {
+      print('Error loading doctors: $e');
+      return [];
+    }
+  }
+
+
+}
+
+
+class AgentManagement extends StatefulWidget {
   const AgentManagement({super.key});
+
+  @override
+  State<AgentManagement> createState() => _AgentManagementState();
+}
+
+class _AgentManagementState extends State<AgentManagement> {
+
+  List<String> doctors = [];
+  List<String> filteredDoctors = [];
+  bool isLoading = true;
+  TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    loadDoctors();
+  }
+
+  Future<void> loadDoctors() async {
+    setState(() => isLoading = true);
+
+    final loadedDoctors = await AgentData.loadDoctorsFromAssets();
+
+    setState(() {
+      doctors = loadedDoctors;
+      filteredDoctors = loadedDoctors;
+      isLoading = false;
+    });
+  }
+
+  void filterDoctors(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredDoctors = doctors;
+      } else {
+        filteredDoctors = doctors
+            .where((doctor) =>
+            doctor.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +106,8 @@ class AgentManagement extends StatelessWidget {
           children: [
             //SIDE BAR
             Container(
-              height: 120,
-              child: UiHelper.custHorixontalTab(container: "5",context: context),
+              height: 180,
+              child: UiHelper.custHorixontalTab(container: "6",context: context),
             ),
             //MAIN CONTENT
             Container(
@@ -41,88 +116,56 @@ class AgentManagement extends StatelessWidget {
                 padding: const EdgeInsets.all(10.0),
                 child: ListView(
                   children: [
-                    UiHelper.CustTopBar(title: "Agent List Management",widget: ElevatedButton(onPressed: (){}, child: UiHelper.CustText(text: "Add New Agent",size: 12.sp))),
+                    UiHelper.CustTopBar(title: "Agent List Management",),
 
                     const SizedBox(height: 20,),
-                    Container(
-                      color: Colors.blue.shade200,
-                      child: Table(
-                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                        border: TableBorder.all(width: 0.5, color: Colors.black),
-                        columnWidths: {
-                          0 : FlexColumnWidth(.5),
-                          1 : FlexColumnWidth(5),
-                          2 : FlexColumnWidth(2),
-                          3 : FlexColumnWidth(5),
-                          4 : FlexColumnWidth(2),
-                          6 : FlexColumnWidth(1),
-                        },
-                        children: [
-                          TableRow(children: [
-                            SizedBox(
-                                height: 40,
-                                child: Center(child: UiHelper.CustText(text: "Sno",size: 12.sp))),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              child: UiHelper.CustText(text: "Agent Name",size: 12.sp),
+
+                    PreferredSize(
+                      preferredSize: Size.fromHeight(40),
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Search doctors...',
+                            prefixIcon: Icon(Icons.search),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
                             ),
-                            Center(child: UiHelper.CustText(text: "Mobile",size: 12.sp)),
-                            Center(child: UiHelper.CustText(text: "Address",size: 12.sp)),
-                            Center(child: UiHelper.CustText(text: "Sop Name",size: 12.sp)),
-                            Center(child: UiHelper.CustText(text: "Action",size: 12.sp)),
-                          ])
-                        ],
+                          ),
+                          onChanged: filterDoctors,
+                        ),
                       ),
                     ),
 
-                    BlocBuilder<AgentCubit, AgentState>(
-                      builder: (context, state) {
-                        if(state is AgentLoadingState){
-                          return Center(child: CircularProgressIndicator(),);
-                        }
-                        if(state is AgentErrorState){
-                          return Center(child: UiHelper.CustText(text: state.errorMsg));
-                        }
-                        if(state is AgentLoadedState){
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            itemBuilder: (_,index){
-                              var data = state.agentModel.agent![index];
-                              return Table(
-                                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                                border: TableBorder.all(width: 0.5, color: Colors.grey),
-                                columnWidths: {
-                                  0 : FlexColumnWidth(.5),
-                                  1 : FlexColumnWidth(5),
-                                  2 : FlexColumnWidth(2),
-                                  3 : FlexColumnWidth(5),
-                                  4 : FlexColumnWidth(2),
-                                  6 : FlexColumnWidth(1),
-                                },
-                                children: [
-                                  TableRow(children: [
-                                    Center(child: UiHelper.CustText(text: "${index+1}",size: 12.sp)),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                                      child: UiHelper.CustText(text: data.agentName!,size: 12.sp),
-                                    ),
-                                    Center(child: UiHelper.CustText(text: data.mobile!,size: 12.sp)),
-                                    Center(child: UiHelper.CustText(text: data.address!,size: 12.sp)),
-                                    Center(child: UiHelper.CustText(text: data.shopName!,size: 12.sp)),
-                                    Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly  ,
-                                      children: [
-                                        IconButton(onPressed: (){}, icon: Icon(Icons.edit,color: Colors.green,)),
-                                        IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.red,)),
-                                      ],)
-                                  ])
-                                ],
-                              );
-                            },itemCount: state.agentModel.agent!.length,);
-                        }
-                        return Container();
-                      },
+                    isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : filteredDoctors.isEmpty
+                        ? Center(
+                      child: Text(
+                        'No agent found',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
                     )
+                        : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: filteredDoctors.length,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          leading: CircleAvatar(
+                            child: Icon(Icons.person),
+                          ),
+                          title: Text(filteredDoctors[index]),
+                          onTap: () {
+                            // Handle doctor selection
+                            print('Selected: ${filteredDoctors[index]}');
+                          },
+                        );
+                      },
+                    ),
 
                   ],
                 ),
@@ -148,88 +191,63 @@ class AgentManagement extends StatelessWidget {
                 padding: const EdgeInsets.all(10.0),
                 child: ListView(
                   children: [
-                    UiHelper.CustTopBar(title: "Agent List Management",widget: ElevatedButton(onPressed: (){}, child: UiHelper.CustText(text: "Add New Agent"))),
+                    UiHelper.CustTopBar(title: "Agent List Management",widget: ElevatedButton(onPressed: (){
+                      // Navigator.push(context, MaterialPageRoute(builder: (_) => DoctorManagementScreen()));
+                    }, child: InkWell(
+                        onTap: (){
+                        },
+                        child: UiHelper.CustText(text: "Add New Agent")))),
 
                     const SizedBox(height: 20,),
-                    Container(
-                      color: Colors.blue.shade200,
-                      child: Table(
-                        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                        border: TableBorder.all(width: 0.5, color: Colors.black),
-                        columnWidths: {
-                          0 : FlexColumnWidth(.5),
-                          1 : FlexColumnWidth(6),
-                          2 : FlexColumnWidth(1),
-                          3 : FlexColumnWidth(6),
-                          4 : FlexColumnWidth(2),
-                          6 : FlexColumnWidth(1),
-                        },
-                        children: [
-                          TableRow(children: [
-                            SizedBox(
-                                height: 40,
-                                child: Center(child: UiHelper.CustText(text: "Sno"))),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 10),
-                              child: UiHelper.CustText(text: "Agent Name"),
+
+                    PreferredSize(
+                      preferredSize: Size.fromHeight(40),
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Search agent...',
+                            prefixIcon: Icon(Icons.search),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
                             ),
-                            Center(child: UiHelper.CustText(text: "Mobile")),
-                            Center(child: UiHelper.CustText(text: "Address")),
-                            Center(child: UiHelper.CustText(text: "Sop Name")),
-                            Center(child: UiHelper.CustText(text: "Action")),
-                          ])
-                        ],
+                          ),
+                          onChanged: filterDoctors,
+                        ),
                       ),
                     ),
 
-                    BlocBuilder<AgentCubit, AgentState>(
-                      builder: (context, state) {
-                        if(state is AgentLoadingState){
-                          return Center(child: CircularProgressIndicator(),);
-                        }
-                        if(state is AgentErrorState){
-                          return Center(child: UiHelper.CustText(text: state.errorMsg));
-                        }
-                        if(state is AgentLoadedState){
-                          return ListView.builder(
-                            shrinkWrap: true,
-                            itemBuilder: (_,index){
-                              var data = state.agentModel.agent![index];
-                              return Table(
-                                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                                border: TableBorder.all(width: 0.5, color: Colors.grey),
-                                columnWidths: {
-                                  0 : FlexColumnWidth(.5),
-                                  1 : FlexColumnWidth(6),
-                                  2 : FlexColumnWidth(1),
-                                  3 : FlexColumnWidth(6),
-                                  4 : FlexColumnWidth(2),
-                                  6 : FlexColumnWidth(1),
-                                },
-                                children: [
-                                  TableRow(children: [
-                                    Center(child: UiHelper.CustText(text: "${index+1}")),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                                      child: UiHelper.CustText(text: data.agentName!),
-                                    ),
-                                    Center(child: UiHelper.CustText(text: data.mobile!)),
-                                    Center(child: UiHelper.CustText(text: data.address!)),
-                                    Center(child: UiHelper.CustText(text: data.shopName!)),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly  ,
-                                      children: [
-                                        IconButton(onPressed: (){}, icon: Icon(Icons.edit,color: Colors.green,)),
-                                        IconButton(onPressed: (){}, icon: Icon(Icons.delete,color: Colors.red,)),
-                                      ],)
-                                  ])
-                                ],
-                              );
-                            },itemCount: state.agentModel.agent!.length,);
-                        }
-                        return Container();
-                      },
+
+                    isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : filteredDoctors.isEmpty
+                        ? Center(
+                      child: Text(
+                        'No agents found',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
+                      ),
                     )
+                        : ListView.builder(
+                      shrinkWrap: true,
+                      // itemCount: filteredDoctors.length,
+                      itemCount: 10,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          leading: CircleAvatar(
+                            child: Icon(Icons.person),
+                          ),
+                          title: Text(filteredDoctors[index]),
+                          onTap: () {
+                            // Handle doctor selection
+                            print('Selected: ${filteredDoctors[index]}');
+                          },
+                        );
+                      },
+                    ),
 
                   ],
                 ),
@@ -241,3 +259,5 @@ class AgentManagement extends StatelessWidget {
     );
   }
 }
+
+

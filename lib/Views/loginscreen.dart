@@ -27,6 +27,7 @@ class _LabLoginScreenState extends State<LabLoginScreen> {
 
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.blue.shade50,
       body: SafeArea(
         child: LayoutBuilder(
@@ -48,8 +49,14 @@ class _LabLoginScreenState extends State<LabLoginScreen> {
             }
             else {
               // --- Mobile Layout: One Column (Stacked) ---
-              return SingleChildScrollView(
-                child: _buildLoginForm(context),
+              return Container(
+                height: double.infinity,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    _buildLoginForm(context),
+                  ],
+                ),
               );
             }
           },

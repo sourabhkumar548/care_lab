@@ -146,7 +146,7 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
           children: [
 
             Container(
-              height: 120,
+              height: 220,
               child: UiHelper.custHorixontalTab(container: "2", context: context),),
 
             BlocListener<CaseNumberCubit, CaseNumberState>(

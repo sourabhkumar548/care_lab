@@ -56,7 +56,7 @@ class _RateListManagementState extends State<RateListManagement> {
           children: [
             //SIDE BAR
             Container(
-              height: 120,
+              height: 180,
               child: UiHelper.custHorixontalTab(container: "5",context: context),
             ),
             //MAIN CONTENT

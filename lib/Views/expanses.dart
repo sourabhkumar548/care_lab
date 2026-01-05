@@ -59,7 +59,7 @@ class _ExpansesState extends State<Expanses> {
           children: [
             //SIDE BAR
             Container(
-              height: 120,
+              height: 180,
               child: UiHelper.custHorixontalTab(container: "7", context: context),
             ),
             //MAIN CONTENT

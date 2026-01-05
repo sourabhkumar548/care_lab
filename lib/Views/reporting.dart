@@ -75,7 +75,7 @@ class _ReportingState extends State<Reporting> {
         shrinkWrap: true,
         children: [
           Container(
-            height: 120,
+            height: 220,
             child: UiHelper.custHorixontalTab(container: "4", context: context),
           ),
           Container(
@@ -143,51 +143,55 @@ class _ReportingState extends State<Reporting> {
   }
 
   Widget _buildTopBar() {
-    return UiHelper.CustTopBar(
-        title: "PATIENT REPORTING LIST",
-        widget: Container(
-          width: 300,
-          height: 40,
-          child: TextField(
-            controller: dateCtrl,
-            style: TextStyle(color: Colors.black),
-            decoration: InputDecoration(
-                labelText: "Select Date",
-                filled: true,
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.green, width: 2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                ),
-                fillColor: Colors.grey.shade100,
-                labelStyle: TextStyle(
-                    color: Colors.black,
-                    fontFamily: 'font-bold',
-                    fontSize: 11.sp),
-                prefixIcon: Icon(Icons.calendar_month),
-                suffixIcon: GestureDetector(
-                    onTap: () async {
-                      DateTime? pickedDate = await showOmniDateTimePicker(
-                        context: context,
-                        type: OmniDateTimePickerType.date,
-                      );
+    return Column(
+      children: [
+        UiHelper.CustTopBar(
+            title: "PATIENT REPORTING LIST",
+            widget: Container(
+              width: 300,
+              height: 40,
+              child: TextField(
+                controller: dateCtrl,
+                style: TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                    labelText: "Select Date",
+                    filled: true,
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.green, width: 2),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                    ),
+                    fillColor: Colors.grey.shade100,
+                    labelStyle: TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'font-bold',
+                        fontSize: 11.sp),
+                    prefixIcon: Icon(Icons.calendar_month),
+                    suffixIcon: GestureDetector(
+                        onTap: () async {
+                          DateTime? pickedDate = await showOmniDateTimePicker(
+                            context: context,
+                            type: OmniDateTimePickerType.date,
+                          );
 
-                      if (pickedDate != null) {
-                        String formattedDate =
-                            "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
-                        setState(() {
-                          dateCtrl.text = formattedDate;
-                          context.read<CaseListCubit>().getCaseList(
-                              date: formattedDate, type: "Report");
-                        });
-                      }
-                    },
-                    child: Icon(Icons.search))),
-          ),
-        ));
+                          if (pickedDate != null) {
+                            String formattedDate =
+                                "${pickedDate.day}-${pickedDate.month}-${pickedDate.year}";
+                            setState(() {
+                              dateCtrl.text = formattedDate;
+                              context.read<CaseListCubit>().getCaseList(
+                                  date: formattedDate, type: "Report");
+                            });
+                          }
+                        },
+                        child: Icon(Icons.search))),
+              ),
+            )),
+      ],
+    );
   }
 
   Widget _buildCaseList({required bool isMobile}) {

@@ -41,7 +41,7 @@ class _CollectionBetweenDateState extends State<CollectionBetweenDate> {
           children: [
             //SIDE BAR
             Container(
-              height: 120,
+              height: 180,
               child: UiHelper.custHorixontalTab(container: "6",context: context),
             ),
             //MAIN CONTENT
