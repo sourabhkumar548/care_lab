@@ -26,7 +26,6 @@ class UiHelper{
     String? userType = userBox.read("userType");
 
     return Container(
-
       color: Colors.blue.shade500,
       child: ListView(
         shrinkWrap: true,
@@ -36,7 +35,7 @@ class UiHelper{
           Divider(color: Colors.blue.shade900,),
           GridView(
             shrinkWrap: true,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 10,),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5,),
             children: [
               InkWell(
                 onTap: ()=>Get.toNamed('/dashboard',arguments: {"code" : "/dashboard"}),
@@ -564,6 +563,32 @@ class UiHelper{
     );
   }
 
+  static Widget CustcardMobile({
+    required String title,
+    Widget? trailing,
+    required Widget child,
+    double? width,
+  }) {
+    return Card(
+      elevation: 0,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(title,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w700, fontSize: 16)),
+            if (trailing != null) trailing,
+            const SizedBox(height: 12),
+            child,
+          ],
+        ),
+      ),
+    );
+  }
+
   static Widget CustTextField({required TextEditingController controller,required String label,Icon? icon,bool? enabled,bool? obscureText,Widget? suffixWidget}){
     return Expanded(
       child: TextField(
@@ -632,10 +657,54 @@ class UiHelper{
           const SizedBox(height: 10),
           Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: color)),
           Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+
         ],
       ),
     );
   }
+
+  static Widget infoCardMobile(String title, String value, Color color, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Icon(icon, size: 28, color: color),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
 
   static Widget CustTopBar({required String title,Widget? widget}){
     return Container(

@@ -307,6 +307,248 @@ class GetCaseList{
     );
   }
 
+  static GetCaseMobile({required String date, required BuildContext context}) {
+
+    context.read<CaseListCubit>().getCaseList(date: date, type: "All");
+
+    TextEditingController searchCtrl = TextEditingController();
+    ValueNotifier<String> searchQuery = ValueNotifier("");
+
+    return Column(
+      children: [
+
+        /// 🔍 SEARCH BAR
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            controller: searchCtrl,
+            decoration: InputDecoration(
+                hintText: "Search by Case No / Patient Name / Mobile",
+                prefixIcon: Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                suffixIcon: IconButton(onPressed: (){searchCtrl.clear();searchQuery.value = "";}, icon: Icon(Icons.close))
+            ),
+            onChanged: (val) {
+              searchQuery.value = val.toLowerCase();
+            },
+          ),
+        ),
+
+        SizedBox(height: 5),
+
+        BlocBuilder<CaseListCubit, CaseListState>(
+          builder: (context, state) {
+
+            if (state is CaseListLoadingState) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            if (state is CaseListErrorState) {
+              return Center(
+                child: Text(
+                  state.errorMsg,
+                  style: TextStyle(color: Colors.red, fontSize: 12.sp),
+                ),
+              );
+            }
+
+            if (state is CaseListLoadedState) {
+
+              if (state.caseListModel.caseList!.isEmpty) {
+                return Center(
+                  child: Text(
+                    "No Cases Available",
+                    style: TextStyle(fontSize: 12.sp),
+                  ),
+                );
+              }
+
+              return ValueListenableBuilder<String>(
+                valueListenable: searchQuery,
+                builder: (context, query, _) {
+
+                  final filteredList = state.caseListModel.caseList!.where((c) {
+                    return c.caseNo!.toLowerCase().contains(query) ||
+                        c.patientName!.toLowerCase().contains(query) ||
+                        c.mobile!.toLowerCase().contains(query);
+                  }).toList();
+
+                  if (filteredList.isEmpty) {
+                    return Center(
+                      child: Text(
+                        "No matching cases found",
+                        style: TextStyle(fontSize: 12.sp),
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: filteredList.length,
+                    itemBuilder: (_, index) {
+
+                      final caseData = filteredList[index];
+
+                      GetCaseList.pay_status.add({
+                        "case_no": caseData.caseNo,
+                        "status": caseData.balance == "0" || caseData.balance == ".00" || caseData.balance == "0.00"  ? "Paid" : "Due"
+                      });
+
+                      /// ⬇️ BELOW CODE IS 100% SAME AS YOURS00
+                      return Container(
+                        margin: EdgeInsets.only(bottom: 5),
+                        color: index%2 == 0 ? Colors.grey.shade200 : Colors.white70,
+                        child: ExpansionTile(title: Table(
+                          columnWidths: {
+                            0: FlexColumnWidth(2),
+                            1: FlexColumnWidth(5),
+                            3: FlexColumnWidth(4),
+                            4: FlexColumnWidth(2.5),
+                            5: FlexColumnWidth(2),
+                            6: FlexColumnWidth(2),
+                          },
+                          children: [
+                            TableRow(children: [
+                              Center(child: UiHelper.CustText(text: "${caseData.caseNo!}",size: 12.sp)),
+                              UiHelper.CustText(text: "${caseData.patientName!}",size: 12.sp),
+                             Center(child: UiHelper.CustText(text: "Date : ${caseData.date}",size: 12.sp)),
+                              Center(child: UiHelper.CustText(text: "Total Amt : ${caseData.afterDiscount!}",size: 12.sp)),
+                              Center(child: UiHelper.CustText(text: "Status : ${caseData.balance! == "0"|| caseData.balance! == ".00" || caseData.balance! == "0.00" ? "Paid" : "Due"}",size: 12.sp)),
+                              Center(child: Row(
+                                children: [
+
+                                  Tooltip(
+                                      message: "Edit Case",
+                                      child: IconButton(onPressed: ()=>Get.to(EditCaseEntry(case_no: caseData.caseNo!)),
+                                          icon: Icon(Icons.edit,color: Colors.green,))),
+
+                                ],
+                              ),)
+                            ])
+
+                          ],
+                        ),
+                          children: [
+                            Table(
+                              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                              columnWidths: {
+                                0: FlexColumnWidth(.8),
+                                1: FlexColumnWidth(.8),
+                                2: FlexColumnWidth(.8),
+                                3: FlexColumnWidth(.6),
+                                4: FlexColumnWidth(.6),
+                                5: FlexColumnWidth(.6),
+                                6: FlexColumnWidth(.8),
+                              },
+                              border: TableBorder.all(width: 0.5, color: Colors.black),
+                              children: [
+                                TableRow(
+                                    children: [
+                                      Center(child: UiHelper.CustText(text: "Slip No",size: 12.sp,color: Colors.blue.shade700)),
+                                      Center(child: UiHelper.CustText(text: "Pay Date",size: 12.sp,color: Colors.blue.shade700)),
+                                      Center(child: UiHelper.CustText(text: "Total Amount",size: 12.sp,color: Colors.blue.shade700)),
+                                      Center(child: UiHelper.CustText(text: "Advance",size: 12.sp,color: Colors.blue.shade700)),
+                                      Center(child: UiHelper.CustText(text: "Paid",size: 12.sp,color: Colors.blue.shade700)),
+                                      Center(child: UiHelper.CustText(text: "Balance",size: 12.sp,color: Colors.blue.shade700)),
+                                      Center(child: UiHelper.CustText(text: "Actions",size: 12.sp,color: Colors.blue.shade700)),
+                                    ]
+                                )
+                              ],
+                            ),
+                            ...caseData.items!.map((data){
+
+                              String total = data.afterDiscount!.replaceFirst(RegExp(r"^0"), "");
+                              String balance = data.balance!.replaceFirst(RegExp(r"^0"), "");
+                              String advance = data.advance!.replaceFirst(RegExp(r"^0"), "");
+                              String paid = data.paidAmount!.replaceFirst(RegExp(r"^0"), "");
+
+                              return Container(
+                                color: Colors.white,
+                                child: Table(
+                                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                    border: TableBorder.all(width: 0.5, color: Colors.grey),
+                                    columnWidths: {
+                                      0: FlexColumnWidth(.8),
+                                      1: FlexColumnWidth(.8),
+                                      2: FlexColumnWidth(.8),
+                                      3: FlexColumnWidth(.6),
+                                      4: FlexColumnWidth(.6),
+                                      5: FlexColumnWidth(.6),
+                                      6: FlexColumnWidth(.8),
+                                    },
+                                    children: [
+                                      TableRow(children: [
+                                        Center(child: UiHelper.CustText(text: "${data.slipNo}",size: 12.sp)),
+                                        Center(child: UiHelper.CustText(text: "${data.date}",size: 12.sp)),
+                                        Center(child: UiHelper.CustText(text: "${total.isEmpty ? "0" : total}",size: 12.sp)),
+                                        Center(child: UiHelper.CustText(text: "${advance.isEmpty ? "0" : advance}",size: 12.sp)),
+                                        Center(child: UiHelper.CustText(text: "${paid.isEmpty || paid==".00" ? "0" : paid}",size: 12.sp)),
+                                        Center(child: UiHelper.CustText(text: "${balance.isEmpty ? "0" : balance}",size: 12.sp)),
+
+                                        Row(children: [
+                                          const SizedBox(width: 10,),
+                                          Tooltip(
+                                            message : "Make Payment",
+                                            child: IconButton(onPressed: (){
+
+                                              String? status = GetCaseList.pay_status
+                                                  .firstWhere((element) => element["case_no"] == data.caseNo,
+                                                orElse: () => {},
+                                              )["status"];
+
+                                              status == "Due" ? showCaseDialog(context: context, case_no: data.caseNo!,case_date: data.caseDate!,case_time: data.time!, patient_name: data.patientName!, year: data.year!, month: data.month!, gender: data.gender!, mobile: data.mobile!, child_male: data.childMale!, child_female: data.childFemale!, address: data.address!, agent: data.agent!, doctor: data.doctor!, test_name: data.testName!, test_rate: data.testRate!, total_amount: data.totalAmount!, discount: data.discount!, after_discount: data.afterDiscount!, advance: advance, balance: balance!, discount_type: data.discountType!,test_date: data.testDate!, test_file: data.testFile!, narration: data.narration!, name_title: data.nameTitle!)
+                                                  : UiHelper.showSuccessToste(message: "Full Payment Already Paid",heading: "Payment Already Paid");
+                                            }, icon: Icon(Icons.add_box_rounded,color: Colors.blue.shade600,)),
+                                          ),
+                                          const SizedBox(width: 10,),
+                                          Tooltip(
+                                            message : "Print Receipt",
+                                            child: IconButton(onPressed: (){
+
+                                              double d = double.parse(paid);
+
+                                              String amountStr = d.toStringAsFixed(2);
+
+                                              if (amountStr.endsWith('.00')) {
+                                                paid = paid;
+                                              } else {
+                                                paid = "${paid}.00";
+                                              }
+
+                                              List<String> testName = data.testName!.split(",");
+                                              List<String> testRate = data.testRate!.split(",");
+                                              List<String> testDate = data.testDate!.split(",");
+                                              PrintCaseEntry.printBill(receiptNo: data.slipNo!, receiptDate: data.date!, caseNo: data.caseNo!, caseDate: data.caseDate!, caseTime: data.time!, patientName: data.patientName!, mobile: data.mobile!, sex: data.gender!, age: "${data.year} Y ${data.month != "0" ? data.month :""}${data.month != "0" ? "M" :""} ", referredBy: data.doctor!, testName: testName, testRate: testRate, date: data.date!, totalAmount: total, discountAmount: paid, balanceAmount: data.balance!, advanceAmount: data.advance!, receivedBy: data.receivedBy!,testDate: testDate);
+                                            }, icon: Icon(Icons.print,color: Colors.green.shade700,),),
+                                          ),
+
+                                        ],),
+                                      ]
+                                      )
+                                    ]),
+                              );
+                            }),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            }
+
+            return SizedBox();
+          },
+        ),
+      ],
+    );
+  }
+
 
 
 

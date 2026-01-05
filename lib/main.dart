@@ -35,10 +35,12 @@ import 'Controllers/CaseEntryCtrl/Bloc/case_entry_bloc.dart';
 import 'Controllers/CaseList/Cubit/case_list_cubit.dart';
 import 'Controllers/CaseNumberCtrl/Cubit/case_number_cubit.dart';
 import 'Controllers/DocCtrl/bloc/doc_bloc.dart';
+import 'Controllers/DuePaidCtrl/due_paid_cubit.dart';
 import 'Controllers/LoginScreenCtrl/LoginBloc/login_bloc.dart';
 import 'Controllers/LoginScreenCtrl/UsernameCubit/username_cubit.dart';
 import 'Controllers/RateListCtrl/Cubit/rate_list_cubit.dart';
 import 'Controllers/StaffCtrl/cubit/staff_cubit.dart';
+import 'Controllers/TodayCollectionCtrl/today_collection_cubit.dart';
 import 'Helpers/report_page.dart';
 import 'Views/agent_collection.dart';
 import 'Views/case_entry_list.dart';
@@ -95,6 +97,8 @@ class MyApp extends StatelessWidget {
                 BlocProvider(create: (_)=>UpdateCaseBloc()),
                 BlocProvider(create: (_)=>TestDataCubit()),
                 BlocProvider(create: (_)=>ReportCubit()..getAllReport()),
+                BlocProvider(create: (_)=>TodayCollectionCubit()),
+                BlocProvider(create: (_)=>DuePaidCubit()),
                 BlocProvider(create: (_)=>CaseListCubit()..getCaseList(date: "${DateTime.now().day.toString()}-${DateTime.now().month.toString()}-${DateTime.now().year.toString()}",type: "All")),
               ],
               child: GetMaterialApp(
