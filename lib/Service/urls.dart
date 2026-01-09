@@ -117,6 +117,10 @@ class Urls {
 
   static const GetTodayCollection = "${BaseUrl}today-revenue/";
   static const GetDueCollection = "${BaseUrl}due-collection/";
+  static const addAgent = "${BaseUrl}add-agent/";
+  static const addDoctor = "${BaseUrl}add-doctor/";
+  static const deleteDoctor = "${BaseUrl}delete-doctor/";
+  static const deleteAgent = "${BaseUrl}delete-agent/";
 
 
 

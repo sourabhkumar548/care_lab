@@ -17,6 +17,8 @@ import '../Helpers/case_entry_data.dart';
 import '../Helpers/print_case_entry.dart';
 import '../Helpers/ratedialog.dart';
 import '../Helpers/uiHelper.dart';
+import '../Model/agent_model.dart';
+import '../Model/doctor_model.dart';
 
 class NewCaseEntry extends StatefulWidget {
 
@@ -445,25 +447,29 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                   children: [
                     Expanded(
                       child: AgentInputField(
-                        controller: agentCtrl,
-                        initialValue: "Self",
-                        onDoctorSelected: (agent) {
+                        onAgentSelected: (Agent agent) {
+                          print('Selected Agent: ${agent.agentName}');
+                          print('Mobile: ${agent.mobile}');
+                          print('Shop: ${agent.shopName}');
+                          print('ID: ${agent.id}');
                           setState(() {
-                            agentCtrl.text = agent;
+                            agentCtrl.text = agent.agentName!;
                           });
+                          // Now you have access to all agent data!
                         },
+                        initialValue: 'Self', // Optional
                       ),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
                       child: DoctorInputField(
-                        controller: doctorCtrl,
-                        initialValue: "Self",
-                        onDoctorSelected: (doctor) {
+                        onDoctorSelected: (Doctor doctor) {
                           setState(() {
-                            doctorCtrl.text = doctor;
+                            doctorCtrl.text = doctor.doctorName!;
                           });
+                          // Full doctor object available!
                         },
+                        initialValue: 'Self', // Optional
                       ),
                     ),
                   ],

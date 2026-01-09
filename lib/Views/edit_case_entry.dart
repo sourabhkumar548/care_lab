@@ -14,6 +14,8 @@ import '../Helpers/case_entry_data.dart';
 import '../Helpers/print_case_entry.dart';
 import '../Helpers/ratedialog.dart';
 import '../Helpers/uiHelper.dart';
+import '../Model/agent_model.dart';
+import '../Model/doctor_model.dart';
 
 class EditCaseEntry extends StatefulWidget {
   String case_no;
@@ -475,24 +477,29 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                               children: [
                                 Expanded(
                                   child: AgentInputField(
-                                    controller: agentCtrl,
-                                    onDoctorSelected: (agent) {
+                                    onAgentSelected: (Agent agent) {
+                                      print('Selected Agent: ${agent.agentName}');
+                                      print('Mobile: ${agent.mobile}');
+                                      print('Shop: ${agent.shopName}');
+                                      print('ID: ${agent.id}');
                                       setState(() {
-                                        agentCtrl.text = agent;
+                                        agentCtrl.text = agent.agentName!;
                                       });
+                                      // Now you have access to all agent data!
                                     },
+                                    initialValue: 'Self', // Optional
                                   ),
                                 ),
                                 const SizedBox(width: 20),
                                 Expanded(
                                   child: DoctorInputField(
-                                    controller: doctorCtrl,  // ✅ Now uses persistent controller
-                                    // ✅ Removed initialValue - let controller handle it
-                                    onDoctorSelected: (doctor) {
+                                    onDoctorSelected: (Doctor doctor) {
                                       setState(() {
-                                        doctorCtrl.text = doctor;
+                                        doctorCtrl.text = doctor.doctorName!;
                                       });
+                                      // Full doctor object available!
                                     },
+                                    initialValue: 'Self', // Optional
                                   ),
                                 ),
                               ],
@@ -1304,25 +1311,29 @@ class _EditCaseEntryState extends State<EditCaseEntry> {
                               children: [
                                 Expanded(
                                   child: AgentInputField(
-                                    controller: agentCtrl,
-                                    onDoctorSelected: (agent) {
+                                    onAgentSelected: (Agent agent) {
+                                      print('Selected Agent: ${agent.agentName}');
+                                      print('Mobile: ${agent.mobile}');
+                                      print('Shop: ${agent.shopName}');
+                                      print('ID: ${agent.id}');
                                       setState(() {
-                                        agentCtrl.text = agent;
+                                        agentCtrl.text = agent.agentName!;
                                       });
+                                      // Now you have access to all agent data!
                                     },
+                                    initialValue: 'Self', // Optional
                                   ),
                                 ),
                                 const SizedBox(width: 20),
                                 Expanded(
                                   child: DoctorInputField(
-                                    controller: doctorCtrl,  // ✅ Now uses persistent controller
-                                    // ✅ Removed initialValue - let controller handle it
-                                    onDoctorSelected: (doctor) {
+                                    onDoctorSelected: (Doctor doctor) {
                                       setState(() {
-                                        print("Doctor Change : $doctor");
-                                        doctorCtrl.text = doctor;
+                                        doctorCtrl.text = doctor.doctorName!;
                                       });
+                                      // Full doctor object available!
                                     },
+                                    initialValue: 'Self', // Optional
                                   ),
                                 ),
                               ],

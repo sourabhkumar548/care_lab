@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 import '../Helpers/case_entry_data.dart';
 import '../Helpers/get_doctor_data.dart';
 import '../Helpers/uiHelper.dart';
+import '../Model/doctor_model.dart';
 import 'doctor_sale_report.dart';
 import 'loginscreen.dart';
 import 'monthly_list.dart';
@@ -133,13 +134,13 @@ class _DoctorCollectionState extends State<DoctorCollection> {
                   const SizedBox(height: 10,),
                   Expanded(
                     child: DoctorInputField(
-                      controller: doctorCtrl,
-                      initialValue: "Self",
-                      onDoctorSelected: (doctor) {
+                      onDoctorSelected: (Doctor doctor) {
                         setState(() {
-                          doctorCtrl.text = doctor;
+                          doctorCtrl.text = doctor.doctorName!;
                         });
+                        // Full doctor object available!
                       },
+                      initialValue: 'Self', // Optional
                     ),
                   ),
                   const SizedBox(height: 10,),
@@ -253,13 +254,13 @@ class _DoctorCollectionState extends State<DoctorCollection> {
                       const SizedBox(width: 10,),
                       Expanded(
                         child: DoctorInputField(
-                          controller: doctorCtrl,
-                          initialValue: "Self",
-                          onDoctorSelected: (doctor) {
+                          onDoctorSelected: (Doctor doctor) {
                             setState(() {
-                              doctorCtrl.text = doctor;
+                              doctorCtrl.text = doctor.doctorName!;
                             });
+                            // Full doctor object available!
                           },
+                          initialValue: 'Self', // Optional
                         ),
                       ),
                       const SizedBox(width: 10,),

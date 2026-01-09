@@ -28,7 +28,7 @@ class AgentCubit extends Cubit<AgentState> {
         emit(AgentLoadedState(agentModel: agentModel));
 
       }else{
-        emit(AgentErrorState(errorMsg: "Failed to load rate list. Status code: ${response.statusCode}"));
+        emit(AgentErrorState(errorMsg: "Failed to load agent list. Status code: ${response.statusCode}"));
       }
 
     }on SocketException catch(e){

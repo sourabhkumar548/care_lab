@@ -6,6 +6,7 @@ import 'package:omni_datetime_picker/omni_datetime_picker.dart';
 import 'package:sizer/sizer.dart';
 
 import '../Helpers/uiHelper.dart';
+import '../Model/agent_model.dart';
 import 'loginscreen.dart';
 
 class AgentCollection extends StatefulWidget {
@@ -126,13 +127,17 @@ class _AgentCollectionState extends State<AgentCollection> {
                 const SizedBox(height: 10,),
                 Expanded(
                   child: AgentInputField(
-                    controller: agentCtrl,
-                    initialValue: "Self",
-                    onDoctorSelected: (agent) {
+                    onAgentSelected: (Agent agent) {
+                      print('Selected Agent: ${agent.agentName}');
+                      print('Mobile: ${agent.mobile}');
+                      print('Shop: ${agent.shopName}');
+                      print('ID: ${agent.id}');
                       setState(() {
-                        agentCtrl.text = agent;
+                        agentCtrl.text = agent.agentName!;
                       });
+                      // Now you have access to all agent data!
                     },
+                    initialValue: 'Self', // Optional
                   ),
                 ),
                 const SizedBox(height: 10,),
@@ -243,13 +248,17 @@ class _AgentCollectionState extends State<AgentCollection> {
                       const SizedBox(width: 10,),
                       Expanded(
                         child: AgentInputField(
-                          controller: agentCtrl,
-                          initialValue: "Self",
-                          onDoctorSelected: (agent) {
+                          onAgentSelected: (Agent agent) {
+                            print('Selected Agent: ${agent.agentName}');
+                            print('Mobile: ${agent.mobile}');
+                            print('Shop: ${agent.shopName}');
+                            print('ID: ${agent.id}');
                             setState(() {
-                              agentCtrl.text = agent;
+                              agentCtrl.text = agent.agentName!;
                             });
+                            // Now you have access to all agent data!
                           },
+                          initialValue: 'Self', // Optional
                         ),
                       ),
                       const SizedBox(width: 10,),
