@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 
 import '../Controllers/DoctorCtrl/cibit/doctor_cubit.dart';
 import '../Model/doctor_model.dart';
 
-// Import your cubit and model
-// import 'package:your_app/bloc/doctor_cubit.dart';
-// import 'package:your_app/model/doctor_model.dart';
-
 // ============================================
-// DOCTOR INPUT FIELD WIDGET WITH BLOC
+// DOCTOR INPUT FIELD WITH KEYBOARD NAVIGATION
 // ============================================
 class DoctorInputField extends StatefulWidget {
   final Function(Doctor)? onDoctorSelected;
@@ -35,6 +32,8 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
   List<Doctor> filteredDoctors = [];
   OverlayEntry? _overlayEntry;
   Doctor? _lastValidSelection;
+  int _highlightedIndex = -1;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -64,8 +63,9 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
 
     if (currentText.isEmpty) return;
 
+    // EXACT MATCH - Case-sensitive comparison
     final isValid = allDoctors.any((doctor) =>
-    doctor.doctorName?.toLowerCase() == currentText.toLowerCase());
+    doctor.doctorName == currentText);
 
     if (!isValid) {
       // Revert to last valid selection
@@ -73,7 +73,7 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
       if (mounted && currentText.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Please select a doctor from the list'),
+            content: Text('Please select a doctor from the list (exact match required)'),
             duration: Duration(seconds: 2),
             backgroundColor: Colors.red,
           ),
@@ -86,6 +86,7 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
     if (query.isEmpty) {
       filteredDoctors = allDoctors.take(50).toList();
     } else {
+      // CASE-INSENSITIVE FILTERING for search convenience
       filteredDoctors = allDoctors.where((doctor) {
         final name = doctor.doctorName?.toLowerCase() ?? '';
         final post = doctor.post?.toLowerCase() ?? '';
@@ -94,6 +95,8 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
         return name.contains(searchQuery) || post.contains(searchQuery);
       }).take(50).toList();
     }
+
+    _highlightedIndex = -1; // Don't auto-highlight on typing
 
     if (filteredDoctors.isNotEmpty && _focusNode.hasFocus) {
       _showDropdown();
@@ -104,12 +107,82 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
     if (mounted) setState(() {});
   }
 
+  void _handleKeyEvent(RawKeyEvent event) {
+    if (event is! RawKeyDownEvent) return;
+    if (filteredDoctors.isEmpty || _overlayEntry == null) return;
+
+    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      if (_highlightedIndex < 0) {
+        _highlightedIndex = 0;
+      } else {
+        _highlightedIndex = (_highlightedIndex + 1) % filteredDoctors.length;
+      }
+      _scrollToHighlighted();
+      _updateOverlay();
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      if (_highlightedIndex < 0) {
+        _highlightedIndex = filteredDoctors.length - 1;
+      } else {
+        _highlightedIndex = (_highlightedIndex - 1 + filteredDoctors.length) % filteredDoctors.length;
+      }
+      _scrollToHighlighted();
+      _updateOverlay();
+    } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.tab) {
+      if (_highlightedIndex >= 0 && _highlightedIndex < filteredDoctors.length) {
+        _selectDoctor(filteredDoctors[_highlightedIndex]);
+      }
+    } else if (event.logicalKey == LogicalKeyboardKey.escape) {
+      _hideDropdown();
+      _focusNode.unfocus();
+    }
+  }
+
+  void _updateOverlay() {
+    if (_overlayEntry != null) {
+      _overlayEntry!.markNeedsBuild();
+    }
+  }
+
+  void _scrollToHighlighted() {
+    if (_highlightedIndex < 0 || !_scrollController.hasClients) return;
+
+    final itemHeight = 56.0; // Approximate ListTile height
+    final scrollOffset = _highlightedIndex * itemHeight;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final viewportHeight = 250.0; // Max height of dropdown
+
+    if (scrollOffset < _scrollController.offset) {
+      _scrollController.animateTo(
+        scrollOffset,
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+      );
+    } else if (scrollOffset + itemHeight > _scrollController.offset + viewportHeight) {
+      _scrollController.animateTo(
+        (scrollOffset + itemHeight - viewportHeight).clamp(0.0, maxScroll),
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _selectDoctor(Doctor doctor) {
+    _controller.text = doctor.doctorName ?? '';
+    _lastValidSelection = doctor;
+    widget.onDoctorSelected?.call(doctor);
+    _hideDropdown();
+    _focusNode.unfocus();
+  }
+
   void _showDropdown() {
     _hideDropdown();
 
     if (filteredDoctors.isEmpty && _controller.text.isEmpty) {
       filteredDoctors = allDoctors.take(50).toList();
     }
+
+    _highlightedIndex = -1; // Reset highlight when showing dropdown
 
     if (filteredDoctors.isEmpty || !mounted) return;
 
@@ -120,6 +193,7 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
   void _hideDropdown() {
     _overlayEntry?.remove();
     _overlayEntry = null;
+    _highlightedIndex = -1;
   }
 
   OverlayEntry _createOverlayEntry() {
@@ -156,34 +230,46 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
               ),
             )
                 : ListView.separated(
+              controller: _scrollController,
               padding: EdgeInsets.zero,
               shrinkWrap: true,
               itemCount: filteredDoctors.length,
               separatorBuilder: (context, index) => Divider(height: 1),
               itemBuilder: (context, index) {
                 final doctor = filteredDoctors[index];
-                return ListTile(
-                  dense: true,
-                  title: Text(
-                    doctor.doctorName ?? '',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                final isHighlighted = index == _highlightedIndex;
+
+                return MouseRegion(
+                  onEnter: (_) {
+                    _highlightedIndex = index;
+                    _updateOverlay();
+                  },
+                  child: Container(
+                    color: isHighlighted
+                        ? Colors.red.shade100
+                        : Colors.transparent,
+                    child: ListTile(
+                      dense: true,
+                      title: Text(
+                        doctor.doctorName ?? '',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: isHighlighted ? FontWeight.w600 : FontWeight.w500,
+                          color: isHighlighted ? Colors.red.shade900 : Colors.black,
+                        ),
+                      ),
+                      subtitle: doctor.post != null
+                          ? Text(
+                        doctor.post!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isHighlighted ? Colors.red.shade700 : Colors.black87,
+                        ),
+                      )
+                          : null,
+                      onTap: () => _selectDoctor(doctor),
                     ),
                   ),
-                  subtitle: doctor.post != null
-                      ? Text(
-                    doctor.post!,
-                    style: TextStyle(fontSize: 12),
-                  )
-                      : null,
-                  onTap: () {
-                    _controller.text = doctor.doctorName ?? '';
-                    _lastValidSelection = doctor;
-                    widget.onDoctorSelected?.call(doctor);
-                    _hideDropdown();
-                    _focusNode.unfocus();
-                  },
                 );
               },
             ),
@@ -198,7 +284,6 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
     _lastValidSelection = null;
     _filterDoctors('');
     if (widget.onDoctorSelected != null) {
-      // Create empty doctor to notify clearing
       widget.onDoctorSelected?.call(Doctor());
     }
   }
@@ -224,7 +309,6 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
         }
       },
       builder: (context, state) {
-        // Update doctor list when loaded
         if (state is DoctorLoadedState) {
           allDoctors = state.doctorModel.doctor ?? [];
           if (_controller.text.isEmpty) {
@@ -241,57 +325,63 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
             Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    style: TextStyle(color: Colors.black),
-                    enabled: !isLoading,
-                    decoration: InputDecoration(
-                      labelText: "Enter Doctor Name",
-                      filled: true,
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.red, width: 2),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.red, width: 1.5),
-                      ),
-                      fillColor: isLoading ? Colors.grey.shade200 : Colors.grey.shade100,
-                      labelStyle: TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'font-bold',
-                        fontSize: 11.sp,
-                      ),
-                      prefixIcon: isLoading
-                          ? Padding(
-                        padding: EdgeInsets.all(12),
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
+                  child: RawKeyboardListener(
+                    focusNode: FocusNode(),
+                    onKey: _handleKeyEvent,
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      style: TextStyle(color: Colors.black),
+                      enabled: !isLoading,
+                      decoration: InputDecoration(
+                        labelText: "Enter Doctor Name",
+                        helperText: "Use ↑↓ arrows, Tab/Enter to select",
+                        helperStyle: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                        filled: true,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: Colors.red, width: 2),
                         ),
-                      )
-                          : Icon(Icons.person),
-                      suffixIcon: _controller.text.isNotEmpty && !isLoading
-                          ? IconButton(
-                        icon: Icon(Icons.close, size: 20),
-                        onPressed: _clearText,
-                      )
-                          : null,
-                      border: OutlineInputBorder(),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: Colors.red, width: 1.5),
+                        ),
+                        fillColor: isLoading ? Colors.grey.shade200 : Colors.grey.shade100,
+                        labelStyle: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'font-bold',
+                          fontSize: 11.sp,
+                        ),
+                        prefixIcon: isLoading
+                            ? Padding(
+                          padding: EdgeInsets.all(12),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        )
+                            : Icon(Icons.person),
+                        suffixIcon: _controller.text.isNotEmpty && !isLoading
+                            ? IconButton(
+                          icon: Icon(Icons.close, size: 20),
+                          onPressed: _clearText,
+                        )
+                            : null,
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: _filterDoctors,
                     ),
-                    onChanged: _filterDoctors,
                   ),
                 ),
                 if (hasError && !isLoading)
@@ -355,6 +445,7 @@ class _DoctorInputFieldState extends State<DoctorInputField> {
   @override
   void dispose() {
     _hideDropdown();
+    _scrollController.dispose();
     if (widget.controller == null) {
       _controller.dispose();
     }

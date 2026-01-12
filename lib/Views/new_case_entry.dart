@@ -448,16 +448,11 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                     Expanded(
                       child: AgentInputField(
                         onAgentSelected: (Agent agent) {
-                          print('Selected Agent: ${agent.agentName}');
-                          print('Mobile: ${agent.mobile}');
-                          print('Shop: ${agent.shopName}');
-                          print('ID: ${agent.id}');
                           setState(() {
                             agentCtrl.text = agent.agentName!;
                           });
-                          // Now you have access to all agent data!
                         },
-                        initialValue: 'Self', // Optional
+                        initialValue: 'Self',
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -467,9 +462,8 @@ class _NewCaseEntryState extends State<NewCaseEntry> {
                           setState(() {
                             doctorCtrl.text = doctor.doctorName!;
                           });
-                          // Full doctor object available!
                         },
-                        initialValue: 'Self', // Optional
+                        initialValue: 'Self',
                       ),
                     ),
                   ],

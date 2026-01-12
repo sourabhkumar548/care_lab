@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 
 import '../Controllers/AgentCtrl/cubit/agent_cubit.dart';
 import '../Model/agent_model.dart';
 // ============================================
-// AGENT INPUT FIELD WIDGET WITH BLOC
+// AGENT INPUT FIELD WITH KEYBOARD NAVIGATION
 // ============================================
 class AgentInputField extends StatefulWidget {
   final Function(Agent)? onAgentSelected;
@@ -30,6 +31,8 @@ class _AgentInputFieldState extends State<AgentInputField> {
   List<Agent> filteredAgents = [];
   OverlayEntry? _overlayEntry;
   Agent? _lastValidSelection;
+  int _highlightedIndex = -1;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -59,8 +62,9 @@ class _AgentInputFieldState extends State<AgentInputField> {
 
     if (currentText.isEmpty) return;
 
+    // EXACT MATCH - Case-sensitive comparison
     final isValid = allAgents.any((agent) =>
-    agent.agentName?.toLowerCase() == currentText.toLowerCase());
+    agent.agentName == currentText);
 
     if (!isValid) {
       // Revert to last valid selection
@@ -68,7 +72,7 @@ class _AgentInputFieldState extends State<AgentInputField> {
       if (mounted && currentText.isNotEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Please select an agent from the list'),
+            content: Text('Please select an agent from the list (exact match required)'),
             duration: Duration(seconds: 2),
             backgroundColor: Colors.red,
           ),
@@ -81,6 +85,7 @@ class _AgentInputFieldState extends State<AgentInputField> {
     if (query.isEmpty) {
       filteredAgents = allAgents.take(50).toList();
     } else {
+      // CASE-INSENSITIVE FILTERING for search convenience
       filteredAgents = allAgents.where((agent) {
         final name = agent.agentName?.toLowerCase() ?? '';
         final mobile = agent.mobile?.toLowerCase() ?? '';
@@ -93,6 +98,8 @@ class _AgentInputFieldState extends State<AgentInputField> {
       }).take(50).toList();
     }
 
+    _highlightedIndex = -1; // Don't auto-highlight on typing
+
     if (filteredAgents.isNotEmpty && _focusNode.hasFocus) {
       _showDropdown();
     } else {
@@ -102,12 +109,82 @@ class _AgentInputFieldState extends State<AgentInputField> {
     if (mounted) setState(() {});
   }
 
+  void _handleKeyEvent(RawKeyEvent event) {
+    if (event is! RawKeyDownEvent) return;
+    if (filteredAgents.isEmpty || _overlayEntry == null) return;
+
+    if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
+      if (_highlightedIndex < 0) {
+        _highlightedIndex = 0;
+      } else {
+        _highlightedIndex = (_highlightedIndex + 1) % filteredAgents.length;
+      }
+      _scrollToHighlighted();
+      _updateOverlay();
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
+      if (_highlightedIndex < 0) {
+        _highlightedIndex = filteredAgents.length - 1;
+      } else {
+        _highlightedIndex = (_highlightedIndex - 1 + filteredAgents.length) % filteredAgents.length;
+      }
+      _scrollToHighlighted();
+      _updateOverlay();
+    } else if (event.logicalKey == LogicalKeyboardKey.enter ||
+        event.logicalKey == LogicalKeyboardKey.tab) {
+      if (_highlightedIndex >= 0 && _highlightedIndex < filteredAgents.length) {
+        _selectAgent(filteredAgents[_highlightedIndex]);
+      }
+    } else if (event.logicalKey == LogicalKeyboardKey.escape) {
+      _hideDropdown();
+      _focusNode.unfocus();
+    }
+  }
+
+  void _updateOverlay() {
+    if (_overlayEntry != null) {
+      _overlayEntry!.markNeedsBuild();
+    }
+  }
+
+  void _scrollToHighlighted() {
+    if (_highlightedIndex < 0 || !_scrollController.hasClients) return;
+
+    final itemHeight = 56.0; // Approximate ListTile height
+    final scrollOffset = _highlightedIndex * itemHeight;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final viewportHeight = 250.0; // Max height of dropdown
+
+    if (scrollOffset < _scrollController.offset) {
+      _scrollController.animateTo(
+        scrollOffset,
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+      );
+    } else if (scrollOffset + itemHeight > _scrollController.offset + viewportHeight) {
+      _scrollController.animateTo(
+        (scrollOffset + itemHeight - viewportHeight).clamp(0.0, maxScroll),
+        duration: Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _selectAgent(Agent agent) {
+    _controller.text = agent.agentName ?? '';
+    _lastValidSelection = agent;
+    widget.onAgentSelected?.call(agent);
+    _hideDropdown();
+    _focusNode.unfocus();
+  }
+
   void _showDropdown() {
     _hideDropdown();
 
     if (filteredAgents.isEmpty && _controller.text.isEmpty) {
       filteredAgents = allAgents.take(50).toList();
     }
+
+    _highlightedIndex = -1; // Reset highlight when showing dropdown
 
     if (filteredAgents.isEmpty || !mounted) return;
 
@@ -118,6 +195,7 @@ class _AgentInputFieldState extends State<AgentInputField> {
   void _hideDropdown() {
     _overlayEntry?.remove();
     _overlayEntry = null;
+    _highlightedIndex = -1;
   }
 
   OverlayEntry _createOverlayEntry() {
@@ -154,43 +232,55 @@ class _AgentInputFieldState extends State<AgentInputField> {
               ),
             )
                 : ListView.separated(
+              controller: _scrollController,
               padding: EdgeInsets.zero,
               shrinkWrap: true,
               itemCount: filteredAgents.length,
               separatorBuilder: (context, index) => Divider(height: 1),
               itemBuilder: (context, index) {
                 final agent = filteredAgents[index];
-                return ListTile(
-                  dense: true,
-                  title: Text(
-                    agent.agentName ?? '',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                final isHighlighted = index == _highlightedIndex;
+
+                return MouseRegion(
+                  onEnter: (_) {
+                    _highlightedIndex = index;
+                    _updateOverlay();
+                  },
+                  child: Container(
+                    color: isHighlighted
+                        ? Colors.red.shade100
+                        : Colors.transparent,
+                    child: ListTile(
+                      dense: true,
+                      title: Text(
+                        agent.agentName ?? '',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: isHighlighted ? FontWeight.w600 : FontWeight.w500,
+                          color: isHighlighted ? Colors.red.shade900 : Colors.black,
+                        ),
+                      ),
+                      subtitle: agent.shopName != null
+                          ? Text(
+                        agent.shopName!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isHighlighted ? Colors.red.shade700 : Colors.black87,
+                        ),
+                      )
+                          : null,
+                      trailing: agent.mobile != null
+                          ? Text(
+                        agent.mobile!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isHighlighted ? Colors.red.shade700 : Colors.grey.shade600,
+                        ),
+                      )
+                          : null,
+                      onTap: () => _selectAgent(agent),
                     ),
                   ),
-                  subtitle: agent.shopName != null
-                      ? Text(
-                    agent.shopName!,
-                    style: TextStyle(fontSize: 12),
-                  )
-                      : null,
-                  trailing: agent.mobile != null
-                      ? Text(
-                    agent.mobile!,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
-                  )
-                      : null,
-                  onTap: () {
-                    _controller.text = agent.agentName ?? '';
-                    _lastValidSelection = agent;
-                    widget.onAgentSelected?.call(agent);
-                    _hideDropdown();
-                    _focusNode.unfocus();
-                  },
                 );
               },
             ),
@@ -205,7 +295,6 @@ class _AgentInputFieldState extends State<AgentInputField> {
     _lastValidSelection = null;
     _filterAgents('');
     if (widget.onAgentSelected != null) {
-      // Create empty agent to notify clearing
       widget.onAgentSelected?.call(Agent());
     }
   }
@@ -231,7 +320,6 @@ class _AgentInputFieldState extends State<AgentInputField> {
         }
       },
       builder: (context, state) {
-        // Update agent list when loaded
         if (state is AgentLoadedState) {
           allAgents = state.agentModel.agent ?? [];
           if (_controller.text.isEmpty) {
@@ -248,57 +336,63 @@ class _AgentInputFieldState extends State<AgentInputField> {
             Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    style: TextStyle(color: Colors.black),
-                    enabled: !isLoading,
-                    decoration: InputDecoration(
-                      labelText: "Select Agent Name",
-                      filled: true,
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.red, width: 2),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.black45, width: 1.5),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(color: Colors.red, width: 1.5),
-                      ),
-                      fillColor: isLoading ? Colors.grey.shade200 : Colors.grey.shade100,
-                      labelStyle: TextStyle(
-                        color: Colors.black,
-                        fontFamily: 'font-bold',
-                        fontSize: 11.sp,
-                      ),
-                      prefixIcon: isLoading
-                          ? Padding(
-                        padding: EdgeInsets.all(12),
-                        child: SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
+                  child: RawKeyboardListener(
+                    focusNode: FocusNode(),
+                    onKey: _handleKeyEvent,
+                    child: TextField(
+                      controller: _controller,
+                      focusNode: _focusNode,
+                      style: TextStyle(color: Colors.black),
+                      enabled: !isLoading,
+                      decoration: InputDecoration(
+                        labelText: "Select Agent Name",
+                        helperText: "Use ↑↓ arrows, Tab/Enter to select",
+                        helperStyle: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+                        filled: true,
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: Colors.red, width: 2),
                         ),
-                      )
-                          : Icon(Icons.person),
-                      suffixIcon: _controller.text.isNotEmpty && !isLoading
-                          ? IconButton(
-                        icon: Icon(Icons.close, size: 20),
-                        onPressed: _clearText,
-                      )
-                          : null,
-                      border: OutlineInputBorder(),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: Colors.black45, width: 1.5),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(color: Colors.red, width: 1.5),
+                        ),
+                        fillColor: isLoading ? Colors.grey.shade200 : Colors.grey.shade100,
+                        labelStyle: TextStyle(
+                          color: Colors.black,
+                          fontFamily: 'font-bold',
+                          fontSize: 11.sp,
+                        ),
+                        prefixIcon: isLoading
+                            ? Padding(
+                          padding: EdgeInsets.all(12),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        )
+                            : Icon(Icons.person),
+                        suffixIcon: _controller.text.isNotEmpty && !isLoading
+                            ? IconButton(
+                          icon: Icon(Icons.close, size: 20),
+                          onPressed: _clearText,
+                        )
+                            : null,
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: _filterAgents,
                     ),
-                    onChanged: _filterAgents,
                   ),
                 ),
                 if (hasError && !isLoading)
@@ -362,6 +456,7 @@ class _AgentInputFieldState extends State<AgentInputField> {
   @override
   void dispose() {
     _hideDropdown();
+    _scrollController.dispose();
     if (widget.controller == null) {
       _controller.dispose();
     }
