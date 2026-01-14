@@ -122,6 +122,8 @@ class Urls {
   static const deleteDoctor = "${BaseUrl}delete-doctor/";
   static const deleteAgent = "${BaseUrl}delete-agent/";
 
+  static const departmentWiseCollection = "${BaseUrl}getCasesWithDepartments?";
+
 
 
 }

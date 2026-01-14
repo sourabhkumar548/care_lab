@@ -1,4 +1,6 @@
 import 'package:care_lab_software/Controllers/BetweenDateCtrl/between_date_cubit.dart';
+import 'package:care_lab_software/Controllers/DepartmentCtrl/department_cubit.dart';
+import 'package:care_lab_software/Helpers/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:omni_datetime_picker/omni_datetime_picker.dart';
@@ -20,6 +22,7 @@ class _CollectionBetweenDeptState extends State<CollectionBetweenDept> {
   TextEditingController endDateCtrl = TextEditingController(text: "${DateTime.now().day.toString()}-${DateTime.now().month.toString()}-${DateTime.now().year.toString()}");
 
   static List<DropdownMenuItem<String>> deptList = [
+    DropdownMenuItem(value: "None", child: Text("None")),
     DropdownMenuItem(value: "CARDIOLOGY", child: Text("CARDIOLOGY")),
     DropdownMenuItem(value: "CT SCAN", child: Text("CT SCAN")),
     DropdownMenuItem(value: "GASTROENTEROLOGY", child: Text("GASTROENTEROLOGY")),
@@ -32,7 +35,6 @@ class _CollectionBetweenDeptState extends State<CollectionBetweenDept> {
     DropdownMenuItem(value: "SPECIAL PATHOLOGY", child: Text("SPECIAL PATHOLOGY")),
     DropdownMenuItem(value: "USG", child: Text("USG")),
     DropdownMenuItem(value: "X-RAY", child: Text("X-RAY")),
-    DropdownMenuItem(value: "BIOCHEMISTRY", child: Text("BIOCHEMISTRY")),
   ];
 
 
@@ -310,61 +312,96 @@ class _CollectionBetweenDeptState extends State<CollectionBetweenDept> {
                       }),
                       const SizedBox(width: 10,),
                       GestureDetector(
-                        onTap: ()=>context.read<BetweenDateCubit>().getBetweenDate(startDate: startDateCtrl.text,endDate: endDateCtrl.text,),
+                        onTap: ()=>context.read<DepartmentCubit>().getDepartmentWiseData(startDate: startDateCtrl.text, endDate: endDateCtrl.text,Department: selectedDEPT),
                         child: Container(
                           height: 50,
                           width: 200,
                           decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(30)),color: Colors.green),
-                          child: Center(child: UiHelper.CustText(text: "Search Detail",color: Colors.white,size: 11.sp)),
+                          child: Center(child: UiHelper.CustText(text: "Search Collection",color: Colors.white,size: 11.sp)),
                         ),
                       ),
 
                     ],),
 
-                    BlocBuilder<BetweenDateCubit, BetweenDateState>(
+                    BlocBuilder<DepartmentCubit, DepartmentState>(
                       builder: (context, state) {
-                        if(state is BetweenDateLoadingState){
+                        if(state is DepartmentLoadingState){
                           return Center(child: CircularProgressIndicator());
                         }
-                        if(state is BetweenDateErrorState){
+                        if(state is DepartmentErrorState){
                           return Center(child: UiHelper.CustText(text: state.errorMsg));
                         }
-                        if(state is BetweenDateLoadedState){
+                        if(state is DepartmentLoadedState){
+                          return GridView(
+                            shrinkWrap: true,
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+                            children: [
+                              ListView.builder(
+                                shrinkWrap: true,
+                                itemBuilder: (_,index){
 
-                          return Card(
-                            color: Colors.white,
-                            child: DataTable(
-                              columns: const [
-                                DataColumn(label: Text("Start Date", style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blueAccent))),
-                                DataColumn(label: Text("End Date", style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blueAccent))),
-                                DataColumn(label: Text("Total Amount", style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blueAccent))),
-                                DataColumn(label: Text("Total Collection", style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blueAccent))),
-                                DataColumn(label: Text("Total Due", style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blueAccent))),
-                                DataColumn(label: Text("Total Patient", style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blueAccent))),
-                                DataColumn(label: Text("Online Collection", style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blueAccent))),
-                                DataColumn(label: Text("Cash Collection", style: TextStyle(fontWeight: FontWeight.bold,color: Colors.blueAccent))),
-                              ],
-                              rows: [
-                                DataRow(cells: [
-                                  DataCell(UiHelper.CustText(text: state.betweenDatesModel.startDate)),
-                                  DataCell(UiHelper.CustText(text: state.betweenDatesModel.endDate)),
-                                  DataCell(UiHelper.CustText(text: state.betweenDatesModel.totalAmount.toString())),
-                                  DataCell(UiHelper.CustText(text: state.betweenDatesModel.totalCollection.toString())),
-                                  DataCell(UiHelper.CustText(text: state.betweenDatesModel.totalDue.toString())),
-                                  DataCell(UiHelper.CustText(text: state.betweenDatesModel.totalPatients.toString())),
-                                  DataCell(UiHelper.CustText(text: state.betweenDatesModel.paymentModeWise[0].totalCollection.toString())),
-                                  DataCell(UiHelper.CustText(text: state.betweenDatesModel.paymentModeWise[1].totalCollection.toString())),
-                                ])
-                              ],
-                            ),
+                                var data = state.departmentModel.dateWiseData![index];
+
+                                return Container(
+                                  margin: EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                      color: Colors.white
+                                  ),
+                                  child: ListTile(
+                                    title: Container(
+                                      padding: EdgeInsets.all(3),
+                                        color: Colors.green.shade200,
+                                        child: UiHelper.CustText(text: data.date!,size: 12)),
+                                    subtitle: Column(children: List.generate(data.tests!.length, (idx){
+                                        return Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            UiHelper.CustText(text: "${idx+1}",size: 12),
+                                            UiHelper.CustText(text: data.tests![idx].testName!,size: 12),
+                                            UiHelper.CustText(text: data.tests![idx].count!.toString(),size: 12),
+                                          ],
+                                        );
+                                    }
+                                    ),),
+
+                                  ),
+                                );
+
+                              },itemCount: state.departmentModel.dateWiseData!.length,),
+                              Container(
+                                padding: EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    left: BorderSide(color: Colors.black, width: 1.5),
+                                  ),
+                                ),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemBuilder: (_,index){
+
+                                  var data = state.departmentModel.summary![index];
+
+                                  return Container(
+                                    margin: EdgeInsets.symmetric(vertical: 5),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                                      color: Colors.white
+                                    ),
+                                    child: ListTile(
+                                      title: UiHelper.CustText(text: data.testName!),
+                                      trailing: UiHelper.CustText(text: data.count!.toString()),
+                                    ),
+                                  );
+
+                                },itemCount: state.departmentModel.summary!.length,),
+                              ),
+                            ],
                           );
                         }
                         return Container();
                       },
                     )
-
-
-
                   ],
                 ),
               ),

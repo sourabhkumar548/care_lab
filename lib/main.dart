@@ -38,6 +38,7 @@ import 'Controllers/BetweenDateCtrl/between_date_cubit.dart';
 import 'Controllers/CaseEntryCtrl/Bloc/case_entry_bloc.dart';
 import 'Controllers/CaseList/Cubit/case_list_cubit.dart';
 import 'Controllers/CaseNumberCtrl/Cubit/case_number_cubit.dart';
+import 'Controllers/DepartmentCtrl/department_cubit.dart';
 import 'Controllers/DocCtrl/bloc/doc_bloc.dart';
 import 'Controllers/DuePaidCtrl/due_paid_cubit.dart';
 import 'Controllers/LoginScreenCtrl/LoginBloc/login_bloc.dart';
@@ -106,6 +107,7 @@ class MyApp extends StatelessWidget {
                 BlocProvider(create: (_)=>AddDoctorCubit()),
                 BlocProvider(create: (_)=>DeleteAgentCubit()),
                 BlocProvider(create: (_)=>DeleteDoctorCubit()),
+                BlocProvider(create: (_)=>DepartmentCubit()),
                 BlocProvider(create: (_)=>CaseListCubit()..getCaseList(date: "${DateTime.now().day.toString()}-${DateTime.now().month.toString()}-${DateTime.now().year.toString()}",type: "All")),
               ],
               child: GetMaterialApp(
