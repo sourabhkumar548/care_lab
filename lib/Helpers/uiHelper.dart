@@ -256,6 +256,8 @@ class UiHelper{
                               value: "agent", child: Text("Agent Collection")),
                           PopupMenuItem(
                               value: "date", child: Text("Collection By Date")),
+                          PopupMenuItem(
+                              value: "dept", child: Text("Collection By Department")),
                         ],
                       ).then((value) {
                         if (value == "doctor") {
@@ -269,6 +271,10 @@ class UiHelper{
                         if (value == "date") {
                           Get.toNamed('/collection_between_date',
                               arguments: {"code": "/collection_between_date"});
+                        }
+                        if (value == "dept") {
+                          Get.toNamed('/collection_between_dept',
+                              arguments: {"code": "/collection_between_dept"});
                         }
                       });
                     },
@@ -500,6 +506,7 @@ class UiHelper{
                     },
                   ),
                 ),
+
               ],
             ),
           ),
@@ -548,6 +555,16 @@ class UiHelper{
                     title: const Text("Collection By Date", style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Get.toNamed('/collection_between_date',arguments: {"code" : "/collection_between_date"});
+                    },
+                  ),
+                ),
+                Container(
+                  color: container == '44' ? Colors.green.shade300 : Colors.transparent,
+                  child: ListTile(
+                    leading: Icon(Icons.check_circle_outlined,color: Colors.black,),
+                    title: const Text("Collection By Dept", style: TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Get.toNamed('/collection_between_dept',arguments: {"code" : "/collection_between_dept"});
                     },
                   ),
                 ),

@@ -48,6 +48,7 @@ import 'Controllers/TodayCollectionCtrl/today_collection_cubit.dart';
 import 'Helpers/report_page.dart';
 import 'Views/agent_collection.dart';
 import 'Views/case_entry_list.dart';
+import 'Views/collection_between_dept.dart';
 import 'Views/dashboard.dart';
 import 'Views/loginscreen.dart';
 import 'Views/new_case_entry.dart';
@@ -129,6 +130,7 @@ class MyApp extends StatelessWidget {
                   "/expanses": (context) => Expanses(),
                   "/upload_report": (context) => ReportUploadScreen(),
                   "/search_report": (context) => SearchReportScreen(),
+                  "/collection_between_dept": (context) => CollectionBetweenDept(),
                 },
               ),
             ),
