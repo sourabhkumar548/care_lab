@@ -502,8 +502,8 @@ class _RateListManagementState extends State<RateListManagement> {
                                         InkWell(
                                             onTap : (){
                                               final encodedUrl = Uri.encodeComponent("${Urls.OrignalWordFileUrl}${data.testFile!}");
-                                              final officeEditorUrl = "https://www.office.com/launch/word?src=$encodedUrl";
-                                              html.window.open(officeEditorUrl, "_blank");
+                                              final wordUrl = "ms-word:ofe|u|$encodedUrl";
+                                              html.window.open(wordUrl, "_self");
 
                                             },
                                             child: Center(child: UiHelper.CustText(text: data.testFile!, size: 11.sp,color: Colors.blue.shade900))),
